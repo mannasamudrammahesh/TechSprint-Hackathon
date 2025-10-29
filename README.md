@@ -76,7 +76,7 @@ Healix is a comprehensive mental health platform that combines cutting-edge AI t
 ## 📁 Project Structure
 
 ```
-AIML-Sprint/
+healix/
 ├── backend/                 # Python FastAPI backend
 │   ├── main.py             # Main server file
 │   ├── gemini_integration.py  # Gemini AI integration
@@ -273,7 +273,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Issues**: [GitHub Issues](https://github.com/mannasamudrammahesh/AIML-Sprint/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/mannasamudrammahesh/AIML-Sprint/discussions)
-- **Documentation**: See README files in `backend/` and `Healix-main/`
 
 ---
 

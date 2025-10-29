@@ -1,0 +1,49 @@
+{
+  "diseases": [
+    {
+      "name": "Acne",
+      "symptoms": "Pimples, blackheads, whiteheads, inflammation, redness, pain",
+      "causes": "Excess oil production, bacteria, hormonal changes, stress, diet",
+      "treatment": "Topical treatments (benzoyl peroxide, salicylic acid), antibiotics, retinoids, lifestyle changes",
+      "prevention": "Regular cleansing, avoiding oily products, managing stress, healthy diet",
+      "severity": "Mild to severe",
+      "common_locations": "Face, chest, back, shoulders"
+    },
+    {
+      "name": "Eczema",
+      "symptoms": "Dry, itchy skin, red patches, inflammation, scaling, cracking",
+      "causes": "Genetic factors, environmental triggers, immune system dysfunction, allergies",
+      "treatment": "Moisturizers, topical steroids, antihistamines, avoiding triggers",
+      "prevention": "Regular moisturizing, avoiding harsh soaps, managing stress, identifying triggers",
+      "severity": "Mild to moderate",
+      "common_locations": "Hands, feet, face, inside of elbows, behind knees"
+    },
+    {
+      "name": "Psoriasis",
+      "symptoms": "Thick, red patches with silvery scales, itching, burning, soreness",
+      "causes": "Immune system dysfunction, genetic factors, stress, infections",
+      "treatment": "Topical treatments, light therapy, systemic medications, biologics",
+      "prevention": "Stress management, avoiding triggers, maintaining healthy lifestyle",
+      "severity": "Mild to severe",
+      "common_locations": "Scalp, elbows, knees, lower back"
+    },
+    {
+      "name": "Rosacea",
+      "symptoms": "Facial redness, visible blood vessels, bumps, eye irritation",
+      "causes": "Genetic factors, environmental triggers, blood vessel abnormalities",
+      "treatment": "Topical medications, oral antibiotics, laser therapy, lifestyle changes",
+      "prevention": "Avoiding triggers, sun protection, gentle skincare",
+      "severity": "Mild to moderate",
+      "common_locations": "Face, particularly cheeks, nose, forehead"
+    },
+    {
+      "name": "Melanoma",
+      "symptoms": "Irregular moles, changes in existing moles, dark spots, itching",
+      "causes": "UV exposure, genetic factors, fair skin, multiple moles",
+      "treatment": "Surgical removal, immunotherapy, targeted therapy, chemotherapy",
+      "prevention": "Sun protection, regular skin checks, avoiding tanning beds",
+      "severity": "Severe",
+      "common_locations": "Anywhere on the body, often sun-exposed areas"
+    }
+  ]
+} 

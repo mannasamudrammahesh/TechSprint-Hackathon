@@ -1,48 +1,42 @@
-# Root level gitignore for Healix project
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# Environment files
-.env
-.env.local
-.env.*.local
-*.env
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
 
-# Python
-__pycache__/
-*.py[cod]
-venv/
-backend/venv/
-backend/__pycache__/
-backend/*.db
-backend/logs/
-backend/model_cache/
+# testing
+/coverage
 
-# Node.js
-node_modules/
-Healix-main/node_modules/
-.next/
-Healix-main/.next/
-out/
-dist/
+# next.js
+/.next/
+/out/
 
-# IDE
-.vscode/
-.windsurf/
-.idea/
-*.swp
-*.swo
+# production
+/build
 
-# OS
+# misc
 .DS_Store
-Thumbs.db
+*.pem
 
-# Logs
-*.log
-logs/
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Build outputs
-build/
-.netlify/
+# local env files
+.env*.local
+.env
 
-# TypeScript
+# vercel
+.vercel
+
+# typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Netlify
+.netlify
+.next
+dist
