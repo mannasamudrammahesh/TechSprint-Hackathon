@@ -1,0 +1,101 @@
+"use client";
+
+import React, { useState, useEffect, useRef } from 'react';
+import { FaMicrophone, FaMicrophoneSlash } from 'react-icons/fa';
+import { useVoiceAssistant } from '@/hooks/useVoiceAssistant';
+import { useUser } from '@clerk/nextjs';
+import toast from 'react-hot-toast';
+
+/**
+ * Professional Microphone Toggle Button
+ * Sticky throughout the website
+ * Uses react-icons for professional appearance
+ * Shows diagonal line when microphone is off
+ * No blinking effects - clean and professional
+ * Microphone starts OFF - user must click to activate
+ */
+export default function MicrophoneToggle() {
+  const { user, isLoaded } = useUser();
+  const { state, startListening, stopListening } = useVoiceAssistant();
+  const [isMicActive, setIsMicActive] = useState(false);
+  const isTogglingRef = useRef(false);
+
+  // NO AUTO-START - Microphone stays OFF until user clicks the button
+  // This ensures no microphone permission is requested on page load
+
+  // Sync with voice assistant state - only update if not currently toggling
+  useEffect(() => {
+    if (!isTogglingRef.current) {
+      setIsMicActive(state.isListening);
+    }
+  }, [state.isListening]);
+
+  const toggleMicrophone = async () => {
+    // Prevent rapid toggling
+    if (isTogglingRef.current) {
+      return;
+    }
+
+    isTogglingRef.current = true;
+
+    try {
+      if (isMicActive) {
+        // Turn OFF microphone
+        await stopListening();
+        setIsMicActive(false);
+        toast.success("Microphone turned off", {
+          icon: '🔴',
+          duration: 2000,
+        });
+      } else {
+        // Turn ON microphone
+        await startListening();
+        setIsMicActive(true);
+        toast.success("Microphone active - Say 'Hey Healix'", {
+          icon: '🟢',
+          duration: 2000,
+        });
+      }
+    } catch (error) {
+      console.error('Microphone toggle error:', error);
+      toast.error("Failed to toggle microphone", {
+        icon: '⚠️',
+        duration: 2000,
+      });
+    } finally {
+      // Reset toggle lock after a short delay
+      setTimeout(() => {
+        isTogglingRef.current = false;
+      }, 300);
+    }
+  };
+
+  return (
+    <button
+      onClick={toggleMicrophone}
+      className={`
+        fixed bottom-20 right-4 z-50
+        w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16
+        sm:bottom-24 sm:right-6 md:bottom-24 md:right-8
+        rounded-full
+        flex items-center justify-center
+        shadow-2xl hover:shadow-3xl
+        transition-all duration-300 ease-in-out
+        hover:scale-105 active:scale-95
+        ${isMicActive
+          ? 'bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700'
+          : 'bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700'
+        }
+        border-2 sm:border-3 md:border-4 border-white
+      `}
+      aria-label={isMicActive ? "Turn off microphone" : "Turn on microphone"}
+      title={isMicActive ? "Microphone ON - Click to turn off" : "Microphone OFF - Click to turn on"}
+    >
+      {isMicActive ? (
+        <FaMicrophone size={20} className="text-white sm:w-6 sm:h-6 md:w-7 md:h-7" />
+      ) : (
+        <FaMicrophoneSlash size={20} className="text-white sm:w-6 sm:h-6 md:w-7 md:h-7" />
+      )}
+    </button>
+  );
+}
