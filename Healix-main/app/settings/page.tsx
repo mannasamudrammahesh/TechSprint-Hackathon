@@ -155,7 +155,7 @@ export default function SettingsPage() {
 
         {/* Settings Tabs */}
         <Tabs defaultValue="profile" className="space-y-4 md:space-y-6">
-          <TabsList className="grid w-full grid-cols-4 h-auto">
+          <TabsList className="grid w-full grid-cols-5 h-auto">
             <TabsTrigger value="profile" className="flex flex-col md:flex-row items-center gap-1 md:gap-2 text-xs md:text-sm py-2 md:py-3">
               <User className="h-3 w-3 md:h-4 md:w-4" />
               <span className="hidden sm:inline">Profile</span>
@@ -163,6 +163,10 @@ export default function SettingsPage() {
             <TabsTrigger value="voice" className="flex flex-col md:flex-row items-center gap-1 md:gap-2 text-xs md:text-sm py-2 md:py-3">
               <Mic className="h-3 w-3 md:h-4 md:w-4" />
               <span className="hidden sm:inline">Voice</span>
+            </TabsTrigger>
+            <TabsTrigger value="commands" className="flex flex-col md:flex-row items-center gap-1 md:gap-2 text-xs md:text-sm py-2 md:py-3">
+              <Volume2 className="h-3 w-3 md:h-4 md:w-4" />
+              <span className="hidden sm:inline">Commands</span>
             </TabsTrigger>
             <TabsTrigger value="audio" className="flex flex-col md:flex-row items-center gap-1 md:gap-2 text-xs md:text-sm py-2 md:py-3">
               <Volume2 className="h-3 w-3 md:h-4 md:w-4" />
@@ -204,6 +208,107 @@ export default function SettingsPage() {
                     <p className="text-sm text-gray-500 mt-1">
                       Say "Hey Healix" to activate the voice assistant
                     </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Voice Commands Guide */}
+          <TabsContent value="commands" className="space-y-4 md:space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base md:text-lg">
+                  <Volume2 className="h-4 w-4 md:h-5 md:w-5" />
+                  Voice Commands Guide
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Alert className="bg-blue-50 border-blue-200">
+                  <Mic className="h-4 w-4 text-blue-600" />
+                  <AlertDescription className="text-blue-800">
+                    Click the microphone button in the bottom right corner to activate voice navigation. 
+                    Say "Hey Healix" followed by your command.
+                  </AlertDescription>
+                </Alert>
+
+                <div className="space-y-3 md:space-y-4">
+                  <div>
+                    <h4 className="font-semibold text-gray-800 mb-2 md:mb-3 flex items-center gap-2 text-sm md:text-base">
+                      <Home className="h-3 w-3 md:h-4 md:w-4" />
+                      Navigation Commands
+                    </h4>
+                    <div className="grid gap-1.5 md:gap-2">
+                      <div className="p-2 md:p-3 bg-gray-50 rounded-lg border border-gray-200">
+                        <p className="font-medium text-gray-800 text-xs md:text-sm">"Go to Home" / "Open Home"</p>
+                        <p className="text-[10px] md:text-xs text-gray-600">Navigate to the home page</p>
+                      </div>
+                      <div className="p-2 md:p-3 bg-gray-50 rounded-lg border border-gray-200">
+                        <p className="font-medium text-gray-800 text-xs md:text-sm">"Go to Chat" / "Open Counseling" / "Talk"</p>
+                        <p className="text-[10px] md:text-xs text-gray-600">Start a chat with the AI counselor</p>
+                      </div>
+                      <div className="p-2 md:p-3 bg-gray-50 rounded-lg border border-gray-200">
+                        <p className="font-medium text-gray-800 text-xs md:text-sm">"Go to Mental Health" / "Open Guidance" / "Show Concerns"</p>
+                        <p className="text-[10px] md:text-xs text-gray-600">Access mental health guidance and evaluation tools</p>
+                      </div>
+                      <div className="p-2 md:p-3 bg-gray-50 rounded-lg border border-gray-200">
+                        <p className="font-medium text-gray-800 text-xs md:text-sm">"Go to Therapy" / "Open Exercise" / "Start Game"</p>
+                        <p className="text-[10px] md:text-xs text-gray-600">Access interactive therapy exercises and games</p>
+                      </div>
+                      <div className="p-2 md:p-3 bg-gray-50 rounded-lg border border-gray-200">
+                        <p className="font-medium text-gray-800 text-xs md:text-sm">"Go to Music" / "Open Music Therapy" / "Relax"</p>
+                        <p className="text-[10px] md:text-xs text-gray-600">Listen to calming music and meditation sounds</p>
+                      </div>
+                      <div className="p-2 md:p-3 bg-gray-50 rounded-lg border border-gray-200">
+                        <p className="font-medium text-gray-800 text-xs md:text-sm">"Go to Settings" / "Open Preferences"</p>
+                        <p className="text-[10px] md:text-xs text-gray-600">Adjust your app settings and preferences</p>
+                      </div>
+                      <div className="p-2 md:p-3 bg-gray-50 rounded-lg border border-gray-200">
+                        <p className="font-medium text-gray-800 text-xs md:text-sm">"Go to Contact" / "Open Support" / "Help"</p>
+                        <p className="text-[10px] md:text-xs text-gray-600">Contact support or get help</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold text-gray-800 mb-2 md:mb-3 text-sm md:text-base">Command Variations</h4>
+                    <div className="p-3 md:p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-200">
+                      <p className="text-xs md:text-sm text-gray-700 mb-1.5 md:mb-2">You can use different phrases:</p>
+                      <ul className="text-[10px] md:text-xs text-gray-600 space-y-0.5 md:space-y-1 list-disc list-inside">
+                        <li>"Go to [page name]"</li>
+                        <li>"Open [page name]"</li>
+                        <li>"Navigate to [page name]"</li>
+                        <li>"Take me to [page name]"</li>
+                        <li>"Show me [page name]"</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold text-gray-800 mb-2 md:mb-3 text-sm md:text-base">Tips for Best Results</h4>
+                    <div className="space-y-1.5 md:space-y-2">
+                      <div className="flex items-start gap-1.5 md:gap-2 p-2 md:p-3 bg-green-50 rounded-lg border border-green-200">
+                        <Check className="h-4 w-4 md:h-5 md:w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-medium text-green-800 text-xs md:text-sm">Speak clearly and naturally</p>
+                          <p className="text-[10px] md:text-xs text-green-700">No need to shout or speak slowly</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-1.5 md:gap-2 p-2 md:p-3 bg-green-50 rounded-lg border border-green-200">
+                        <Check className="h-4 w-4 md:h-5 md:w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-medium text-green-800 text-xs md:text-sm">Use a quiet environment</p>
+                          <p className="text-[10px] md:text-xs text-green-700">Reduce background noise for better recognition</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-1.5 md:gap-2 p-2 md:p-3 bg-green-50 rounded-lg border border-green-200">
+                        <Check className="h-4 w-4 md:h-5 md:w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-medium text-green-800 text-xs md:text-sm">Wait for confirmation</p>
+                          <p className="text-[10px] md:text-xs text-green-700">The assistant will confirm your command before navigating</p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </CardContent>
