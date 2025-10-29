@@ -1,6 +1,6 @@
 /**
  * Supabase Client Configuration
- * Used for data storage only - Authentication is handled by Clerk
+ * Handles both authentication and data storage
  */
 
 import { createClient } from '@supabase/supabase-js';
@@ -9,16 +9,15 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('⚠️ Supabase credentials not found. Data will be stored locally only.');
+  console.warn('⚠️ Supabase credentials not found.');
 }
 
-// Create Supabase client
+// Create Supabase client with auth enabled
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    // Disable Supabase auth since we're using Clerk
-    persistSession: false,
-    autoRefreshToken: false,
-    detectSessionInUrl: false,
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
   },
 });
 

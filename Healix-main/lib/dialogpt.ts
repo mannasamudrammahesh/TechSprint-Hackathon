@@ -25,14 +25,18 @@ const VOICE_ASSISTANT_RESPONSES = {
       "I hear that you're feeling down. That's really tough. Have you been able to get outside today or talk to someone you trust?",
       "Depression can make everything feel heavy. You're brave for reaching out. What's one small thing that usually makes you feel a bit better?",
       "I'm sorry you're struggling with this. You don't have to face this alone. Is there someone in your life you can reach out to today?",
+      "Feeling down is hard. Remember, this feeling won't last forever. What's one thing you enjoyed doing before?",
+      "I'm here with you. Depression can cloud everything, but you're taking a positive step by talking. How long have you been feeling this way?",
     ],
     hi: [
       "मैं समझता हूं कि आप उदास महसूस कर रहे हैं। यह बहुत कठिन है। क्या आप किसी भरोसेमंद व्यक्ति से बात कर सकते हैं?",
       "अवसाद सब कुछ भारी लगाता है। आपने संपर्क किया यह बहादुरी है। कोई छोटी सी बात है जो आपको बेहतर महसूस कराती है?",
+      "उदास महसूस करना कठिन है। याद रखें, यह भावना हमेशा नहीं रहेगी। आप पहले क्या करना पसंद करते थे?",
     ],
     te: [
       "మీరు నిరాశగా ఉన్నారని నేను అర్థం చేసుకున్నాను। అది చాలా కష్టం. మీరు నమ్మకమైన ఎవరితోనైనా మాట్లాడగలరా?",
       "డిప్రెషన్ అంతా భారంగా అనిపించేలా చేస్తుంది. మీరు చేరుకున్నందుకు ధైర్యం చూపించారు. మీకు కొంచెం మంచి అనిపించే చిన్న విషయం ఏమైనా ఉందా?",
+      "నిరాశగా అనిపించడం కష్టం. గుర్తుంచుకోండి, ఈ అనుభూతి శాశ్వతం కాదు. మీరు ముందు ఏమి చేయడం ఇష్టపడేవారు?",
     ],
   },
   anxiety: {
@@ -40,14 +44,18 @@ const VOICE_ASSISTANT_RESPONSES = {
       "Anxiety can feel overwhelming. Let's slow down your breathing - breathe in for 4, hold for 4, out for 6. Are you somewhere safe right now?",
       "I can hear you're anxious. Try naming 3 things you can see around you. This can help ground you in the present moment.",
       "Anxiety is your body's alarm system being too sensitive. You're safe right now. What usually helps calm you down?",
+      "Take a deep breath with me. You're experiencing anxiety, but you're safe. What's making you feel anxious right now?",
+      "I understand you're feeling anxious. Let's focus on the present. Can you feel your feet on the ground? You're here, you're safe.",
     ],
     hi: [
       "चिंता बहुत भारी लग सकती है। आइए सांस धीमी करें - 4 तक सांस लें, 4 तक रोकें, 6 तक छोड़ें। क्या आप सुरक्षित जगह पर हैं?",
       "मैं समझता हूं आप चिंतित हैं। अपने आसपास 3 चीजों को देखकर नाम लें। यह आपको शांत करने में मदद करेगा।",
+      "मेरे साथ गहरी सांस लें। आप चिंतित महसूस कर रहे हैं, लेकिन आप सुरक्षित हैं। अभी आपको क्या चिंतित कर रहा है?",
     ],
     te: [
       "ఆందోళన చాలా అధికంగా అనిపించవచ్చు. మన శ్వాసను మందగించుకుందాం - 4 వరకు ఊపిరి పీల్చండి, 4 పాటు పట్టుకోండి, 6 పాటు వదలండి. మీరు ఇప్పుడు సురక్షితమైన చోట ఉన్నారా?",
       "మీరు ఆందోళనలో ఉన్నారని నేను అర్థం చేసుకున్నాను. మీ చుట్టూ కనిపించే 3 వస్తువుల పేర్లను చెప్పండి. ఇది మిమ్మల్ని ప్రశాంతపరచడంలో సహాయపడుతుంది।",
+      "నాతో లోతైన శ్వాస తీసుకోండి. మీరు ఆందోళన అనుభవిస్తున్నారు, కానీ మీరు సురక్షితంగా ఉన్నారు. ఇప్పుడు మిమ్మల్ని ఆందోళనకు గురిచేస్తున్నది ఏమిటి?",
     ],
   },
   stress: {
@@ -55,14 +63,52 @@ const VOICE_ASSISTANT_RESPONSES = {
       "Sounds like you're carrying a lot right now. What's the most urgent thing on your plate today?",
       "Stress builds up over time. What's one thing you could let go of or ask for help with?",
       "I hear you're overwhelmed. Sometimes we need to pause and breathe. What would help you feel lighter right now?",
+      "That's a lot to handle. Let's break it down. What's one thing you can tackle first?",
+      "Stress is tough. Remember to be kind to yourself. What's causing you the most stress right now?",
     ],
     hi: [
       "लगता है आप पर बहुत दबाव है। आज सबसे जरूरी काम क्या है?",
       "तनाव समय के साथ बढ़ता है। कोई एक चीज है जिसे आप छोड़ सकें या मदद मांग सकें?",
+      "यह संभालना बहुत है। आइए इसे तोड़ें। आप पहले किस एक चीज से निपट सकते हैं?",
     ],
     te: [
       "మీరు ఇప్పుడు చాలా భారం మోస్తున్నట్లు అనిపిస్తోంది. ఈ రోజు అత్యంత అవసరమైన పని ఏమిటి?",
       "ఒత్తిడి కాలక్రమేణా పెరుగుతుంది. మీరు వదులుకోవచ్చు లేదా సహాయం అడగవచ్చు అనేది ఏదైనా ఉందా?",
+      "అది నిర్వహించడానికి చాలా ఉంది. దానిని విభజిద్దాం. మీరు మొదట ఏ ఒక్క విషయాన్ని పరిష్కరించగలరు?",
+    ],
+  },
+  sleep: {
+    en: [
+      "Sleep problems can really affect everything. What's been keeping you awake at night?",
+      "Not sleeping well is exhausting. Have you tried any relaxation techniques before bed?",
+      "Sleep is so important for mental health. What's your bedtime routine like?",
+    ],
+    hi: [
+      "नींद की समस्याएं सब कुछ प्रभावित कर सकती हैं। रात में आपको क्या जगाए रख रहा है?",
+      "अच्छी नींद न आना थका देने वाला है। क्या आपने सोने से पहले कोई विश्राम तकनीक आजमाई है?",
+    ],
+    te: [
+      "నిద్ర సమస్యలు నిజంగా ప్రతిదీ ప్రభావితం చేయవచ్చు. రాత్రి మిమ్మల్ని మెలకువగా ఉంచుతున్నది ఏమిటి?",
+      "బాగా నిద్రపోకపోవడం అలసిపోయేలా చేస్తుంది. మీరు పడుకునే ముందు ఏదైనా విశ్రాంతి పద్ధతులను ప్రయత్నించారా?",
+    ],
+  },
+  general: {
+    en: [
+      "I'm here to listen. What's on your mind today?",
+      "Thank you for reaching out. How are you feeling right now?",
+      "I'm here to support you. What would you like to talk about?",
+      "Tell me more about what's going on. I'm listening.",
+      "How can I help you today? I'm here for you.",
+    ],
+    hi: [
+      "मैं सुनने के लिए यहां हूं। आज आपके मन में क्या है?",
+      "संपर्क करने के लिए धन्यवाद। आप अभी कैसा महसूस कर रहे हैं?",
+      "मैं आपका समर्थन करने के लिए यहां हूं। आप किस बारे में बात करना चाहेंगे?",
+    ],
+    te: [
+      "నేను వినడానికి ఇక్కడ ఉన్నాను. ఈరోజు మీ మనసులో ఏముంది?",
+      "చేరుకున్నందుకు ధన్యవాదాలు. మీరు ఇప్పుడు ఎలా అనిపిస్తున్నారు?",
+      "నేను మీకు మద్దతు ఇవ్వడానికి ఇక్కడ ఉన్నాను. మీరు దేని గురించి మాట్లాడాలనుకుంటున్నారు?",
     ],
   },
 };
@@ -259,31 +305,50 @@ class DialogGPTChat {
         };
       }
 
-      // Generate appropriate response based on interaction mode
-      let response: string;
-      let modelUsed: string = "contextual_mental_health";
-
+      // For voice assistant, prioritize fast local responses
       if (interactionMode === "voice_assistant") {
-        response = this.generateVoiceAssistantResponse(
+        const localResponse = this.generateVoiceAssistantResponse(
           input,
           context,
           language,
         );
-        modelUsed = "voice_assistant";
-      } else {
-        response = this.generateCouncilChatResponse(input, context, language);
-        modelUsed = "council_chat";
+
+        // Return immediately with local response for voice
+        this.conversationHistory.push(`Assistant: ${localResponse}`);
+
+        // Maintain history length
+        if (this.conversationHistory.length > this.maxHistoryLength * 2) {
+          this.conversationHistory = this.conversationHistory.slice(
+            -this.maxHistoryLength * 2,
+          );
+        }
+
+        return {
+          text: localResponse,
+          confidence: 0.85,
+          detectedEmotion: context.emotionalState,
+          urgencyLevel: context.urgency as any,
+          modelUsed: "voice_assistant_local",
+        };
       }
 
-      // If no specific response generated, try backend or fallback
+      // For council chat, try backend first for more detailed responses
+      let response: string;
+      let modelUsed: string = "contextual_mental_health";
+
+      try {
+        response = await this.tryBackendResponse(input, context, language);
+        modelUsed = "backend_dialogpt";
+      } catch (error) {
+        // Fallback to local council chat response
+        response = this.generateCouncilChatResponse(input, context, language);
+        modelUsed = "council_chat_local";
+      }
+
+      // Final fallback if response is too short
       if (!response || response.length < 20) {
-        try {
-          response = await this.tryBackendResponse(input, context, language);
-          modelUsed = "backend_dialogpt";
-        } catch (error) {
-          response = this.generateGenericSupportResponse(context, language);
-          modelUsed = "fallback_support";
-        }
+        response = this.generateGenericSupportResponse(context, language);
+        modelUsed = "fallback_support";
       }
 
       this.conversationHistory.push(`Assistant: ${response}`);
@@ -318,19 +383,39 @@ class DialogGPTChat {
     language: string,
   ): string {
     const emotionalState = context.emotionalState;
+    const topic = context.topic;
 
-    // Check if we have specific voice responses for this emotional state
-    if (emotionalState in VOICE_ASSISTANT_RESPONSES) {
+    // First try to match by topic (more specific)
+    if (topic in VOICE_ASSISTANT_RESPONSES) {
       const responses =
         VOICE_ASSISTANT_RESPONSES[
-          emotionalState as keyof typeof VOICE_ASSISTANT_RESPONSES
+        topic as keyof typeof VOICE_ASSISTANT_RESPONSES
         ];
       const langResponses =
         responses[language as keyof typeof responses] || responses.en;
       return langResponses[Math.floor(Math.random() * langResponses.length)];
     }
 
-    // Fallback voice responses
+    // Then try to match by emotional state
+    if (emotionalState in VOICE_ASSISTANT_RESPONSES) {
+      const responses =
+        VOICE_ASSISTANT_RESPONSES[
+        emotionalState as keyof typeof VOICE_ASSISTANT_RESPONSES
+        ];
+      const langResponses =
+        responses[language as keyof typeof responses] || responses.en;
+      return langResponses[Math.floor(Math.random() * langResponses.length)];
+    }
+
+    // Use general responses as fallback
+    if ('general' in VOICE_ASSISTANT_RESPONSES) {
+      const responses = VOICE_ASSISTANT_RESPONSES.general;
+      const langResponses =
+        responses[language as keyof typeof responses] || responses.en;
+      return langResponses[Math.floor(Math.random() * langResponses.length)];
+    }
+
+    // Final fallback
     const fallbackResponses = {
       en: [
         "I hear you. Can you tell me more about what's going on?",
@@ -364,7 +449,7 @@ class DialogGPTChat {
     if (emotionalState in COUNCIL_CHAT_RESPONSES) {
       const responses =
         COUNCIL_CHAT_RESPONSES[
-          emotionalState as keyof typeof COUNCIL_CHAT_RESPONSES
+        emotionalState as keyof typeof COUNCIL_CHAT_RESPONSES
         ];
       const langResponses =
         responses[language as keyof typeof responses] || responses.en;
@@ -397,7 +482,7 @@ class DialogGPTChat {
     language: string,
   ): Promise<string> {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // Reduced from 10s to 5s
 
     try {
       const response = await fetch(`${this.backendUrl}/chat`, {

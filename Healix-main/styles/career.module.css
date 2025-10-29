@@ -44,7 +44,7 @@
     font-weight: 400;
 }
 
-/* Mobile responsiveness */
+
 @media (max-width: 640px) {
     .career {
         flex-direction: column;
@@ -124,7 +124,7 @@
     }
 }
 
-/* Tablet responsiveness */
+
 @media (min-width: 769px) and (max-width: 1024px) {
     .imageContainer {
         grid-template-columns: repeat(3, 1fr);

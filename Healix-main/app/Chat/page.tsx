@@ -11,10 +11,11 @@ import toast, { Toaster } from "react-hot-toast";
 import { TypingIndicator, HealixThinking } from "@/components/LoadingSpinner";
 import { useSpeechSynthesis } from "react-speech-kit";
 import { chatStorage } from "@/lib/chatStorage";
-import { useUser } from "@clerk/nextjs";
+import { useAuth } from "@/contexts/AuthContext";
 import RiveBear from "@/components/RiveBear";
 import HealixLogo from "@/components/HealixLogo";
 import { useRouter } from "next/navigation";
+import { BeatLoader } from "react-spinners";
 
 interface Message {
   role: 'user' | 'assistant';
@@ -30,7 +31,7 @@ interface ChatHistory {
 }
 
 export default function Home() {
-  const { user } = useUser();
+  const { user } = useAuth();
   const router = useRouter();
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
@@ -525,11 +526,13 @@ export default function Home() {
         <div className="p-4 border-t border-gray-300 bg-white/50">
           <div className="flex items-center gap-3 text-sm text-gray-800">
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-sm">
-              <User size={18} className="text-white" />
+              <span className="text-white font-bold text-base">
+                {user?.user_metadata?.full_name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
+              </span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-medium truncate">{user?.firstName || 'User'}</p>
-              <p className="text-xs text-gray-600 truncate">{user?.primaryEmailAddress?.emailAddress || ''}</p>
+              <p className="font-medium truncate">{user?.user_metadata?.full_name || 'User'}</p>
+              <p className="text-xs text-gray-600 truncate">{user?.email || ''}</p>
             </div>
           </div>
         </div>
@@ -682,7 +685,7 @@ export default function Home() {
                   <div className="flex-shrink-0 mt-1 sticky top-20">
                     <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center shadow-md">
                       <span className="text-white font-bold text-base sm:text-lg">
-                        {user?.firstName?.charAt(0).toUpperCase() || user?.username?.charAt(0).toUpperCase() || 'U'}
+                        {user?.user_metadata?.full_name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
                       </span>
                     </div>
                   </div>

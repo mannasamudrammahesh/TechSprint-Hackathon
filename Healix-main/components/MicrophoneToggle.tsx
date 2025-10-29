@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaMicrophone, FaMicrophoneSlash } from 'react-icons/fa';
 import { useVoiceAssistant } from '@/hooks/useVoiceAssistant';
-import { useUser } from '@clerk/nextjs';
+import { useAuth } from '@/contexts/AuthContext';
 import toast from 'react-hot-toast';
 
 /**
@@ -15,7 +15,7 @@ import toast from 'react-hot-toast';
  * Microphone starts OFF - user must click to activate
  */
 export default function MicrophoneToggle() {
-  const { user, isLoaded } = useUser();
+  const { user, loading } = useAuth();
   const { state, startListening, stopListening } = useVoiceAssistant();
   const [isMicActive, setIsMicActive] = useState(false);
   const isTogglingRef = useRef(false);

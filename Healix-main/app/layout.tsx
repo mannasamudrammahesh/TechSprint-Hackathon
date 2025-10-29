@@ -1,8 +1,8 @@
 "use client";
 
-import { ClerkProvider } from '@clerk/nextjs';
 import './globals.css';
 import { UserSettingsProvider } from '@/contexts/UserSettingsContext';
+import { AuthProvider } from '@/contexts/AuthContext';
 import { usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
 
@@ -29,10 +29,11 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isHomePage = pathname === '/' || pathname === '/Home';
   const isChatPage = pathname === '/Chat';
+  const isAuthPage = pathname === '/sign-in' || pathname === '/sign-up' || pathname?.startsWith('/sign-');
 
   return (
     <>
-      {!isHomePage && !isChatPage && <GlobalNavbar />}
+      {!isHomePage && !isChatPage && !isAuthPage && <GlobalNavbar />}
       {children}
     </>
   );
@@ -44,22 +45,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <head>
-          <meta charSet="utf-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
-          <meta name="mobile-web-app-capable" content="yes" />
-          <meta name="apple-mobile-web-app-capable" content="yes" />
-          <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-          <meta name="theme-color" content="#3b82f6" />
-          <meta name="google-site-verification" content="ZuJTAJvh7XaciFro6UMkmUpHDYjb5uvPh-B9JH0DSF8" />
-          <link rel="icon" href="/logo.svg" type="image/svg+xml" />
-          <link rel="apple-touch-icon" href="/logo.svg" />
-          <title>Healix - AI Mental Health Companion</title>
-          <meta name="description" content="Healix provides AI-powered mental health counseling, support, and wellness tools. Chat with our compassionate AI companion powered by Gemini." />
-        </head>
-        <body style={{ fontFamily: fallbackFonts }} className="backg">
+    <html lang="en">
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="theme-color" content="#3b82f6" />
+        <meta name="google-site-verification" content="ZuJTAJvh7XaciFro6UMkmUpHDYjb5uvPh-B9JH0DSF8" />
+        <link rel="icon" href="/logo.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/logo.svg" />
+        <title>Healix - AI Mental Health Companion</title>
+        <meta name="description" content="Healix provides AI-powered mental health counseling, support, and wellness tools. Chat with our compassionate AI companion powered by Gemini." />
+      </head>
+      <body style={{ fontFamily: fallbackFonts }} className="backg">
+        <AuthProvider>
           <UserSettingsProvider>
             <LayoutContent>
               {children}
@@ -67,8 +68,8 @@ export default function RootLayout({
             <VoiceMusicPlayer />
             <MicrophoneToggle />
           </UserSettingsProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+        </AuthProvider>
+      </body>
+    </html>
   );
 }

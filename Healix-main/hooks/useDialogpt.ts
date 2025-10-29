@@ -23,8 +23,8 @@ export const useDialogpt = () => {
     setIsLoading(true);
     setError(null);
     try {
-      // Use local DialogGPT model instead of API
-      const response = await generateMentalHealthResponse(text, language, 'general');
+      // Use voice_assistant mode for faster responses
+      const response = await generateMentalHealthResponse(text, language, 'voice_assistant');
       return response;
     } catch (e: any) {
       setError(e?.message || 'Request failed');

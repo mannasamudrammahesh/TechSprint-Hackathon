@@ -9,9 +9,16 @@ const nextConfig = {
   },
 
   images: {
-    domains: ["uploadthing.com", "utfs.io"],
     unoptimized: false, // Enable image optimization for better performance
     remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "uploadthing.com",
+      },
+      {
+        protocol: "https",
+        hostname: "utfs.io",
+      },
       {
         protocol: "https",
         hostname: "replicate.com",

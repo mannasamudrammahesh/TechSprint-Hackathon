@@ -1,0 +1,141 @@
+# Core FastAPI and server dependencies
+fastapi==0.104.1
+uvicorn==0.24.0
+python-multipart==0.0.6
+aiofiles==23.2.0
+python-dotenv==1.0.0
+requests==2.31.0
+
+# PDF and Document Processing
+PyPDF2==3.0.1
+pdfplumber==0.10.3
+python-docx==1.1.0
+openpyxl==3.1.2
+python-pptx==0.6.23
+beautifulsoup4==4.12.2
+lxml==4.9.3
+ebooklib==0.18
+markdown==3.5.1
+
+# AI/ML Core Dependencies
+torch==2.1.1
+torchaudio==2.1.1
+transformers==4.35.2
+numpy==1.26.4
+scipy==1.11.4
+
+# Enhanced Mental Health AI Dependencies
+google-generativeai>=0.8.0
+openai==1.3.7
+accelerate==0.25.0
+sentence-transformers==2.2.2
+
+# Speech Recognition and Audio Processing
+openai-whisper==20231117
+librosa==0.10.1
+soundfile==0.12.1
+pydub==0.25.1
+
+# Text-to-Speech (Multiple engines for better language support)
+TTS==0.22.0
+pyttsx3==2.90
+gtts==2.5.1
+edge-tts==6.1.10
+
+# Translation and Language Processing
+sentencepiece==0.1.99
+sacremoses==0.0.53
+
+# Emotion Detection and Computer Vision
+datasets==2.14.6
+opencv-python==4.8.1.78
+mediapipe==0.10.8
+face-recognition==1.3.0
+dlib==19.24.2
+
+# Mental Health Specialized Models
+tokenizers==0.15.0
+safetensors==0.4.1
+
+# Best Open-Source Mental Health Models
+# These models provide specialized mental health support as secondary priority
+# Primary: Gemini API, Secondary: These models, Tertiary: Fallback responses
+
+# Empathetic Conversation Models
+# facebook/blenderbot-400M-distill - Trained on empathetic dialogues
+# facebook/blenderbot_small-90M - Lightweight empathetic responses
+
+# Emotion and Crisis Detection
+# j-hartmann/emotion-english-distilroberta-base - State-of-the-art emotion recognition
+# unitary/toxic-bert - Crisis and self-harm detection
+# cardiffnlp/twitter-roberta-base-sentiment-latest - Depression indicators
+# cardiffnlp/twitter-roberta-base-emotion-latest - Anxiety detection
+
+# Multilingual Mental Health Support
+# nlptown/bert-base-multilingual-uncased-sentiment - Cross-language sentiment
+
+# Note: These models will be downloaded automatically when first used
+# Total size: ~2-3GB for all models (downloaded on-demand)
+
+# Additional ML Models for Enhanced Features
+scikit-learn==1.3.2
+xgboost==2.0.3
+lightgbm==4.1.0
+
+# Behavior Detection and Pose Estimation
+pose-estimation==0.1.0
+yolov5==7.0.13
+
+# Security and Authentication
+passlib[bcrypt]==1.7.4
+numba==0.58.1
+
+# Flask for additional services
+flask==3.0.0
+flask-cors==4.0.0
+
+# Database and Storage
+sqlite3
+
+# Utilities
+pillow==10.1.0
+matplotlib==3.8.2
+seaborn==0.13.0
+pandas==2.1.4
+
+# Additional TTS engines for multi-language support
+espeak==1.48.15
+festival==2.5.0
+
+# API and HTTP clients
+aiohttp==3.9.1
+httpx==0.25.2
+
+# Environment and configuration
+python-decouple==3.8
+pydantic==2.5.2
+pydantic-settings==2.1.0
+
+# Advanced text processing
+spacy==3.7.2
+nltk==3.8.1
+textblob==0.17.1
+
+# Async support
+asyncio==3.4.3
+aiofiles==23.2.0
+
+# Advanced Emotion Detection for Rive Animation Mirroring
+# LITE VERSION (Recommended for Windows - no DLL issues):
+#   pip install fer opencv-python mediapipe
+# FULL VERSION (Optional - may have DLL issues on Windows):
+#   pip install deepface tensorflow keras mtcnn
+
+# Lite version (always works):
+fer==22.5.1
+
+# Full version (optional - comment out if you get DLL errors):
+# deepface==0.0.79
+# tensorflow==2.13.0
+# keras==2.13.1
+# mtcnn==0.1.1

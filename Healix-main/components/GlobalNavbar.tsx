@@ -1,16 +1,19 @@
 "use client";
 
-import { UserButton } from "@clerk/nextjs";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Settings } from "lucide-react";
+import { Settings, LogOut } from "lucide-react";
 import HealixLogo from "@/components/HealixLogo";
+import { useAuth } from "@/contexts/AuthContext";
 import styles from "@/styles/Root.module.css";
 
 export default function GlobalNavbar() {
   const [showMenu, setShowMenu] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const { user, signOut } = useAuth();
   const router = useRouter();
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
   // Prefetch all navigation routes on mount for instant navigation
   useEffect(() => {
@@ -19,6 +22,23 @@ export default function GlobalNavbar() {
       router.prefetch(route);
     });
   }, [router]);
+
+  // Close user menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setShowUserMenu(false);
+      }
+    };
+
+    if (showUserMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showUserMenu]);
 
   const toggleMenu = () => {
     setShowMenu(!showMenu);
@@ -92,7 +112,31 @@ export default function GlobalNavbar() {
                 </Link>
               </li>
             </ul>
-            <UserButton />
+            <div className="relative" ref={userMenuRef}>
+              <button
+                onClick={() => setShowUserMenu(!showUserMenu)}
+                className="hover:opacity-80 transition-opacity"
+                aria-label="User menu"
+              >
+                <div 
+                  className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-sm md:text-base shadow-md hover:shadow-lg transition-all hover:scale-105"
+                  style={{ backgroundColor: 'rgb(59, 130, 246)', color: '#ffffff' }}
+                >
+                  {user?.user_metadata?.full_name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
+                </div>
+              </button>
+              {showUserMenu && (
+                <div className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg py-1 z-10 border border-gray-200">
+                  <button
+                    onClick={async () => { await signOut(); }}
+                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Sign Out
+                  </button>
+                </div>
+              )}
+            </div>
             <Link
               href="/settings"
               className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-1.5 px-3 md:py-2 md:px-4 rounded flex items-center gap-1 md:gap-2 text-sm md:text-base"

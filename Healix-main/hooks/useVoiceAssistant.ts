@@ -562,41 +562,49 @@ export const useVoiceAssistant = (
             console.log("📝 Final transcript:", transcript);
           } else {
             interimTranscript += transcript;
-            console.log("📝 Interim transcript:", transcript);
+            // Only log interim if assistant is active (to reduce spam)
+            if (state.isActive) {
+              console.log("📝 Interim transcript:", transcript);
+            }
           }
         }
 
         const fullTranscript = finalTranscript + interimTranscript;
         setState((prev) => ({ ...prev, transcript: fullTranscript }));
 
-        // Use custom wake word detection from settings
-        const isWakeWordDetected = detectWakeWord(
-          fullTranscript,
-          defaultConfig.language,
-          settings.wakeWord
-        );
+        // Only check for wake word if assistant is NOT active
+        if (!state.isActive) {
+          const isWakeWordDetected = detectWakeWord(
+            fullTranscript,
+            defaultConfig.language,
+            settings.wakeWord
+          );
 
-        // DEBOUNCE: Only activate if not already active and enough time has passed
-        const now = Date.now();
-        const timeSinceLastActivation = now - lastActivationTimeRef.current;
-        const ACTIVATION_COOLDOWN = 3000; // 3 seconds cooldown
+          // DEBOUNCE: Only activate if not already activating and enough time has passed
+          const now = Date.now();
+          const timeSinceLastActivation = now - lastActivationTimeRef.current;
+          const ACTIVATION_COOLDOWN = 3000; // 3 seconds cooldown
 
-        if (isWakeWordDetected && !state.isActive && !isActivatingRef.current && timeSinceLastActivation > ACTIVATION_COOLDOWN) {
-          console.log(`🎯 Wake word detected: "${settings.wakeWord}"`);
-          lastActivationTimeRef.current = now;
-          isActivatingRef.current = true;
-          activateAssistant();
-          // Reset activation flag after a delay
-          setTimeout(() => {
-            isActivatingRef.current = false;
-          }, 2000);
-        } else if (isWakeWordDetected) {
-          console.log(`⏭️ Wake word detected but skipped (cooldown: ${timeSinceLastActivation}ms, active: ${state.isActive}, activating: ${isActivatingRef.current})`);
-        }
-
-        // Process commands when assistant is active (only on final transcript)
-        if (state.isActive && finalTranscript) {
-          processCommand(finalTranscript, detectedLanguage);
+          if (isWakeWordDetected && !isActivatingRef.current && timeSinceLastActivation > ACTIVATION_COOLDOWN) {
+            console.log(`🎯 Wake word detected: "${settings.wakeWord}"`);
+            lastActivationTimeRef.current = now;
+            isActivatingRef.current = true;
+            
+            // Clear transcript to avoid processing wake word as command
+            setState((prev) => ({ ...prev, transcript: "" }));
+            
+            activateAssistant();
+            
+            // Reset activation flag after a delay
+            setTimeout(() => {
+              isActivatingRef.current = false;
+            }, 2000);
+          }
+        } else {
+          // Process commands when assistant is active (only on final transcript)
+          if (finalTranscript) {
+            processCommand(finalTranscript, detectedLanguage);
+          }
         }
       };
 
@@ -702,33 +710,22 @@ export const useVoiceAssistant = (
     if ("speechSynthesis" in window) {
       synthesisRef.current = window.speechSynthesis;
 
-      // Load voices immediately
+      // Load voices immediately (only log once on first load)
       let voices = speechSynthesis.getVoices();
-      console.log('🎤 Speech synthesis initialized with', voices.length, 'voices');
-
-      // Log female voices available
-      const logFemaleVoices = (voiceList: SpeechSynthesisVoice[]) => {
-        const femaleVoices = voiceList.filter(v =>
-          v.name.toLowerCase().includes('female') ||
-          v.name.toLowerCase().includes('zira') ||
-          v.name.toLowerCase().includes('samantha') ||
-          v.name.toLowerCase().includes('hazel') ||
-          v.name.toLowerCase().includes('aria') ||
-          v.name.toLowerCase().includes('jenny')
-        );
-        console.log('👩 Female voices available:', femaleVoices.length);
-        femaleVoices.forEach(v => console.log('  -', v.name, '(', v.lang, ')'));
-      };
+      
+      // Only log if voices are available and not already logged
+      if (voices.length > 0 && !cachedFemaleVoiceRef.current) {
+        console.log('🎤 Speech synthesis initialized with', voices.length, 'voices');
+      }
 
       // If no voices yet, wait for them to load
       if (voices.length === 0) {
         speechSynthesis.onvoiceschanged = () => {
           voices = speechSynthesis.getVoices();
-          console.log('🎤 Voices loaded after change event:', voices.length);
-          logFemaleVoices(voices);
+          if (!cachedFemaleVoiceRef.current) {
+            console.log('🎤 Voices loaded:', voices.length);
+          }
         };
-      } else {
-        logFemaleVoices(voices);
       }
     }
   }, []);
@@ -1000,9 +997,19 @@ export const useVoiceAssistant = (
 
       // PRIORITY 1: Check for navigation commands FIRST (including music therapy page)
       if (voiceCommand.entities?.action === "navigate") {
+        console.log("🧭 Navigation command detected:", voiceCommand.intent);
         const response = intentDetectorRef.current.getResponse(voiceCommand.intent);
-        await executeCommand(voiceCommand);
+        console.log("🧭 Executing navigation to:", voiceCommand.intent);
+        
+        // Speak first to provide immediate feedback
         speak(response, detectedLanguage);
+        
+        // Then navigate with minimal delay for near-simultaneous execution
+        setTimeout(() => {
+          executeCommand(voiceCommand);
+          console.log("🧭 Navigation executed");
+        }, 50);
+        
         setState((prev) => ({ ...prev, status: "idle" }));
         return;
       }
@@ -1109,12 +1116,20 @@ export const useVoiceAssistant = (
 
       switch (entities?.action) {
         case "navigate":
+          console.log("🚀 Executing navigation action for intent:", intent);
           switch (intent) {
             case "navigate_home":
+              console.log("🏠 Navigating to home");
               router.push("/");
               break;
             case "navigate_chat":
-              router.push("/Chat");
+              console.log("💬 Navigating to /Chat");
+              try {
+                router.push("/Chat");
+                console.log("✅ router.push('/Chat') called successfully");
+              } catch (error) {
+                console.error("❌ Error calling router.push:", error);
+              }
               break;
             case "navigate_therapy":
               router.push("/Therapy");
@@ -1318,7 +1333,10 @@ export const useVoiceAssistant = (
           );
           if (foundVoice) {
             femaleVoice = foundVoice;
-            console.log('✅ Found & cached FEMALE voice:', femaleVoice.name);
+            // Only log once when caching
+            if (!cachedFemaleVoiceRef.current) {
+              console.log('✅ Found & cached FEMALE voice:', femaleVoice.name);
+            }
             break;
           }
         }
@@ -1412,6 +1430,12 @@ export const useVoiceAssistant = (
     shouldBeListeningRef.current = true;
     console.log("🎤 User wants microphone ON - will auto-restart if needed");
 
+    // If already listening, just update state and return
+    if (state.isListening) {
+      console.log("ℹ️ Recognition already running, no need to start again");
+      return;
+    }
+
     try {
       console.log("🎤 Starting speech recognition...");
       recognitionRef.current.start();
@@ -1431,7 +1455,7 @@ export const useVoiceAssistant = (
         }));
       }
     }
-  }, []);
+  }, [state.isListening]);
 
   // Stop listening - ONLY STOPS WHEN USER CLICKS BUTTON
   const stopListening = useCallback(() => {

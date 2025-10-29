@@ -7,10 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "analyze": "cross-env ANALYZE=true next build"
+    "analyze": "cross-env ANALYZE=true next build",
+    "check-teddy": "node scripts/download-teddy-rive.js"
   },
   "dependencies": {
-    "@clerk/nextjs": "^4.28.1",
     "@emailjs/browser": "^3.11.0",
     "@google-cloud/text-to-speech": "^5.8.1",
     "@google/generative-ai": "^0.21.0",

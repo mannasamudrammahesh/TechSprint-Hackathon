@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Mic, MicOff, Settings, Volume2, VolumeX } from 'lucide-react';
 import { useDialogpt } from '@/hooks/useDialogpt';
-import { useUser } from '@clerk/nextjs';
+import { useAuth } from '@/contexts/AuthContext';
 import { useUserSettings } from '@/contexts/UserSettingsContext';
 import { voiceSelector } from '@/lib/voiceSelection';
 
@@ -18,7 +18,7 @@ export default function VoiceAssistantDialo({
   onLanguageChange 
 }: VoiceAssistantDialoProps) {
   const { send, isLoading } = useDialogpt();
-  const { isSignedIn, user } = useUser();
+  const { user } = useAuth();
   const { settings, updateSettings } = useUserSettings();
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
@@ -108,10 +108,10 @@ export default function VoiceAssistantDialo({
 
   // Auto-activate microphone for signed-in users
   useEffect(() => {
-    if (isSignedIn && !microphonePermission) {
+    if (user && !microphonePermission) {
       requestMicrophonePermission();
     }
-  }, [isSignedIn]);
+  }, [user, microphonePermission]);
 
   // Auto-deactivate after 5 minutes of inactivity
   useEffect(() => {
@@ -141,7 +141,7 @@ export default function VoiceAssistantDialo({
       stream.getTracks().forEach(track => track.stop()); // Stop the stream, we just needed permission
       
       // Auto-start listening for signed-in users
-      if (isSignedIn) {
+      if (user) {
         setTimeout(() => {
           if (recognitionRef.current && !isListening) {
             recognitionRef.current.start();

@@ -20,7 +20,7 @@
     word-break: break-word;
 }
 
-/* Mobile responsiveness */
+
 @media (max-width: 640px) {
     .textwrapper {
         font-size: 0.875rem;
@@ -28,7 +28,7 @@
     }
 }
 
-/* Tablet responsiveness */
+
 @media (min-width: 641px) and (max-width: 1024px) {
     .textwrapper {
         font-size: 0.9375rem;

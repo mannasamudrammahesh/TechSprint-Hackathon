@@ -73,7 +73,7 @@
 }
 
 .heroheading {
-    /* font-size: clamp(2.25rem, 1.5vw, 3rem); */
+    
     font-size: 2.5vh;
     margin-bottom: 1rem;
     transform: translateY(-50px) translateZ(0px);
@@ -135,10 +135,10 @@
 }
 
 .heroimg {
-    /* width: 600px; */
-    /* height: 600px; */
-    /* display: grid; */
-    /* place-items: center; */
+    
+    
+    
+    
     clip-path: polygon(0px 0px, 100% 0px, 100% 0px, 0px 0px);
     transform: translateY(50px) scale(0.9) translateZ(0px);
     animation: 1.1s cubic-bezier(0.77, 0.2, 0.05, 1) 0.4s 1 normal forwards running frameClip;

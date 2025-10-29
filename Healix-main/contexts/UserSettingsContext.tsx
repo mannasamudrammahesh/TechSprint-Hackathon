@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useUser } from '@clerk/nextjs';
+import { useAuth } from '@/contexts/AuthContext';
 import { getUserSettings, saveUserSettings, createOrUpdateUserProfile } from '@/lib/supabaseService';
 
 export interface UserSettings {
@@ -62,13 +62,13 @@ interface UserSettingsProviderProps {
 }
 
 export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ children }) => {
-  const { user, isLoaded } = useUser();
+  const { user, loading: authLoading } = useAuth();
   const [settings, setSettings] = useState<UserSettings>(defaultSettings);
   const [isLoading, setIsLoading] = useState(true);
 
   // Load settings from Supabase or localStorage
   useEffect(() => {
-    if (!isLoaded) return;
+    if (authLoading) return;
 
     const loadSettings = async () => {
       try {
@@ -86,9 +86,9 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ chil
           // Then sync with Supabase in background (non-blocking)
           createOrUpdateUserProfile({
             clerk_user_id: user.id,
-            email: user.primaryEmailAddress?.emailAddress,
-            full_name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || undefined,
-            avatar_url: user.imageUrl,
+            email: user.email,
+            full_name: user.user_metadata?.full_name || undefined,
+            avatar_url: user.user_metadata?.avatar_url || undefined,
           }).catch(console.error);
 
           // Try to load from Supabase in background
@@ -120,13 +120,9 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ chil
             }
           }
 
-          // Set user name from Clerk user data if not set
-          if (!userSettings.userName) {
-            if (user.firstName || user.lastName) {
-              userSettings.userName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
-            } else if (user.username) {
-              userSettings.userName = user.username;
-            }
+          // Set user name from Supabase user data if not set
+          if (!userSettings.userName && user.user_metadata?.full_name) {
+            userSettings.userName = user.user_metadata.full_name;
           }
         } else {
           // For non-authenticated users, use localStorage
@@ -146,7 +142,7 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ chil
     };
 
     loadSettings();
-  }, [user, isLoaded]);
+  }, [user, authLoading]);
 
   // Save settings to Supabase and localStorage
   const saveSettings = async (newSettings: UserSettings) => {
@@ -194,8 +190,8 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ chil
 
   const resetSettings = () => {
     const resetSettings = { ...defaultSettings };
-    if (user && (user.firstName || user.lastName || user.username)) {
-      resetSettings.userName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || '';
+    if (user && user.user_metadata?.full_name) {
+      resetSettings.userName = user.user_metadata.full_name;
     }
     setSettings(resetSettings);
     saveSettings(resetSettings);
