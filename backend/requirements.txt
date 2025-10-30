@@ -83,7 +83,7 @@ xgboost==2.0.3
 lightgbm==4.1.0
 
 # Behavior Detection and Pose Estimation
-pose-estimation==0.1.0
+# pose-estimation==0.1.0  # Package doesn't exist - removed
 yolov5==7.0.13
 
 # Security and Authentication
@@ -95,7 +95,7 @@ flask==3.0.0
 flask-cors==4.0.0
 
 # Database and Storage
-sqlite3
+# sqlite3  # Built into Python - no need to install
 
 # Utilities
 pillow==10.1.0
@@ -104,8 +104,8 @@ seaborn==0.13.0
 pandas==2.1.4
 
 # Additional TTS engines for multi-language support
-espeak==1.48.15
-festival==2.5.0
+# espeak==1.48.15  # System package, not pip installable
+# festival==2.5.0  # System package, not pip installable
 
 # API and HTTP clients
 aiohttp==3.9.1
@@ -122,8 +122,8 @@ nltk==3.8.1
 textblob==0.17.1
 
 # Async support
-asyncio==3.4.3
-aiofiles==23.2.0
+# asyncio==3.4.3  # Built into Python - no need to install
+# aiofiles==23.2.0  # Already listed above
 
 # Advanced Emotion Detection for Rive Animation Mirroring
 # LITE VERSION (Recommended for Windows - no DLL issues):
