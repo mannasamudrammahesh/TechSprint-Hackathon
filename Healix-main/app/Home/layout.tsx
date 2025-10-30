@@ -91,46 +91,59 @@ export default function HomeLayout({
                 </Link>
               </li>
             </ul>
-            <div className="relative">
-              <button
-                onClick={() => setShowUserMenu(!showUserMenu)}
-                className="hover:opacity-80 transition-opacity"
-                aria-label="User menu"
-              >
-                <div 
-                  className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-base shadow-md hover:shadow-lg transition-all hover:scale-105"
-                  style={{ backgroundColor: 'rgb(59, 130, 246)', color: '#ffffff' }}
-                >
-                  {user?.user_metadata?.full_name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
-                </div>
-              </button>
-              {showUserMenu && (
-                <div className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg py-1 z-10 border border-gray-200">
+            {user && (
+              <>
+                <div className="relative">
                   <button
-                    onClick={handleSignOut}
-                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                    className="hover:opacity-80 transition-opacity"
+                    aria-label="User menu"
                   >
-                    <LogOut className="h-4 w-4" />
-                    Sign Out
+                    <div 
+                      className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-base shadow-md hover:shadow-lg transition-all hover:scale-105"
+                      style={{ backgroundColor: 'rgb(59, 130, 246)', color: '#ffffff' }}
+                    >
+                      {user?.user_metadata?.full_name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
+                    </div>
                   </button>
+                  {showUserMenu && (
+                    <div className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg py-1 z-10 border border-gray-200">
+                      <button
+                        onClick={handleSignOut}
+                        className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        Sign Out
+                      </button>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-            <Link
-              href="/settings"
-              className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded flex items-center gap-2"
-              onClick={closeMenu}
-            >
-              <Settings className="h-4 w-4" />
-              Settings
-            </Link>
+                <Link
+                  href="/settings"
+                  className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded flex items-center gap-2"
+                  onClick={closeMenu}
+                >
+                  <Settings className="h-4 w-4" />
+                  Settings
+                </Link>
+              </>
+            )}
             <Link
               href="/Contact"
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-center"
+              className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded text-center"
               onClick={closeMenu}
             >
-              Contact Us
+              Contact
             </Link>
+            {!user && (
+              <Link
+                href="/sign-in"
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-center"
+                onClick={closeMenu}
+              >
+                Sign In
+              </Link>
+            )}
           </div>
         </div>
       </nav>
