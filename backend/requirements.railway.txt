@@ -1,0 +1,52 @@
+# RAILWAY OPTIMIZED REQUIREMENTS
+# Minimal dependencies for faster deployment
+
+# Core FastAPI and server dependencies
+fastapi>=0.104.0
+uvicorn>=0.24.0
+python-multipart>=0.0.6
+aiofiles>=23.2.0
+python-dotenv>=1.0.0
+requests>=2.31.0
+
+# Document Processing (minimal - only used if needed)
+beautifulsoup4>=4.12.0
+markdown>=3.5.0
+
+# Essential AI Dependencies (MINIMAL SET)
+google-generativeai>=0.8.0
+openai>=1.3.0
+numpy>=1.26.0
+
+# Text-to-Speech (lightweight engines only)
+pyttsx3>=2.90
+gtts>=2.5.0
+edge-tts>=6.1.0
+
+# Security and Authentication
+passlib[bcrypt]>=1.7.4
+
+# API and HTTP clients
+aiohttp>=3.9.0
+httpx>=0.25.0
+
+# Environment and configuration
+python-decouple>=3.8
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+
+# Utilities (essential only)
+pillow>=10.0.0
+pandas>=1.4,<2.0
+
+# HEAVY DEPENDENCIES REMOVED FOR RAILWAY:
+# - torch, torchaudio, torchvision (2GB+)
+# - transformers, sentence-transformers (500MB+)
+# - tensorflow, keras (1GB+)
+# - opencv, mediapipe (300MB+)
+# - whisper, librosa (200MB+)
+# - spacy, nltk (200MB+)
+# - yolov5, ultralytics (500MB+)
+# - scikit-learn, xgboost, lightgbm (200MB+)
+#
+# These can be added later if needed, but will significantly increase build time

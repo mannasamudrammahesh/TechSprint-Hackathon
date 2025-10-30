@@ -1,0 +1,64 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+*.md
+docs/
+
+# Tests
+tests/
+test/
+*.test.js
+*.spec.js
+
+# Frontend (if deploying backend only)
+Healix-main/
+node_modules/
+.next/
+out/
+*.log
+
+# Large model files
+*.pth
+*.bin
+*.h5
+*.onnx
+models/
+checkpoints/
+
+# Environment files (will be set via Railway)
+.env
+.env.local
+.env.production
+
+# Deployment configs (not needed in container)
+DEPLOY*.md
+RAILWAY*.md
+railway.json
+railway.toml
+Procfile
