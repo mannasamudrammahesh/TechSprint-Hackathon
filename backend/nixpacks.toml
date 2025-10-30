@@ -3,10 +3,14 @@ nixPkgs = ["python311"]
 aptPkgs = ["ffmpeg"]
 
 [phases.install]
-cmds = ["python -m pip install --no-cache-dir -r requirements.railway.txt"]
+cmds = [
+  "python3.11 -m venv /opt/venv",
+  ". /opt/venv/bin/activate && pip install --upgrade pip",
+  ". /opt/venv/bin/activate && pip install --no-cache-dir -r requirements.railway.txt"
+]
 
 [phases.build]
 cmds = ["echo 'Build complete'"]
 
 [start]
-cmd = "python -m uvicorn main:app --host 0.0.0.0 --port $PORT"
+cmd = ". /opt/venv/bin/activate && uvicorn main:app --host 0.0.0.0 --port $PORT"
