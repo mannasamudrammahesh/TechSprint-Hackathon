@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { createClient } from '@supabase/supabase-js';
 
-// Public routes that don't require authentication
+// Routes that don't require authentication
 const publicRoutes = [
   "/",
   "/Contact",
@@ -10,7 +11,7 @@ const publicRoutes = [
   "/api/uploadthing",
 ];
 
-// Routes that should always be accessible
+// Routes to ignore completely
 const ignoredRoutes = [
   "/api/health",
   "/_next",
@@ -19,28 +20,77 @@ const ignoredRoutes = [
   "/public",
 ];
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Check if route should be ignored
+  // Skip ignored routes
   if (ignoredRoutes.some(route => pathname.startsWith(route))) {
     return NextResponse.next();
   }
 
-  // Check if route is public
+  // Check if it's a public route
   const isPublicRoute = publicRoutes.some(route => pathname === route || pathname.startsWith(route));
 
-  // Add performance headers
+  // Set cache headers for static files
   const response = NextResponse.next();
-
-  // Enable browser caching for static assets
   if (pathname.startsWith('/_next/static')) {
     response.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
   }
 
-  // For now, allow all routes (authentication will be handled client-side)
-  // You can add server-side auth checks here if needed
-  return response;
+  // If it's a public route, allow access
+  if (isPublicRoute) {
+    return response;
+  }
+
+  // For protected routes, check authentication via cookies
+  try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (!supabaseUrl || !supabaseAnonKey) {
+      // If Supabase not configured, allow access (fallback to client-side protection)
+      return response;
+    }
+
+    // Get the session token from cookies
+    const accessToken = request.cookies.get('sb-access-token')?.value;
+    const refreshToken = request.cookies.get('sb-refresh-token')?.value;
+
+    // If no tokens found, redirect to sign-in
+    if (!accessToken && !refreshToken) {
+      const redirectUrl = new URL('/sign-in', request.url);
+      redirectUrl.searchParams.set('redirectTo', pathname);
+      return NextResponse.redirect(redirectUrl);
+    }
+
+    // Create Supabase client for server-side
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: false,
+      },
+      global: {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    });
+
+    // Verify the session
+    const { data: { user }, error } = await supabase.auth.getUser();
+
+    // If no valid user, redirect to sign-in
+    if (error || !user) {
+      const redirectUrl = new URL('/sign-in', request.url);
+      redirectUrl.searchParams.set('redirectTo', pathname);
+      return NextResponse.redirect(redirectUrl);
+    }
+
+    return response;
+  } catch (error) {
+    console.error('Middleware auth error:', error);
+    // On error, allow access (fallback to client-side protection)
+    return response;
+  }
 }
 
 export const config = {

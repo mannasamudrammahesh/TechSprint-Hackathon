@@ -112,46 +112,59 @@ export default function GlobalNavbar() {
                 </Link>
               </li>
             </ul>
-            <div className="relative" ref={userMenuRef}>
-              <button
-                onClick={() => setShowUserMenu(!showUserMenu)}
-                className="hover:opacity-80 transition-opacity"
-                aria-label="User menu"
-              >
-                <div 
-                  className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-sm md:text-base shadow-md hover:shadow-lg transition-all hover:scale-105"
-                  style={{ backgroundColor: 'rgb(59, 130, 246)', color: '#ffffff' }}
-                >
-                  {user?.user_metadata?.full_name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
-                </div>
-              </button>
-              {showUserMenu && (
-                <div className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg py-1 z-10 border border-gray-200">
+            {user && (
+              <>
+                <div className="relative" ref={userMenuRef}>
                   <button
-                    onClick={async () => { await signOut(); }}
-                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                    className="hover:opacity-80 transition-opacity"
+                    aria-label="User menu"
                   >
-                    <LogOut className="h-4 w-4" />
-                    Sign Out
+                    <div 
+                      className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-sm md:text-base shadow-md hover:shadow-lg transition-all hover:scale-105"
+                      style={{ backgroundColor: 'rgb(59, 130, 246)', color: '#ffffff' }}
+                    >
+                      {user?.user_metadata?.full_name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
+                    </div>
                   </button>
+                  {showUserMenu && (
+                    <div className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg py-1 z-10 border border-gray-200">
+                      <button
+                        onClick={async () => { await signOut(); }}
+                        className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        Sign Out
+                      </button>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-            <Link
-              href="/settings"
-              className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-1.5 px-3 md:py-2 md:px-4 rounded flex items-center gap-1 md:gap-2 text-sm md:text-base"
-              onClick={closeMenu}
-            >
-              <Settings className="h-3 w-3 md:h-4 md:w-4" />
-              <span className="hidden md:inline">Settings</span>
-            </Link>
+                <Link
+                  href="/settings"
+                  className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-1.5 px-3 md:py-2 md:px-4 rounded flex items-center gap-1 md:gap-2 text-sm md:text-base"
+                  onClick={closeMenu}
+                >
+                  <Settings className="h-3 w-3 md:h-4 md:w-4" />
+                  <span className="hidden md:inline">Settings</span>
+                </Link>
+              </>
+            )}
             <Link 
               href="/Contact" 
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1.5 px-3 md:py-2 md:px-4 rounded text-sm md:text-base text-center"
+              className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-1.5 px-3 md:py-2 md:px-4 rounded text-sm md:text-base text-center"
               onClick={closeMenu}
             >
               Contact
             </Link>
+            {!user && (
+              <Link 
+                href="/sign-in" 
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1.5 px-3 md:py-2 md:px-4 rounded text-sm md:text-base text-center"
+                onClick={closeMenu}
+              >
+                Sign In
+              </Link>
+            )}
           </div>
         </div>
       </nav>

@@ -1,17 +1,14 @@
 "use client";
-
 import React, { useRef, useState, ChangeEvent, SyntheticEvent, useEffect } from 'react';
 import { useRive, useStateMachineInput, Layout, Fit, Alignment } from 'rive-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { signInWithEmail } from '@/lib/supabaseAuth';
 import './AnimatedLoginForm.css';
-
 const STATE_MACHINE_NAME = 'Login Machine';
-
 const AnimatedLoginForm = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
-
   const { rive: riveInstance, RiveComponent } = useRive({
     src: '/login-teddy.riv',
     stateMachines: STATE_MACHINE_NAME,
@@ -21,15 +18,12 @@ const AnimatedLoginForm = () => {
       alignment: Alignment.Center,
     }),
   });
-
   const [emailValue, setEmailValue] = useState('');
   const [passValue, setPassValue] = useState('');
   const [inputLookMultiplier, setInputLookMultiplier] = useState(0);
   const [loginButtonText, setLoginButtonText] = useState('Login');
   const [error, setError] = useState('');
-
   const inputRef = useRef<HTMLInputElement>(null);
-
   const isCheckingInput = useStateMachineInput(
     riveInstance,
     STATE_MACHINE_NAME,
@@ -55,28 +49,23 @@ const AnimatedLoginForm = () => {
     STATE_MACHINE_NAME,
     'isHandsUp'
   );
-
   useEffect(() => {
     if (inputRef?.current && !inputLookMultiplier) {
       setInputLookMultiplier(inputRef.current.offsetWidth / 100);
     }
   }, [inputRef, inputLookMultiplier]);
-
   const onEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newVal = e.target.value;
     setEmailValue(newVal);
     setError('');
-    
     if (isCheckingInput && !isCheckingInput.value) {
       isCheckingInput.value = true;
     }
-
     const numChars = newVal.length;
     if (numLookInput) {
       numLookInput.value = numChars * inputLookMultiplier;
     }
   };
-
   const onEmailFocus = () => {
     if (isCheckingInput) {
       isCheckingInput.value = true;
@@ -85,41 +74,32 @@ const AnimatedLoginForm = () => {
       numLookInput.value = emailValue.length * inputLookMultiplier;
     }
   };
-
   const onSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
-    
     if (isLoading) return;
-
     setLoginButtonText('Checking...');
     setError('');
     setIsLoading(true);
-
     try {
       await signInWithEmail(emailValue, passValue);
-      
-      // Trigger success animation
       if (trigSuccessInput) {
         trigSuccessInput.fire();
       }
-      
+      // Get redirect URL from query params or default to /Home
+      const redirectTo = searchParams.get('redirectTo') || '/Home';
       setTimeout(() => {
-        router.push('/Home');
+        router.push(redirectTo);
       }, 1500);
     } catch (err: any) {
       console.error('Login error:', err);
       setLoginButtonText('Login');
       setIsLoading(false);
-      
-      // Trigger fail animation
       if (trigFailInput) {
         trigFailInput.fire();
       }
-      
       setError(err.message || 'Invalid email or password');
     }
   };
-
   return (
     <div className="login-form-component-root">
       <div className="login-form-wrapper">
@@ -187,5 +167,4 @@ const AnimatedLoginForm = () => {
     </div>
   );
 };
-
 export default AnimatedLoginForm;

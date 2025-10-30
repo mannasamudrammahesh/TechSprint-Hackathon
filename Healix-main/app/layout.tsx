@@ -1,44 +1,43 @@
 "use client";
-
 import './globals.css';
 import { UserSettingsProvider } from '@/contexts/UserSettingsContext';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
-
-// Lazy load heavy components - only load when needed
 const VoiceMusicPlayer = dynamic(() => import('@/components/VoiceMusicPlayer'), {
   ssr: false,
   loading: () => null
 });
-
 const MicrophoneToggle = dynamic(() => import('@/components/MicrophoneToggle'), {
   ssr: false,
   loading: () => null
 });
-
 const GlobalNavbar = dynamic(() => import('@/components/GlobalNavbar'), {
   ssr: false,
   loading: () => <div className="h-16 md:h-20 lg:h-28" />
 });
-
-// Remove Inter font import and just use system fonts
 const fallbackFonts = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
+const ProtectedRoute = dynamic(() => import('@/components/ProtectedRoute'), {
+  ssr: false,
+  loading: () => (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+    </div>
+  )
+});
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isHomePage = pathname === '/' || pathname === '/Home';
   const isChatPage = pathname === '/Chat';
   const isAuthPage = pathname === '/sign-in' || pathname === '/sign-up' || pathname?.startsWith('/sign-');
-
   return (
-    <>
+    <ProtectedRoute>
       {!isHomePage && !isChatPage && !isAuthPage && <GlobalNavbar />}
       {children}
-    </>
+    </ProtectedRoute>
   );
 }
-
 export default function RootLayout({
   children,
 }: {
