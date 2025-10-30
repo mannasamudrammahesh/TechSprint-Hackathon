@@ -101,7 +101,7 @@ flask-cors==4.0.0
 pillow==10.1.0
 matplotlib==3.8.2
 seaborn==0.13.0
-pandas==2.1.4
+pandas<2.0,>=1.4
 
 # Additional TTS engines for multi-language support
 # espeak==1.48.15  # System package, not pip installable
