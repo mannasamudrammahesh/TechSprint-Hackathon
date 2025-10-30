@@ -131,11 +131,15 @@ llama_scout_ai = None
 opus_models = {}
 tts_models = {}
 conversation_sessions = {}
+models_loaded = False
+models_loading = False
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await startup_models()
+    # Quick startup - load models lazily on first request
+    print("🚀 Healix AI Backend starting...")
+    print("✅ Server ready - models will load on first request")
     yield
     print("🔄 Shutting down Healix AI Backend...")
 
@@ -213,10 +217,16 @@ async def startup_models():
         gemini_mental_health_ai, \
         llama_scout_ai, \
         opus_models, \
-        tts_models
+        tts_models, \
+        models_loaded, \
+        models_loading
 
+    if models_loaded or models_loading:
+        return
+    
+    models_loading = True
     print("=" * 60)
-    print("Starting Healix AI Backend...")
+    print("Loading AI models...")
     print("=" * 60)
 
     if WHISPER_AVAILABLE:
@@ -414,15 +424,7 @@ async def startup_models():
         print("⚠️ TTS not available - text-to-speech will use fallback")
 
     print("\n" + "=" * 60)
-    print("Healix AI Backend started successfully!")
-    print("=" * 60)
-    print("Available endpoints:")
-    print("   • /health - Health check")
-    print("   • /chat - Mental health counseling chat")
-    print("   • /stt - Speech-to-text")
-    print("   • /tts - Text-to-speech")
-    print("   • /translate - Language translation")
-    print("   • /emotion-detect - Emotion detection")
+    print("✅ AI Models loaded successfully!")
     print("=" * 60)
     if llama_scout_ai:
         print("🚀 Primary Mental Health AI: Llama Scout")
@@ -444,6 +446,9 @@ async def startup_models():
     else:
         print("WARNING: Mental Health AI: Fallback mode")
     print("=" * 60 + "\n")
+    
+    models_loaded = True
+    models_loading = False
 
 
 def get_or_create_session(session_id: str) -> Dict:
@@ -540,6 +545,10 @@ async def chat(request: ChatRequest):
     print(f"   Session: {request.session_id}")
     print(f"   Language: {request.language}")
     print("=" * 80)
+
+    # Ensure models are loaded
+    if not models_loaded and not models_loading:
+        await startup_models()
 
     try:
         session = get_or_create_session(request.session_id)
@@ -1018,24 +1027,35 @@ async def analyze_behavior(request: BehaviorAnalysisRequest):
         )
 
 
-@app.get("/health")
-async def health_check():
+@app.get("/")
+async def root():
+    """Quick health check for Render port detection"""
     return {
         "status": "healthy",
-        "models_loaded": {
-            "whisper": bool(whisper_model is not None),
-            "dialogpt": bool(dialogpt_model is not None),
-            "translation": bool(len(opus_models) > 0),
-            "tts": bool(len(tts_models) > 0),
-        },
+        "service": "Healix AI Backend",
+        "message": "Server is running"
+    }
+
+
+@app.get("/health")
+async def health_check():
+    # Trigger lazy model loading on first health check
+    global models_loaded
+    if not models_loaded and not models_loading:
+        import asyncio
+        asyncio.create_task(startup_models())
+    
+    return {
+        "status": "healthy",
+        "models_loaded": models_loaded,
+        "models_loading": models_loading,
         "available_features": {
-            "speech_to_text": bool(WHISPER_AVAILABLE and whisper_model is not None),
-            "translation": bool(TRANSFORMERS_AVAILABLE and len(opus_models) > 0),
-            "text_to_speech": bool(TTS_AVAILABLE and len(tts_models) > 0),
+            "speech_to_text": bool(WHISPER_AVAILABLE),
+            "translation": bool(TRANSFORMERS_AVAILABLE),
+            "text_to_speech": bool(TTS_AVAILABLE or GTTS_AVAILABLE or EDGE_TTS_AVAILABLE),
             "chat": True,
         },
-        "port": 8000,
-        "message": "Healix AI Backend is running successfully!",
+        "message": "Healix AI Backend is running!",
     }
 
 
@@ -1145,4 +1165,5 @@ if __name__ == "__main__":
     print(f"   - /facial-emotion-detect - Facial emotion detection")
     print(f"   - /analyze-behavior - Behavior analysis for tasks")
     print(f"   - /voices - Available TTS voices")
-    uvicorn.run(app, host="0.0.0.0", port=port, reload=False)
+    print("=" * 70)
+    uvicorn.run(app, host="0.0.0.0", port=port, log_level="info")

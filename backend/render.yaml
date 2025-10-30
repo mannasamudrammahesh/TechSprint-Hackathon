@@ -2,13 +2,11 @@ services:
   - type: web
     name: healix-backend
     env: python
-    region: oregon
+    region: Singapore (Southeast Asia)
     plan: free
     branch: main
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT --timeout-keep-alive 120
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.0
-      - key: PORT
-        value: 10000
+        value: 3.11.9
