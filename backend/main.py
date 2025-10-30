@@ -15,10 +15,8 @@ warnings.filterwarnings("ignore", category=UserWarning)
 import io
 import sys
 
-# Add current directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-# Try to import optional dependencies with fallbacks
 try:
     import torch
 
@@ -83,7 +81,6 @@ except ImportError:
     TTS_AVAILABLE = False
     print("WARNING: Coqui TTS not available - trying fallback TTS options")
 
-# Try fallback TTS options
 try:
     import pyttsx3
 
@@ -108,7 +105,6 @@ try:
 except ImportError:
     EDGE_TTS_AVAILABLE = False
 
-# Gemini AI (Primary - Fast Response)
 try:
     from gemini_integration import gemini_ai
     GEMINI_AI_AVAILABLE = True
@@ -117,7 +113,6 @@ except ImportError as e:
     GEMINI_AI_AVAILABLE = False
     print(f"WARNING: Gemini AI not available - {e}")
 
-# Llama Scout Mental Health AI (Fallback)
 try:
     from llama_scout_integration import get_llama_scout_ai
     LLAMA_SCOUT_AI_AVAILABLE = True
@@ -127,39 +122,33 @@ except ImportError as e:
     print(f"WARNING: Llama Scout AI not available - {e}")
     print("Using fallback responses")
 
-# Global models
 whisper_model = None
 dialogpt_model = None
 dialogpt_tokenizer = None
-enhanced_dialogpt = None  # Enhanced DialogGPT instance
-gemini_mental_health_ai = None  # Gemini AI instance (Primary)
-llama_scout_ai = None  # Llama Scout Mental Health AI instance (Fallback)
+enhanced_dialogpt = None
+gemini_mental_health_ai = None
+llama_scout_ai = None
 opus_models = {}
 tts_models = {}
 conversation_sessions = {}
 
 
-# Initialize models on startup using lifespan
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup
     await startup_models()
     yield
-    # Shutdown
     print("🔄 Shutting down Healix AI Backend...")
 
 
 app = FastAPI(title="AI Voice Assistant Backend", version="1.0.0", lifespan=lifespan)
 
-# CORS middleware - Updated for production security
-# Add your actual domains here before deployment
 ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # Local development
-    "http://localhost:3001",  # Alternative local port
-    "https://your-domain.xyz",  # Replace with your actual .xyz domain
-    "https://www.your-domain.xyz",  # Replace with your actual .xyz domain
-    "https://your-app.vercel.app",  # Replace with your Vercel URL
-    "https://your-app.netlify.app",  # Replace with your Netlify URL
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "https://your-domain.xyz",
+    "https://www.your-domain.xyz",
+    "https://your-app.vercel.app",
+    "https://your-app.netlify.app",
 ]
 
 app.add_middleware(
@@ -171,7 +160,6 @@ app.add_middleware(
 )
 
 
-# Pydantic models
 class ChatRequest(BaseModel):
     text: str
     session_id: str
@@ -231,7 +219,6 @@ async def startup_models():
     print("Starting Healix AI Backend...")
     print("=" * 60)
 
-    # Initialize Whisper model if available
     if WHISPER_AVAILABLE:
         print("Loading Whisper model for Speech-to-Text...")
         try:
@@ -250,12 +237,10 @@ async def startup_models():
         whisper_model = None
         print("WARNING: Whisper not available - STT will use fallback")
 
-    # Initialize Gemini AI (Primary - Fast Response)
     global gemini_mental_health_ai
     if GEMINI_AI_AVAILABLE:
         print("\n🚀 Loading Gemini AI (Primary - Fast Response)...")
         try:
-            # Gemini is already initialized in gemini_integration.py
             gemini_mental_health_ai = gemini_ai
             if gemini_mental_health_ai.is_available():
                 print("✅ Gemini AI loaded successfully")
@@ -276,7 +261,6 @@ async def startup_models():
         gemini_mental_health_ai = None
         print("⚠️ Gemini AI not available")
 
-    # Initialize Llama Scout Mental Health AI (Fallback)
     global llama_scout_ai
     if LLAMA_SCOUT_AI_AVAILABLE:
         print("\n📦 Loading Llama Scout AI (Fallback)...")
@@ -295,12 +279,10 @@ async def startup_models():
         llama_scout_ai = None
         print("⚠️ Llama Scout AI not available")
 
-    # Initialize Enhanced DialogGPT model with better error handling
     if TRANSFORMERS_AVAILABLE and TORCH_AVAILABLE:
         print("\nLoading Enhanced DialoGPT for Dynamic Conversations...")
         try:
 
-            # Try to import enhanced DialogGPT
             try:
                 from enhanced_dialogpt import EnhancedDialogGPT
 
@@ -330,7 +312,6 @@ async def startup_models():
                     print("OK: Standard DialoGPT model loaded successfully")
                 except Exception as model_error:
                     print(f"WARNING: Failed to load standard model: {model_error}")
-                    # Try smaller model as fallback
                     try:
                         dialogpt_model = AutoModelForCausalLM.from_pretrained(
                             "microsoft/DialoGPT-small"
@@ -355,11 +336,9 @@ async def startup_models():
         enhanced_dialogpt = None
         print("WARNING: DialoGPT not available - chat will use advanced fallback")
 
-    # Initialize translation models if available
     if TRANSFORMERS_AVAILABLE:
         print("Loading Opus-MT translation models...")
         try:
-            # Check if SentencePiece is available
             try:
                 import sentencepiece
 
@@ -371,18 +350,17 @@ async def startup_models():
                 )
 
             if SENTENCEPIECE_AVAILABLE:
-                # Load available translation models
                 translation_models = [
                     ("hi-en", "Helsinki-NLP/opus-mt-hi-en"),
                     ("en-hi", "Helsinki-NLP/opus-mt-en-hi"),
                     (
                         "mul-en",
                         "Helsinki-NLP/opus-mt-mul-en",
-                    ),  # Multilingual to English
+                    ),
                     (
                         "en-mul",
                         "Helsinki-NLP/opus-mt-en-mul",
-                    ),  # English to Multilingual
+                    ),
                 ]
 
                 loaded_models = []
@@ -411,17 +389,14 @@ async def startup_models():
     else:
         print("⚠️ Translation models not available - will use fallback")
 
-    # Initialize TTS models if available
     if TTS_AVAILABLE:
         print("Loading TTS models...")
         try:
-            # English TTS
             tts_models["en"] = TTS(
                 model_name="tts_models/en/ljspeech/tacotron2-DDC", progress_bar=False
             )
             print("✅ English TTS model loaded successfully")
 
-            # Multilingual TTS for Hindi, Telugu, Tamil
             multilingual_tts = TTS(
                 model_name="tts_models/multilingual/multi-dataset/your_tts",
                 progress_bar=False,
@@ -449,18 +424,20 @@ async def startup_models():
     print("   • /translate - Language translation")
     print("   • /emotion-detect - Emotion detection")
     print("=" * 60)
-    if gemini_mental_health_ai and gemini_mental_health_ai.is_available():
-        print("🚀 Primary Mental Health AI: Gemini 2.5 Flash")
-        print("   Provider: Google AI")
-        print("   Response Time: 2-4 seconds (FAST)")
-        print("   Status: Ready ✅")
-        if llama_scout_ai:
-            print("\n📦 Fallback AI: Llama Scout")
-            print("   Status: Ready as backup")
-    elif llama_scout_ai:
-        print("Mental Health AI: Llama Scout")
+    if llama_scout_ai:
+        print("🚀 Primary Mental Health AI: Llama Scout")
         print("   Model: meta-llama/llama-3.2-3b-instruct:free")
         print("   Provider: OpenRouter AI")
+        print("   Response Time: <5 seconds (OPTIMIZED)")
+        print("   Status: Ready ✅")
+        if gemini_mental_health_ai and gemini_mental_health_ai.is_available():
+            print("\n📦 Secondary AI: Gemini 2.5 Flash")
+            print("   Provider: Google AI")
+            print("   Status: Ready as backup")
+    elif gemini_mental_health_ai and gemini_mental_health_ai.is_available():
+        print("Mental Health AI: Gemini 2.5 Flash")
+        print("   Provider: Google AI")
+        print("   Response Time: 2-4 seconds")
         print("   Status: Ready")
     elif enhanced_dialogpt:
         print("Mental Health AI: Enhanced DialogGPT")
@@ -484,12 +461,10 @@ def translate_text(text: str, source_lang: str, target_lang: str) -> str:
         return text
 
     if not TRANSFORMERS_AVAILABLE or not opus_models:
-        # Fallback: return original text with a note
         return f"[Translation not available - {source_lang} to {target_lang}] {text}"
 
     model_key = f"{source_lang}-{target_lang}"
     if model_key not in opus_models:
-        # Fallback for unsupported language pairs
         return f"[Translation {source_lang}->{target_lang} not supported] {text}"
 
     try:
@@ -497,7 +472,6 @@ def translate_text(text: str, source_lang: str, target_lang: str) -> str:
         tokenizer = model_data["tokenizer"]
         model = model_data["model"]
 
-        # Tokenize and translate
         inputs = tokenizer(
             text, return_tensors="pt", padding=True, truncation=True, max_length=512
         )
@@ -519,26 +493,22 @@ async def speech_to_text(
 ):
     try:
         if not WHISPER_AVAILABLE or whisper_model is None:
-            # Fallback response when Whisper is not available
             return STTResponse(
                 text="Speech recognition not available. Please type your message instead.",
                 language="en",
                 confidence=0.0,
             )
 
-        # Save uploaded file temporarily
         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp_file:
             content = await audio_file.read()
             tmp_file.write(content)
             tmp_file_path = tmp_file.name
 
-        # Transcribe with Whisper
         result = whisper_model.transcribe(tmp_file_path)
         text = result["text"].strip()
         language = result["language"]
-        confidence = 1.0  # Whisper doesn't provide confidence scores
+        confidence = 1.0
 
-        # Clean up temp file
         os.unlink(tmp_file_path)
 
         return STTResponse(text=text, language=language, confidence=confidence)
@@ -564,10 +534,6 @@ async def translate(request: TranslationRequest):
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest):
-    """
-    Main chat endpoint - Uses Gemini AI (Primary) with Llama Scout fallback
-    Optimized for fast response (2-4 seconds)
-    """
     print("=" * 80)
     print("CHAT ENDPOINT CALLED")
     print(f"   Input: {request.text[:100]}...")
@@ -580,45 +546,8 @@ async def chat(request: ChatRequest):
         response_text = None
         model_used = None
 
-        # Try Gemini AI first (Primary - Fast)
-        if gemini_mental_health_ai and gemini_mental_health_ai.is_available():
-            print("🚀 Using Gemini AI (Primary - Fast Response)...")
-            try:
-                import time
-                start_time = time.time()
-                
-                gemini_response = gemini_mental_health_ai.generate_response(
-                    user_input=request.text,
-                    session_id=request.session_id,
-                    language=request.language,
-                    conversation_history=request.conversation_history,
-                )
-                
-                elapsed_time = time.time() - start_time
-                
-                if gemini_response and gemini_response.get("reply"):
-                    response_text = gemini_response["reply"]
-                    model_used = "gemini"
-                    
-                    print("=" * 80)
-                    print("✅ GEMINI RESPONSE GENERATED SUCCESSFULLY")
-                    print(f"   Response Time: {elapsed_time:.2f} seconds")
-                    print(f"   Model: Gemini 2.5 Flash")
-                    print(f"   Length: {len(response_text)} chars")
-                    print(f"   Preview: {response_text[:150]}...")
-                    print("=" * 80)
-                else:
-                    print("⚠️ Gemini returned empty response, trying fallback...")
-                    
-            except Exception as gemini_error:
-                print(f"⚠️ Gemini AI error: {gemini_error}")
-                print("   Falling back to Llama Scout...")
-        else:
-            print("⚠️ Gemini AI not available, using fallback...")
-
-        # Fallback to Llama Scout if Gemini failed
-        if not response_text and llama_scout_ai:
-            print("📦 Using Llama Scout AI (Fallback)...")
+        if llama_scout_ai:
+            print("🚀 Using Llama Scout AI (Primary - Fast <5s Response)...")
             try:
                 import time
                 start_time = time.time()
@@ -634,7 +563,7 @@ async def chat(request: ChatRequest):
                 model_used = "llama_scout"
 
                 print("=" * 80)
-                print("✅ LLAMA SCOUT RESPONSE GENERATED")
+                print("✅ LLAMA SCOUT RESPONSE GENERATED (PRIMARY)")
                 print(f"   Response Time: {elapsed_time:.2f} seconds")
                 print(f"   Emotion: {mental_health_response.detected_emotion}")
                 print(f"   Sentiment: {mental_health_response.sentiment}")
@@ -642,16 +571,49 @@ async def chat(request: ChatRequest):
                 print(f"   Preview: {response_text[:150]}...")
                 print("=" * 80)
 
-                # Update session with emotion data
                 session["detected_emotion"] = mental_health_response.detected_emotion
                 session["sentiment"] = mental_health_response.sentiment
                 
             except Exception as llama_error:
                 print(f"⚠️ Llama Scout error: {llama_error}")
+                print("   Falling back to Gemini AI...")
                 import traceback
                 print(f"   Traceback: {traceback.format_exc()}")
+        else:
+            print("⚠️ Llama Scout AI not available, using Gemini fallback...")
 
-        # Final fallback if both AI models failed
+        if not response_text and gemini_mental_health_ai and gemini_mental_health_ai.is_available():
+            print("📦 Using Gemini AI (Secondary Fallback)...")
+            try:
+                import time
+                start_time = time.time()
+                
+                gemini_response = gemini_mental_health_ai.generate_response(
+                    user_input=request.text,
+                    session_id=request.session_id,
+                    language=request.language,
+                    conversation_history=request.conversation_history,
+                )
+                
+                elapsed_time = time.time() - start_time
+                
+                if gemini_response and gemini_response.get("reply"):
+                    response_text = gemini_response["reply"]
+                    model_used = "gemini_fallback"
+                    
+                    print("=" * 80)
+                    print("✅ GEMINI FALLBACK RESPONSE GENERATED")
+                    print(f"   Response Time: {elapsed_time:.2f} seconds")
+                    print(f"   Model: Gemini 2.5 Flash")
+                    print(f"   Length: {len(response_text)} chars")
+                    print(f"   Preview: {response_text[:150]}...")
+                    print("=" * 80)
+                else:
+                    print("⚠️ Gemini returned empty response...")
+                    
+            except Exception as gemini_error:
+                print(f"⚠️ Gemini AI error: {gemini_error}")
+
         if not response_text:
             print("⚠️ All AI models failed, using basic fallback...")
             model_used = "fallback"
@@ -666,7 +628,6 @@ If you're in crisis, please reach out immediately:
 
 What would you like to talk about?"""
 
-        # Update session history
         session["history"].append(f"User: {request.text}")
         session["history"].append(f"Assistant: {response_text}")
         session["last_activity"] = datetime.now().isoformat()
@@ -687,7 +648,6 @@ What would you like to talk about?"""
         traceback.print_exc()
         print("=" * 80)
 
-        # Return empathetic error message to user
         error_response = """I'm here to support you, though I'm experiencing a technical issue at the moment. Your wellbeing is important to me.
 
 Please try sending your message again. If the issue persists, I'm still here to help in any way I can.
@@ -708,7 +668,6 @@ async def text_to_speech(request: TTSRequest):
         text = request.text
         language = request.language
 
-        # Try Coqui TTS first
         if TTS_AVAILABLE and language in tts_models:
             try:
                 tts_model = tts_models[language]
@@ -732,10 +691,8 @@ async def text_to_speech(request: TTSRequest):
             except Exception as e:
                 print(f"Coqui TTS failed: {e}, trying fallback...")
 
-        # Try Google TTS fallback
         if GTTS_AVAILABLE:
             try:
-                # Map language codes for gTTS
                 gtts_lang_map = {
                     "en": "en",
                     "hi": "hi",
@@ -768,10 +725,8 @@ async def text_to_speech(request: TTSRequest):
             except Exception as e:
                 print(f"Google TTS failed: {e}, trying next fallback...")
 
-        # Try Edge TTS fallback
         if EDGE_TTS_AVAILABLE:
             try:
-                # Map language codes for Edge TTS
                 edge_voices = {
                     "en": "en-US-AriaNeural",
                     "hi": "hi-IN-SwaraNeural",
@@ -793,7 +748,7 @@ async def text_to_speech(request: TTSRequest):
 
                 audio_data = (
                     await generate_edge_tts()
-                )  # Changed from asyncio.run to await
+                )
 
                 return StreamingResponse(
                     io.BytesIO(audio_data),
@@ -803,7 +758,6 @@ async def text_to_speech(request: TTSRequest):
             except Exception as e:
                 print(f"Edge TTS failed: {e}")
 
-        # Final fallback - return text as JSON
         return {
             "text": text,
             "language": language,
@@ -815,23 +769,19 @@ async def text_to_speech(request: TTSRequest):
         raise HTTPException(status_code=500, detail=f"TTS generation failed: {str(e)}")
 
 
-# Helper functions for improved chat responses
 def clean_and_validate_response(response: str, user_input: str) -> str:
-    """Clean and validate the generated response"""
     if not response or len(response.strip()) < 5:
         return get_contextual_fallback_response(user_input, "en")
 
-    # Remove common artifacts
     response = response.replace("User:", "").replace("Assistant:", "").strip()
 
-    # Remove repetitive patterns
     lines = response.split("\n")
     unique_lines = []
     for line in lines:
         if line.strip() and line.strip() not in unique_lines:
             unique_lines.append(line.strip())
 
-    cleaned = " ".join(unique_lines[:3])  # Limit to 3 sentences
+    cleaned = " ".join(unique_lines[:3])
 
     if len(cleaned.strip()) < 10:
         return get_contextual_fallback_response(user_input, "en")
@@ -840,12 +790,9 @@ def clean_and_validate_response(response: str, user_input: str) -> str:
 
 
 def get_contextual_fallback_response(user_input: str, language: str = "en") -> str:
-    """Generate contextual fallback responses based on user input analysis"""
 
-    # Analyze user input for emotional context
     lower_input = user_input.lower()
 
-    # Crisis detection
     crisis_words = [
         "suicide",
         "kill myself",
@@ -862,7 +809,6 @@ def get_contextual_fallback_response(user_input: str, language: str = "en") -> s
         }
         return crisis_responses.get(language, crisis_responses["en"])
 
-    # Mental health topics with contextual responses
     if any(
         word in lower_input
         for word in ["anxious", "anxiety", "worried", "panic", "fear"]
@@ -907,7 +853,6 @@ def get_contextual_fallback_response(user_input: str, language: str = "en") -> s
         }
         return sleep_responses.get(language, sleep_responses["en"])
 
-    # General supportive responses
     supportive_responses = {
         "en": "Thank you for sharing with me. I'm here to listen and support you on your mental health journey. Your feelings are valid, and seeking support shows real strength. What would you like to talk about today?",
         "hi": "मेरे साथ साझा करने के लिए धन्यवाद। मैं आपकी मानसिक स्वास्थ्य यात्रा में सुनने और समर्थन करने के लिए यहां हूं। आपकी भावनाएं वैध हैं। आज आप किस बारे में बात करना चाहेंगे?",
@@ -917,7 +862,6 @@ def get_contextual_fallback_response(user_input: str, language: str = "en") -> s
     return supportive_responses.get(language, supportive_responses["en"])
 
 
-# Emotion Detection Endpoint
 @app.post("/emotion-detect")
 async def detect_emotion(request: EmotionRequest):
     try:
@@ -937,12 +881,10 @@ async def detect_emotion(request: EmotionRequest):
 
         results = emotion_classifier(request.text)
 
-        # Format results
         emotions = {}
         for result in results[0]:
             emotions[result["label"].lower()] = result["score"]
 
-        # Get dominant emotion
         dominant_emotion = max(emotions, key=emotions.get)
 
         return {
@@ -958,17 +900,12 @@ async def detect_emotion(request: EmotionRequest):
         )
 
 
-# Facial Emotion Detection Endpoint
 class FacialEmotionRequest(BaseModel):
-    image: str  # base64 encoded image
+    image: str
 
 
 @app.post("/facial-emotion-detect")
 async def detect_facial_emotion(request: FacialEmotionRequest):
-    """
-    Real-time facial emotion detection using MediaPipe Face Mesh
-    Detects: happy, sad, angry, surprised, neutral
-    """
     try:
         import base64
         import io
@@ -979,18 +916,15 @@ async def detect_facial_emotion(request: FacialEmotionRequest):
 
         print("🎭 Received emotion detection request")
 
-        # Decode base64 image
         image_data = base64.b64decode(request.image.split(",")[1])
         image = Image.open(io.BytesIO(image_data))
         image_array = np.array(image)
 
-        # Convert RGB to BGR for OpenCV
         if len(image_array.shape) == 3 and image_array.shape[2] == 3:
             bgr_image = cv2.cvtColor(image_array, cv2.COLOR_RGB2BGR)
         else:
             bgr_image = image_array
 
-        # Use MediaPipe emotion detection service
         emotion_service = get_emotion_service()
         result = emotion_service.detect_emotion_from_frame(bgr_image)
 
@@ -1004,13 +938,12 @@ async def detect_facial_emotion(request: FacialEmotionRequest):
             "emotion": emotion,
             "confidence": confidence,
             "face_detected": face_detected,
-            "dominant_emotion": emotion,  # Backward compatibility
+            "dominant_emotion": emotion,
             "all_emotions": {emotion: confidence}
         }
 
     except Exception as e:
         print(f"❌ Facial emotion detection error: {e}")
-        # Return fallback instead of error
         return {
             "emotion": "neutral",
             "confidence": 0.5,
@@ -1018,9 +951,8 @@ async def detect_facial_emotion(request: FacialEmotionRequest):
             "error": str(e)
         }
 
-# Behavior Analysis Endpoint
 class BehaviorAnalysisRequest(BaseModel):
-    image: str  # base64 encoded image
+    image: str
     task_type: str
     task_id: str
 
@@ -1033,11 +965,9 @@ async def analyze_behavior(request: BehaviorAnalysisRequest):
         from PIL import Image
         import numpy as np
 
-        # Decode base64 image
         image_data = base64.b64decode(request.image.split(",")[1])
         image = Image.open(io.BytesIO(image_data))
 
-        # Simulate behavior analysis based on task type
         base_accuracy = 0.7 + np.random.random() * 0.3
 
         if request.task_type == "chest_movement":
@@ -1102,7 +1032,7 @@ async def health_check():
             "speech_to_text": bool(WHISPER_AVAILABLE and whisper_model is not None),
             "translation": bool(TRANSFORMERS_AVAILABLE and len(opus_models) > 0),
             "text_to_speech": bool(TTS_AVAILABLE and len(tts_models) > 0),
-            "chat": True,  # Always available with fallback
+            "chat": True,
         },
         "port": 8000,
         "message": "Healix AI Backend is running successfully!",
@@ -1123,10 +1053,8 @@ async def clear_session(session_id: str):
         raise HTTPException(status_code=404, detail="Session not found")
 
 
-# Voice Configuration Endpoint
 @app.get("/voices")
 async def get_available_voices():
-    """Get available TTS voices for different languages"""
     voices = {
         "en": [
             {
@@ -1202,8 +1130,7 @@ if __name__ == "__main__":
     import uvicorn
     import os
 
-    # Use fixed port 3003 for frontend integration
-    port = int(os.getenv("BACKEND_PORT", "3003"))
+    port = int(os.getenv("PORT", os.getenv("BACKEND_PORT", "8000")))
     print("=" * 70)
     print(f"🚀 Starting Healix AI Backend on port {port}")
     print(f"🌐 Backend will be available at: http://localhost:{port}")
