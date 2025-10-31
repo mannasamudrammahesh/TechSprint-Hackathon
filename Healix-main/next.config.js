@@ -1,15 +1,11 @@
-/** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-
-  // Performance optimizations
   swcMinify: true,
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
-
   images: {
-    unoptimized: false, // Enable image optimization for better performance
+    unoptimized: false, 
     remotePatterns: [
       {
         protocol: "https",
@@ -37,8 +33,6 @@ const nextConfig = {
       },
     ],
   },
-
-  // Enable modern bundling features
   modularizeImports: {
     'lucide-react': {
       transform: 'lucide-react/dist/esm/icons/{{kebabCase member}}',
@@ -47,11 +41,8 @@ const nextConfig = {
       transform: '@radix-ui/react-icons/dist/{{member}}',
     },
   },
-
   experimental: {
-    // Ensure output file tracing roots at this project only
     outputFileTracingRoot: __dirname,
-    // Performance optimizations
     optimizeCss: true,
     optimizePackageImports: [
       "lucide-react",
@@ -59,22 +50,15 @@ const nextConfig = {
       "framer-motion",
     ],
   },
-
-  // Webpack optimizations for AI libraries
   webpack: (config, { isServer }) => {
-    // Optimize for AI/ML libraries
     config.externals = config.externals || [];
-
     if (!isServer) {
-      // Client-side optimizations
       config.resolve.fallback = {
         ...config.resolve.fallback,
         fs: false,
         path: false,
         crypto: false,
       };
-
-      // Chunk splitting for better caching
       config.optimization.splitChunks = {
         ...config.optimization.splitChunks,
         cacheGroups: {
@@ -96,10 +80,8 @@ const nextConfig = {
         },
       };
     }
-
     return config;
   },
-
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -107,5 +89,4 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
 };
-
 module.exports = nextConfig;
