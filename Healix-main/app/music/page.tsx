@@ -1,12 +1,10 @@
 "use client";
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, Music, Mic, MicOff, Heart, Waves } from 'lucide-react';
 import { BackButton } from '@/components/BackButton';
 import { Badge } from '@/components/ui/badge';
-
 interface Track {
   id: string;
   title: string;
@@ -17,8 +15,6 @@ interface Track {
   description: string;
   benefits: string[];
 }
-
-// Enhanced stress relief tracks with mental health benefits - using actual file locations
 const stressReliefTracks: Track[] = [
   {
     id: '1',
@@ -91,7 +87,6 @@ const stressReliefTracks: Track[] = [
     benefits: ['Synchronizes brainwaves', 'Enhances creativity', 'Promotes calm alertness']
   }
 ];
-
 export default function MusicPage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrack, setCurrentTrack] = useState(0);
@@ -102,13 +97,9 @@ export default function MusicPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-
   const audioRef = useRef<HTMLAudioElement>(null);
   const recognitionRef = useRef<any>(null);
-
   const categories = ['all', 'meditation', 'nature', 'ambient', 'classical', 'binaural'];
-
-  // Initialize speech recognition for voice commands
   useEffect(() => {
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
       const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
@@ -116,17 +107,14 @@ export default function MusicPage() {
       recognitionRef.current.continuous = true;
       recognitionRef.current.interimResults = false;
       recognitionRef.current.lang = 'en-US';
-
       recognitionRef.current.onresult = (event: any) => {
         const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
         handleVoiceCommand(transcript);
       };
-
       recognitionRef.current.onerror = (event: any) => {
         console.error('Speech recognition error:', event.error);
         setIsListening(false);
       };
-
       recognitionRef.current.onend = () => {
         if (isListening) {
           recognitionRef.current.start();
@@ -134,11 +122,8 @@ export default function MusicPage() {
       };
     }
   }, [isListening]);
-
   const handleVoiceCommand = (command: string) => {
     console.log('Voice command:', command);
-
-    // Check for specific track requests
     if (command.includes('rain') || command.includes('rainfall')) {
       const track = stressReliefTracks.find(t => t.title.toLowerCase().includes('rain'));
       if (track) {
@@ -168,7 +153,6 @@ export default function MusicPage() {
         setTimeout(() => playTrack(), 100);
       }
     } else if (command.includes('play') && !command.includes('pause')) {
-      // Generic play command
       playTrack();
     } else if (command.includes('pause')) {
       pauseTrack();
@@ -199,35 +183,28 @@ export default function MusicPage() {
       }
     } else if (command.includes('exit music') || command.includes('close music') || command.includes('exit player') || command.includes('close player')) {
       console.log('🚪 Exit music player command');
-      // Stop the music and turn off local voice recognition
       pauseTrack();
       if (audioRef.current) {
         audioRef.current.currentTime = 0;
       }
-      // Turn off local voice recognition
       if (recognitionRef.current && isListening) {
         recognitionRef.current.stop();
         setIsListening(false);
       }
-      // Note: Global voice assistant will handle navigation to home
     } else if (command.includes('goodbye') || command.includes('bye')) {
       console.log('👋 Goodbye command');
-      // Stop music if playing
       if (isPlaying) {
         pauseTrack();
         if (audioRef.current) {
           audioRef.current.currentTime = 0;
         }
       }
-      // Turn off local voice recognition
       if (recognitionRef.current && isListening) {
         recognitionRef.current.stop();
         setIsListening(false);
       }
-      // Note: Global voice assistant will handle microphone off
     }
   };
-
   const toggleVoiceListening = () => {
     if (isListening) {
       recognitionRef.current?.stop();
@@ -237,51 +214,39 @@ export default function MusicPage() {
       setIsListening(true);
     }
   };
-
-  // Audio event handlers
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-
     const updateTime = () => {
       setCurrentTime(audio.currentTime);
     };
-
     const updateDuration = () => {
       if (audio.duration && !isNaN(audio.duration)) {
         setDuration(audio.duration);
       }
     };
-
     const handleEnded = () => {
       setIsPlaying(false);
       nextTrack();
     };
-
     const handleLoadStart = () => {
       setIsLoading(true);
     };
-
     const handleCanPlay = () => {
       setIsLoading(false);
     };
-
     const handleError = (e: any) => {
       console.error('Audio loading error:', e);
       setIsLoading(false);
       setIsPlaying(false);
     };
-
     audio.addEventListener('timeupdate', updateTime);
     audio.addEventListener('loadedmetadata', updateDuration);
     audio.addEventListener('ended', handleEnded);
     audio.addEventListener('loadstart', handleLoadStart);
     audio.addEventListener('canplay', handleCanPlay);
     audio.addEventListener('error', handleError);
-
-    // Load the audio when track changes
     audio.load();
-
     return () => {
       audio.removeEventListener('timeupdate', updateTime);
       audio.removeEventListener('loadedmetadata', updateDuration);
@@ -291,18 +256,13 @@ export default function MusicPage() {
       audio.removeEventListener('error', handleError);
     };
   }, [currentTrack]);
-
   const playTrack = async () => {
     const audio = audioRef.current;
     if (!audio) return;
-
     try {
       setIsLoading(true);
-
-      // Ensure audio is loaded
       if (audio.readyState < 2) {
         audio.load();
-        // Wait for audio to be ready
         await new Promise((resolve, reject) => {
           const handleCanPlay = () => {
             audio.removeEventListener('canplay', handleCanPlay);
@@ -318,8 +278,6 @@ export default function MusicPage() {
           audio.addEventListener('error', handleError);
         });
       }
-
-      // Play the audio
       await audio.play();
       setIsPlaying(true);
       setIsLoading(false);
@@ -329,12 +287,9 @@ export default function MusicPage() {
       console.error('Audio ready state:', audio.readyState);
       setIsPlaying(false);
       setIsLoading(false);
-
-      // Show user-friendly error
       alert('Unable to play audio. Please check if the file exists and try again.');
     }
   };
-
   const pauseTrack = () => {
     const audio = audioRef.current;
     if (audio) {
@@ -342,7 +297,6 @@ export default function MusicPage() {
       setIsPlaying(false);
     }
   };
-
   const togglePlayPause = () => {
     if (isPlaying) {
       pauseTrack();
@@ -350,7 +304,6 @@ export default function MusicPage() {
       playTrack();
     }
   };
-
   const nextTrack = () => {
     const filteredTracks = getFilteredTracks();
     const currentIndex = filteredTracks.findIndex(track => track.id === stressReliefTracks[currentTrack].id);
@@ -361,7 +314,6 @@ export default function MusicPage() {
       setTimeout(() => playTrack(), 100);
     }
   };
-
   const previousTrack = () => {
     const filteredTracks = getFilteredTracks();
     const currentIndex = filteredTracks.findIndex(track => track.id === stressReliefTracks[currentTrack].id);
@@ -372,7 +324,6 @@ export default function MusicPage() {
       setTimeout(() => playTrack(), 100);
     }
   };
-
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVolume = parseFloat(e.target.value);
     setVolume(newVolume);
@@ -381,7 +332,6 @@ export default function MusicPage() {
     }
     setIsMuted(newVolume === 0);
   };
-
   const toggleMute = () => {
     if (audioRef.current) {
       if (isMuted) {
@@ -393,7 +343,6 @@ export default function MusicPage() {
       }
     }
   };
-
   const handleProgressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const audio = audioRef.current;
     if (audio) {
@@ -402,24 +351,20 @@ export default function MusicPage() {
       setCurrentTime(newTime);
     }
   };
-
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
-
   const getFilteredTracks = () => {
     if (selectedCategory === 'all') return stressReliefTracks;
     return stressReliefTracks.filter(track => track.category === selectedCategory);
   };
-
   const currentTrackData = stressReliefTracks[currentTrack];
-
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#d6e2ea' }}>
       <div className="container mx-auto p-3 md:p-6">
-        {/* Header Section */}
+        {}
         <div className="text-center mb-4 md:mb-8 mt-3 md:mt-8 px-4">
           <div className="mb-2 md:mb-4">
             <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600" style={{ 
@@ -437,11 +382,8 @@ export default function MusicPage() {
             Use voice commands or manual controls to enhance your therapeutic experience.
           </p>
         </div>
-
-
-
         <div className="grid lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
-          {/* Music Player */}
+          {}
           <div className="lg:col-span-2">
             <Card className="shadow-xl bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200">
               <CardHeader className="pb-2 md:pb-3">
@@ -450,16 +392,14 @@ export default function MusicPage() {
                   Now Playing
                 </CardTitle>
               </CardHeader>
-
               <CardContent className="space-y-3 md:space-y-6 p-4 md:p-6">
-                {/* Current Track Info */}
+                {}
                 <div className="text-center">
                   <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-gray-800 mb-1.5 md:mb-2">{currentTrackData.title}</h3>
                   <p className="text-sm sm:text-base md:text-lg text-gray-600 mb-1.5 md:mb-2">{currentTrackData.artist}</p>
                   <Badge className="mb-2 md:mb-3 text-[10px] sm:text-xs md:text-sm">{currentTrackData.category}</Badge>
                   <p className="text-[10px] sm:text-xs md:text-sm text-gray-600 mb-2 md:mb-4 px-2 leading-relaxed">{currentTrackData.description}</p>
-
-                  {/* Benefits */}
+                  {}
                   <div className="flex flex-wrap justify-center gap-1 md:gap-2 mb-2 md:mb-4 px-2">
                     {currentTrackData.benefits.map((benefit, index) => (
                       <span key={index} className="inline-flex items-center gap-0.5 md:gap-1 px-1.5 md:px-3 py-0.5 md:py-1 text-[9px] sm:text-[10px] md:text-xs bg-green-100 text-green-700 rounded-full">
@@ -469,8 +409,7 @@ export default function MusicPage() {
                     ))}
                   </div>
                 </div>
-
-                {/* Progress Bar */}
+                {}
                 <div className="space-y-1.5 md:space-y-2">
                   <input
                     type="range"
@@ -485,8 +424,7 @@ export default function MusicPage() {
                     <span>{formatTime(duration)}</span>
                   </div>
                 </div>
-
-                {/* Controls */}
+                {}
                 <div className="flex items-center justify-center space-x-2 md:space-x-4">
                   <Button
                     variant="outline"
@@ -496,7 +434,6 @@ export default function MusicPage() {
                   >
                     <SkipBack className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5" />
                   </Button>
-
                   <Button
                     onClick={togglePlayPause}
                     disabled={isLoading}
@@ -510,7 +447,6 @@ export default function MusicPage() {
                       <Play className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" />
                     )}
                   </Button>
-
                   <Button
                     variant="outline"
                     size="sm"
@@ -520,8 +456,7 @@ export default function MusicPage() {
                     <SkipForward className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5" />
                   </Button>
                 </div>
-
-                {/* Volume Control */}
+                {}
                 <div className="flex items-center space-x-2">
                   <Button
                     variant="ghost"
@@ -541,8 +476,7 @@ export default function MusicPage() {
                     className="flex-1 h-1.5 md:h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                   />
                 </div>
-
-                {/* Audio Element */}
+                {}
                 <audio
                   ref={audioRef}
                   src={currentTrackData.url}
@@ -552,8 +486,7 @@ export default function MusicPage() {
               </CardContent>
             </Card>
           </div>
-
-          {/* Track List */}
+          {}
           <div>
             <Card className="shadow-xl">
               <CardHeader>
@@ -561,8 +494,7 @@ export default function MusicPage() {
                   <Waves className="h-4 w-4 md:h-5 md:w-5" />
                   Music Library
                 </CardTitle>
-
-                {/* Category Filter */}
+                {}
                 <div className="flex flex-wrap gap-1.5 md:gap-2 mt-3 md:mt-4">
                   {categories.map((category) => (
                     <Button
@@ -577,7 +509,6 @@ export default function MusicPage() {
                   ))}
                 </div>
               </CardHeader>
-
               <CardContent>
                 <div className="space-y-2 max-h-64 md:max-h-96 overflow-y-auto">
                   {getFilteredTracks().map((track, index) => {
