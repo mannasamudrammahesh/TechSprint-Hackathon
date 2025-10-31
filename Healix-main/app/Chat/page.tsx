@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect, useRef } from "react";
 import Markdown from "react-markdown";
 import { Input } from "@/components/ui/input";
@@ -56,12 +55,10 @@ export default function Home() {
       "Alex",
       "Karen",
     ];
-
     for (const name of preferredVoiceNames) {
       const exactMatch = voices.find((voice: SpeechSynthesisVoice) => voice.name === name);
       if (exactMatch) return exactMatch;
     }
-
     const keywordMatch = voices.find(
       (voice: SpeechSynthesisVoice) =>
         (voice.name.toLowerCase().includes("female") ||
@@ -70,14 +67,12 @@ export default function Home() {
         voice.lang.startsWith("en"),
     );
     if (keywordMatch) return keywordMatch;
-
     const providerMatch = voices.find(
       (voice: SpeechSynthesisVoice) =>
         (voice.name.includes("Google") || voice.name.includes("Microsoft")) &&
         voice.lang.startsWith("en"),
     );
     if (providerMatch) return providerMatch;
-
     const englishVoice = voices.find((voice: SpeechSynthesisVoice) => voice.lang.startsWith("en"));
     return englishVoice || voices[0];
   };
@@ -97,7 +92,6 @@ export default function Home() {
   // Load chat history from Supabase/LocalStorage on mount - optimized
   useEffect(() => {
     if (!user?.id) return;
-
     const loadChatHistory = async () => {
       try {
         const loadedMessages = await chatStorage.getMessages(user.id);
@@ -108,7 +102,6 @@ export default function Home() {
         console.error('Failed to load chat history:', error);
       }
     };
-
     // Use setTimeout to defer loading and improve initial render
     const timeoutId = setTimeout(loadChatHistory, 100);
     return () => clearTimeout(timeoutId);
@@ -121,33 +114,27 @@ export default function Home() {
       toast.error("Speech recognition not supported in this browser!");
       return;
     }
-
     const recognition = new SpeechRecognition();
     recognition.continuous = false;
     recognition.lang = "en-US";
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
-
     recognition.onstart = () => {
       setIsListening(true);
       toast.success("Listening...");
     };
-
     recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
       setPrompt(transcript);
       toast.success("Voice captured!");
       submissionTimeout.current = setTimeout(() => onSubmit(), 1500);
     };
-
     recognition.onerror = (event) => {
       toast.error(`Voice input error: ${event.error}`);
       setIsListening(false);
       if (submissionTimeout.current) clearTimeout(submissionTimeout.current);
     };
-
     recognition.onend = () => setIsListening(false);
-
     try {
       recognition.start();
     } catch (error) {
@@ -158,7 +145,6 @@ export default function Home() {
 
   const processTextForSpeech = (text: string): string => {
     if (!text) return "";
-
     let cleanedText = text
       .replace(/\*\*(.*?)\*\*/g, "$1")
       .replace(/\*(.*?)\*/g, "$1")
@@ -176,11 +162,9 @@ export default function Home() {
       .replace(/\s{2,}/g, " ")
       .replace(/[\s\.]+([\.,;:])/g, "$1")
       .trim();
-
     if (cleanedText && !".?!".includes(cleanedText[cleanedText.length - 1])) {
       cleanedText += ".";
     }
-
     return cleanedText;
   };
 
@@ -189,13 +173,11 @@ export default function Home() {
       cancel();
       return;
     }
-
     const processedText = processTextForSpeech(text);
     if (!processedText) {
       toast.error("No valid content to speak");
       return;
     }
-
     toast.success("Starting speech...");
     speak({
       ...speechOptions,
@@ -215,15 +197,12 @@ export default function Home() {
     }
   };
 
-
-
   const copyMessage = (text: string) => {
     const cleanText = text
       .replace(/\*\*(.*?)\*\*/g, "$1")
       .replace(/\*(.*?)\*/g, "$1")
       .replace(/__(.*?)__/g, "$1")
       .replace(/_(.*?)_/g, "$1");
-
     navigator.clipboard
       .writeText(cleanText)
       .then(() => toast.success("Copied to clipboard!"))
@@ -236,7 +215,6 @@ export default function Home() {
       // Load existing history
       const savedHistory = localStorage.getItem('healix_chat_history_list');
       let historyList: ChatHistory[] = [];
-
       if (savedHistory) {
         try {
           historyList = JSON.parse(savedHistory);
@@ -244,7 +222,6 @@ export default function Home() {
           console.error('Failed to load chat history:', error);
         }
       }
-
       // Check for old chat format and migrate it
       const oldChatData = localStorage.getItem('healix_chat_history');
       if (oldChatData && historyList.length === 0) {
@@ -256,14 +233,12 @@ export default function Home() {
             const title = firstUserMessage
               ? firstUserMessage.content.slice(0, 50) + (firstUserMessage.content.length > 50 ? '...' : '')
               : 'Previous Conversation';
-
             const migratedChat: ChatHistory = {
               id: `chat_migrated_${Date.now()}`,
               title: `${title} (${oldMessages.length} messages)`,
               messages: oldMessages,
               timestamp: oldMessages[0]?.timestamp || Date.now(),
             };
-
             historyList = [migratedChat];
             localStorage.setItem('healix_chat_history_list', JSON.stringify(historyList));
             console.log(`✅ Migrated old chat with ${oldMessages.length} messages to history`);
@@ -273,7 +248,6 @@ export default function Home() {
           console.error('Failed to migrate old chat:', error);
         }
       }
-
       setChatHistory(historyList);
     }
   }, []);
@@ -285,23 +259,19 @@ export default function Home() {
       const title = firstUserMessage
         ? firstUserMessage.content.slice(0, 50) + (firstUserMessage.content.length > 50 ? '...' : '')
         : 'Untitled Chat';
-
       const newHistoryItem: ChatHistory = {
         id: `chat_${Date.now()}`,
         title,
         messages: [...messages],
         timestamp: Date.now(),
       };
-
       const updatedHistory = [newHistoryItem, ...chatHistory];
       setChatHistory(updatedHistory);
-
       // Save to localStorage
       if (typeof window !== 'undefined') {
         localStorage.setItem('healix_chat_history_list', JSON.stringify(updatedHistory));
       }
     }
-
     // Clear current chat
     await chatStorage.clearMessages(user?.id);
     setMessages([]);
@@ -321,7 +291,6 @@ export default function Home() {
   const deleteChatFromHistory = (chatId: string) => {
     const updatedHistory = chatHistory.filter(chat => chat.id !== chatId);
     setChatHistory(updatedHistory);
-
     if (typeof window !== 'undefined') {
       localStorage.setItem('healix_chat_history_list', JSON.stringify(updatedHistory));
     }
@@ -330,35 +299,29 @@ export default function Home() {
 
   const onSubmit = async () => {
     if (submissionTimeout.current) clearTimeout(submissionTimeout.current);
-
     const trimmedPrompt = prompt.trim();
     if (!trimmedPrompt) return toast.error("Please enter a message!");
-
     // Add user message immediately
     const userMessage: Message = {
       role: 'user',
       content: trimmedPrompt,
       timestamp: Date.now(),
     };
-
     setMessages(prev => [...prev, userMessage]);
     setPrompt("");
     setLoading(true);
     setStreamingMessage("");
-
     try {
       // Save user message
       await chatStorage.saveMessage({
         ...userMessage,
         userId: user?.id,
       });
-
       // Prepare conversation history for context (last 10 messages)
       const conversationHistory = messages.slice(-10).map(msg => ({
         role: msg.role,
         content: msg.content
       }));
-
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
@@ -370,53 +333,42 @@ export default function Home() {
           conversationHistory: conversationHistory, // Send conversation context
         }),
       });
-
       if (!response.ok) throw new Error(`Server error: ${response.status}`);
-
       const data = await response.json();
-
       if (data.error) {
         toast.error(data.error);
         setLoading(false);
         return;
       }
-
       if (!data.text) {
         toast.error("No response from server!");
         setLoading(false);
         return;
       }
-
       const fullResponse = data.text;
-
       // Animate the response
       const charsPerBatch = 5;
       const batchDelay = 12;
       let currentText = "";
-
       for (let i = 0; i < fullResponse.length; i += charsPerBatch) {
         await new Promise(resolve => setTimeout(resolve, batchDelay));
         currentText += fullResponse.slice(i, Math.min(i + charsPerBatch, fullResponse.length));
         setStreamingMessage(currentText);
       }
-
       // Add assistant message to messages
       const assistantMessage: Message = {
         role: 'assistant',
         content: fullResponse,
         timestamp: Date.now(),
       };
-
       setMessages(prev => [...prev, assistantMessage]);
       setStreamingMessage("");
       setLoading(false);
-
       // Save assistant message
       await chatStorage.saveMessage({
         ...assistantMessage,
         userId: user?.id,
       });
-
       console.log('✅ Messages saved to storage');
     } catch (error) {
       toast.error(
@@ -430,7 +382,6 @@ export default function Home() {
   return (
     <div className="flex h-screen bg-[#d6e2ea]">
       <Toaster position="top-center" />
-
       {/* Sidebar */}
       <div className={cn(
         "fixed inset-y-0 left-0 z-50 w-72 sm:w-80 md:w-72 bg-[#d6e2ea] border-r border-gray-300 transform transition-transform duration-300 ease-in-out flex flex-col shadow-lg",
@@ -448,7 +399,6 @@ export default function Home() {
             <X size={20} />
           </Button>
         </div>
-
         {/* New Chat Button */}
         <div className="p-4">
           <Button
@@ -459,14 +409,12 @@ export default function Home() {
             New Chat
           </Button>
         </div>
-
         {/* Chat History */}
         <div className="flex-1 overflow-y-auto p-4">
           <div className="flex items-center gap-2 mb-4 text-sm font-semibold text-gray-800">
             <History size={18} />
             <span>History</span>
           </div>
-
           {/* Current Chat */}
           {messages.length > 0 && (
             <div className="mb-3">
@@ -481,7 +429,6 @@ export default function Home() {
               </div>
             </div>
           )}
-
           {/* Previous Chats */}
           {chatHistory.length > 0 ? (
             <div className="space-y-2">
@@ -521,23 +468,7 @@ export default function Home() {
             )
           )}
         </div>
-
-        {/* Sidebar Footer */}
-        <div className="p-4 border-t border-gray-300 bg-white/50">
-          <div className="flex items-center gap-3 text-sm text-gray-800">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-sm">
-              <span className="text-white font-bold text-base">
-                {user?.user_metadata?.full_name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
-              </span>
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-medium truncate">{user?.user_metadata?.full_name || 'User'}</p>
-              <p className="text-xs text-gray-600 truncate">{user?.email || ''}</p>
-            </div>
-          </div>
-        </div>
       </div>
-
       {/* Overlay for mobile/desktop */}
       {showSidebar && (
         <div
@@ -545,7 +476,6 @@ export default function Home() {
           onClick={() => setShowSidebar(false)}
         />
       )}
-
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col">
         {/* Header with Counselling Image and Back Button */}
@@ -560,13 +490,11 @@ export default function Home() {
             >
               <Menu size={20} className="md:w-[22px] md:h-[22px]" />
             </Button>
-
             {/* Center: Counselling Icon and Text */}
             <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-2 md:gap-3">
               <MessageCircleCode size={36} className="text-gray-800 md:w-12 md:h-12" />
               <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 hidden sm:inline">Counselling</span>
             </div>
-
             {/* Right: Back Button */}
             <Button
               variant="outline"
@@ -579,7 +507,6 @@ export default function Home() {
             </Button>
           </div>
         </div>
-
         {/* Messages Container */}
         <div
           ref={chatContainerRef}
@@ -609,7 +536,6 @@ export default function Home() {
               </div>
             </div>
           )}
-
           <div className="max-w-4xl mx-auto space-y-4 md:space-y-6">
             {messages.map((message, index) => (
               <div
@@ -627,7 +553,6 @@ export default function Home() {
                     </div>
                   </div>
                 )}
-
                 {/* Message Content */}
                 <div className={cn(
                   "max-w-[80%] sm:max-w-[75%] md:max-w-[70%]",
@@ -654,7 +579,6 @@ export default function Home() {
                       </Markdown>
                     </div>
                   </div>
-
                   {/* Action Buttons for Assistant Messages */}
                   {message.role === 'assistant' && (
                     <div className="flex gap-1 mt-2">
@@ -679,7 +603,6 @@ export default function Home() {
                     </div>
                   )}
                 </div>
-
                 {/* User Avatar - Right Side */}
                 {message.role === 'user' && (
                   <div className="flex-shrink-0 mt-1 sticky top-20">
@@ -692,7 +615,6 @@ export default function Home() {
                 )}
               </div>
             ))}
-
             {/* Streaming Message */}
             {streamingMessage && (
               <div className="flex gap-3 items-start">
@@ -718,7 +640,6 @@ export default function Home() {
                 </div>
               </div>
             )}
-
             {/* Loading Indicator */}
             {loading && !streamingMessage && (
               <div className="flex gap-3 items-start">
@@ -733,10 +654,8 @@ export default function Home() {
               </div>
             )}
           </div>
-
           <div ref={messagesEndRef} />
         </div>
-
         {/* Input Area - Sticky at bottom */}
         <div className="sticky bottom-4 sm:bottom-0 bg-gradient-to-t from-[#d6e2ea] to-transparent border-t border-gray-200 p-2 sm:p-3 md:p-4 backdrop-blur-sm">
           <div className="max-w-4xl mx-auto">
