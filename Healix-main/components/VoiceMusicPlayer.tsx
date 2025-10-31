@@ -1,11 +1,9 @@
 "use client";
-
 import React, { useState, useEffect } from 'react';
 import { FaPlay, FaPause, FaStop, FaVolumeUp, FaVolumeDown } from 'react-icons/fa';
 import { useVoiceMusicAssistant } from '@/hooks/useVoiceMusicAssistant';
 import { MusicService, MusicTrack } from '@/lib/musicService';
 import toast from 'react-hot-toast';
-
 export default function VoiceMusicPlayer() {
   const { state } = useVoiceMusicAssistant();
   const [currentTrack, setCurrentTrack] = useState<MusicTrack | null>(null);
@@ -14,10 +12,7 @@ export default function VoiceMusicPlayer() {
   const [showPlayer, setShowPlayer] = useState(false);
   const [showVolumeIndicator, setShowVolumeIndicator] = useState(false);
   const volumeTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
-
   const musicService = MusicService.getInstance();
-
-  // Subscribe to music service updates
   useEffect(() => {
     musicService.onTrackChange((track) => {
       setCurrentTrack(track);
@@ -25,43 +20,30 @@ export default function VoiceMusicPlayer() {
         setShowPlayer(true);
       }
     });
-
     musicService.onPlayStateChange((playing) => {
       setIsPlaying(playing);
-      // Hide player when music stops from voice command
       if (!playing && !musicService.getCurrentTrack()) {
         setShowPlayer(false);
       }
     });
-
-    // Listen for volume changes from voice commands
     musicService.onVolumeChange((newVolume) => {
       const newVol = Math.round(newVolume * 100);
       setVolume(newVol);
       showVolumeChange(newVol);
     });
-
-    // Initialize volume
     setVolume(Math.round(musicService.getVolume() * 100));
   }, [musicService]);
-
-  // Listen for close player command from voice assistant
   useEffect(() => {
     const handleCloseMusicPlayer = () => {
       console.log('🚪 VoiceMusicPlayer: Received close player event');
       setShowPlayer(false);
       setCurrentTrack(null);
     };
-
-    // Listen for custom event from voice assistant
     window.addEventListener('voice-close-music-player', handleCloseMusicPlayer);
-
     return () => {
       window.removeEventListener('voice-close-music-player', handleCloseMusicPlayer);
     };
   }, []);
-
-  // Handle manual controls
   const handlePlayPause = () => {
     if (isPlaying) {
       musicService.pause();
@@ -71,27 +53,19 @@ export default function VoiceMusicPlayer() {
       toast.success("Music resumed");
     }
   };
-
   const handleStop = () => {
     musicService.stop();
     toast.success("Music stopped");
   };
-
-  // Show volume indicator temporarily
   const showVolumeChange = (newVol: number) => {
     setShowVolumeIndicator(true);
-    
-    // Clear existing timeout
     if (volumeTimeoutRef.current) {
       clearTimeout(volumeTimeoutRef.current);
     }
-    
-    // Hide after 2 seconds
     volumeTimeoutRef.current = setTimeout(() => {
       setShowVolumeIndicator(false);
     }, 2000);
   };
-
   const handleVolumeUp = () => {
     const newVol = Math.min(100, volume + 10);
     setVolume(newVol);
@@ -99,7 +73,6 @@ export default function VoiceMusicPlayer() {
     showVolumeChange(newVol);
     toast.success(`Volume: ${newVol}%`);
   };
-
   const handleVolumeDown = () => {
     const newVol = Math.max(0, volume - 10);
     setVolume(newVol);
@@ -107,15 +80,12 @@ export default function VoiceMusicPlayer() {
     showVolumeChange(newVol);
     toast.success(`Volume: ${newVol}%`);
   };
-
   const handleVolumeSlider = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVol = parseInt(e.target.value);
     setVolume(newVol);
     musicService.setVolume(newVol / 100);
     showVolumeChange(newVol);
   };
-
-  // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
       if (volumeTimeoutRef.current) {
@@ -123,15 +93,12 @@ export default function VoiceMusicPlayer() {
       }
     };
   }, []);
-
-  // Don't show anything if player is hidden - main microphone button handles all voice control
   if (!showPlayer) {
     return null;
   }
-
   return (
     <div className="fixed bottom-24 right-8 z-40 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-4 w-80 border-2 border-gray-200 dark:border-gray-700">
-      {/* Header */}
+      {}
       <div className="flex justify-between items-center mb-3">
         <h3 className="text-lg font-bold text-gray-800 dark:text-white">🎵 Music Player</h3>
         <button
@@ -141,8 +108,7 @@ export default function VoiceMusicPlayer() {
           ✕
         </button>
       </div>
-
-      {/* Current Track */}
+      {}
       {currentTrack && (
         <div className="mb-4 p-3 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 rounded-lg">
           <p className="text-sm font-semibold text-gray-800 dark:text-white truncate">
@@ -156,8 +122,7 @@ export default function VoiceMusicPlayer() {
           </p>
         </div>
       )}
-
-      {/* Voice transcript display (if active) */}
+      {}
       {state.transcript && (
         <div className="mb-3 p-2 bg-blue-50 dark:bg-gray-700 rounded-lg">
           <p className="text-xs text-gray-600 dark:text-gray-400 italic">
@@ -165,8 +130,7 @@ export default function VoiceMusicPlayer() {
           </p>
         </div>
       )}
-
-      {/* Playback Controls */}
+      {}
       <div className="flex justify-center items-center gap-3 mb-3">
         <button
           onClick={handleStop}
@@ -183,8 +147,7 @@ export default function VoiceMusicPlayer() {
           {isPlaying ? <FaPause size={20} /> : <FaPlay size={20} />}
         </button>
       </div>
-
-      {/* Volume Controls with Visual Slider */}
+      {}
       <div className="mb-3">
         <div className="flex items-center justify-between gap-2 mb-2">
           <button
@@ -207,8 +170,7 @@ export default function VoiceMusicPlayer() {
             <FaVolumeUp size={16} className="text-gray-700 dark:text-gray-300" />
           </button>
         </div>
-        
-        {/* Visual Volume Slider */}
+        {}
         <div className="relative">
           <input
             type="range"
@@ -221,8 +183,7 @@ export default function VoiceMusicPlayer() {
               background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${volume}%, #e5e7eb ${volume}%, #e5e7eb 100%)`
             }}
           />
-          
-          {/* Animated Volume Indicator (shows on change) */}
+          {}
           {showVolumeIndicator && (
             <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg animate-bounce">
               <div className="text-center">
@@ -234,8 +195,7 @@ export default function VoiceMusicPlayer() {
           )}
         </div>
       </div>
-
-      {/* Voice Commands Help */}
+      {}
       <div className="text-xs text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 p-2 rounded-lg">
         <p className="font-semibold mb-1">🎤 Voice Commands:</p>
         <ul className="space-y-0.5 text-[10px]">
