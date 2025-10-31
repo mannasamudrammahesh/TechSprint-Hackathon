@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, Music, Mic, MicOff, Heart, Waves } from 'lucide-react';
 import { BackButton } from '@/components/BackButton';
 import { Badge } from '@/components/ui/badge';
+
 interface Track {
   id: string;
   title: string;
@@ -15,6 +16,7 @@ interface Track {
   description: string;
   benefits: string[];
 }
+
 const stressReliefTracks: Track[] = [
   {
     id: '1',
@@ -87,6 +89,7 @@ const stressReliefTracks: Track[] = [
     benefits: ['Synchronizes brainwaves', 'Enhances creativity', 'Promotes calm alertness']
   }
 ];
+
 export default function MusicPage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrack, setCurrentTrack] = useState(0);
@@ -104,14 +107,12 @@ export default function MusicPage() {
 
   // Preload audio files for instant playback
   useEffect(() => {
-    // Preload current, next, and previous tracks
     const preloadTracks = () => {
       const tracksToPreload = [
         currentTrack,
         (currentTrack + 1) % stressReliefTracks.length,
         currentTrack === 0 ? stressReliefTracks.length - 1 : currentTrack - 1
       ];
-
       tracksToPreload.forEach(index => {
         const track = stressReliefTracks[index];
         if (!audioPoolRef.current.has(track.id)) {
@@ -122,7 +123,6 @@ export default function MusicPage() {
           audioPoolRef.current.set(track.id, audio);
         }
       });
-
       // Clean up old preloaded tracks (keep only 5 most recent)
       if (audioPoolRef.current.size > 5) {
         const keysToDelete = Array.from(audioPoolRef.current.keys()).slice(0, audioPoolRef.current.size - 5);
@@ -136,7 +136,6 @@ export default function MusicPage() {
         });
       }
     };
-
     preloadTracks();
   }, [currentTrack, volume]);
 
@@ -162,6 +161,7 @@ export default function MusicPage() {
       };
     }
   }, [isListening]);
+
   const handleVoiceCommand = (command: string) => {
     console.log('Voice command:', command);
     if (command.includes('rain') || command.includes('rainfall')) {
@@ -245,6 +245,7 @@ export default function MusicPage() {
       }
     }
   };
+
   const toggleVoiceListening = () => {
     if (isListening) {
       recognitionRef.current?.stop();
@@ -254,10 +255,10 @@ export default function MusicPage() {
       setIsListening(true);
     }
   };
+
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-
     const updateTime = () => {
       setCurrentTime(audio.currentTime);
     };
@@ -281,14 +282,12 @@ export default function MusicPage() {
       setIsLoading(false);
       setIsPlaying(false);
     };
-
     audio.addEventListener('timeupdate', updateTime);
     audio.addEventListener('loadedmetadata', updateDuration);
     audio.addEventListener('ended', handleEnded);
     audio.addEventListener('loadstart', handleLoadStart);
     audio.addEventListener('canplay', handleCanPlay);
     audio.addEventListener('error', handleError);
-
     // Use preloaded audio if available
     const preloadedAudio = audioPoolRef.current.get(currentTrackData.id);
     if (preloadedAudio && preloadedAudio.readyState >= 2) {
@@ -301,7 +300,6 @@ export default function MusicPage() {
       audio.src = currentTrackData.url;
       audio.load();
     }
-
     return () => {
       audio.removeEventListener('timeupdate', updateTime);
       audio.removeEventListener('loadedmetadata', updateDuration);
@@ -311,13 +309,13 @@ export default function MusicPage() {
       audio.removeEventListener('error', handleError);
     };
   }, [currentTrack]);
+
   const playTrack = async () => {
     const audio = audioRef.current;
     if (!audio) return;
     try {
       // Check if we have a preloaded audio ready to go
       const preloadedAudio = audioPoolRef.current.get(currentTrackData.id);
-
       if (preloadedAudio && preloadedAudio.readyState >= 2) {
         // Instant playback from preloaded audio
         audio.src = preloadedAudio.src;
@@ -328,7 +326,6 @@ export default function MusicPage() {
         setIsLoading(false);
         return;
       }
-
       // Fallback: load and play
       setIsLoading(true);
       if (audio.readyState < 2) {
@@ -336,8 +333,7 @@ export default function MusicPage() {
         await new Promise((resolve, reject) => {
           const timeout = setTimeout(() => {
             resolve(true); // Continue even if not fully loaded
-          }, 1000); // 1 second max wait
-
+          }, 100); // Reduced timeout for faster playback
           const handleCanPlay = () => {
             clearTimeout(timeout);
             audio.removeEventListener('canplay', handleCanPlay);
@@ -365,6 +361,7 @@ export default function MusicPage() {
       setIsLoading(false);
     }
   };
+
   const pauseTrack = () => {
     const audio = audioRef.current;
     if (audio) {
@@ -372,6 +369,7 @@ export default function MusicPage() {
       setIsPlaying(false);
     }
   };
+
   const togglePlayPause = () => {
     if (isPlaying) {
       pauseTrack();
@@ -379,19 +377,17 @@ export default function MusicPage() {
       playTrack();
     }
   };
+
   const nextTrack = () => {
     const filteredTracks = getFilteredTracks();
     const currentIndex = filteredTracks.findIndex(track => track.id === stressReliefTracks[currentTrack].id);
     const nextIndex = (currentIndex + 1) % filteredTracks.length;
     const nextTrackIndex = stressReliefTracks.findIndex(track => track.id === filteredTracks[nextIndex].id);
-
     const wasPlaying = isPlaying;
     if (audioRef.current) {
       audioRef.current.pause();
     }
-
     setCurrentTrack(nextTrackIndex);
-
     if (wasPlaying) {
       // Use requestAnimationFrame for immediate execution
       requestAnimationFrame(() => {
@@ -405,14 +401,11 @@ export default function MusicPage() {
     const currentIndex = filteredTracks.findIndex(track => track.id === stressReliefTracks[currentTrack].id);
     const prevIndex = currentIndex === 0 ? filteredTracks.length - 1 : currentIndex - 1;
     const prevTrackIndex = stressReliefTracks.findIndex(track => track.id === filteredTracks[prevIndex].id);
-
     const wasPlaying = isPlaying;
     if (audioRef.current) {
       audioRef.current.pause();
     }
-
     setCurrentTrack(prevTrackIndex);
-
     if (wasPlaying) {
       // Use requestAnimationFrame for immediate execution
       requestAnimationFrame(() => {
@@ -420,6 +413,7 @@ export default function MusicPage() {
       });
     }
   };
+
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVolume = parseFloat(e.target.value);
     setVolume(newVolume);
@@ -428,6 +422,7 @@ export default function MusicPage() {
     }
     setIsMuted(newVolume === 0);
   };
+
   const toggleMute = () => {
     if (audioRef.current) {
       if (isMuted) {
@@ -439,6 +434,7 @@ export default function MusicPage() {
       }
     }
   };
+
   const handleProgressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const audio = audioRef.current;
     if (audio) {
@@ -447,20 +443,23 @@ export default function MusicPage() {
       setCurrentTime(newTime);
     }
   };
+
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
+
   const getFilteredTracks = () => {
     if (selectedCategory === 'all') return stressReliefTracks;
     return stressReliefTracks.filter(track => track.category === selectedCategory);
   };
+
   const currentTrackData = stressReliefTracks[currentTrack];
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#d6e2ea' }}>
       <div className="container mx-auto p-3 md:p-6">
-        { }
         <div className="text-center mb-4 md:mb-8 mt-3 md:mt-8 px-4">
           <div className="mb-2 md:mb-4">
             <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600" style={{
@@ -479,7 +478,6 @@ export default function MusicPage() {
           </p>
         </div>
         <div className="grid lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
-          { }
           <div className="lg:col-span-2">
             <Card className="shadow-xl bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200">
               <CardHeader className="pb-2 md:pb-3">
@@ -489,13 +487,11 @@ export default function MusicPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 md:space-y-6 p-4 md:p-6">
-                { }
                 <div className="text-center">
                   <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-gray-800 mb-1.5 md:mb-2">{currentTrackData.title}</h3>
                   <p className="text-sm sm:text-base md:text-lg text-gray-600 mb-1.5 md:mb-2">{currentTrackData.artist}</p>
                   <Badge className="mb-2 md:mb-3 text-[10px] sm:text-xs md:text-sm">{currentTrackData.category}</Badge>
                   <p className="text-[10px] sm:text-xs md:text-sm text-gray-600 mb-2 md:mb-4 px-2 leading-relaxed">{currentTrackData.description}</p>
-                  { }
                   <div className="flex flex-wrap justify-center gap-1 md:gap-2 mb-2 md:mb-4 px-2">
                     {currentTrackData.benefits.map((benefit, index) => (
                       <span key={index} className="inline-flex items-center gap-0.5 md:gap-1 px-1.5 md:px-3 py-0.5 md:py-1 text-[9px] sm:text-[10px] md:text-xs bg-green-100 text-green-700 rounded-full">
@@ -505,7 +501,6 @@ export default function MusicPage() {
                     ))}
                   </div>
                 </div>
-                { }
                 <div className="space-y-1.5 md:space-y-2">
                   <input
                     type="range"
@@ -520,7 +515,6 @@ export default function MusicPage() {
                     <span>{formatTime(duration)}</span>
                   </div>
                 </div>
-                { }
                 <div className="flex items-center justify-center space-x-2 md:space-x-4">
                   <Button
                     variant="outline"
@@ -552,7 +546,6 @@ export default function MusicPage() {
                     <SkipForward className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5" />
                   </Button>
                 </div>
-                { }
                 <div className="flex items-center space-x-2">
                   <Button
                     variant="ghost"
@@ -572,7 +565,6 @@ export default function MusicPage() {
                     className="flex-1 h-1.5 md:h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                   />
                 </div>
-                { }
                 <audio
                   ref={audioRef}
                   preload="metadata"
@@ -581,7 +573,6 @@ export default function MusicPage() {
               </CardContent>
             </Card>
           </div>
-          { }
           <div>
             <Card className="shadow-xl">
               <CardHeader>
@@ -589,7 +580,6 @@ export default function MusicPage() {
                   <Waves className="h-4 w-4 md:h-5 md:w-5" />
                   Music Library
                 </CardTitle>
-                { }
                 <div className="flex flex-wrap gap-1.5 md:gap-2 mt-3 md:mt-4">
                   {categories.map((category) => (
                     <Button
