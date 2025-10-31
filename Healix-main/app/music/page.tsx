@@ -97,42 +97,9 @@ export default function MusicPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [playbackRate, setPlaybackRate] = useState(1.0);
   const audioRef = useRef<HTMLAudioElement>(null);
   const recognitionRef = useRef<any>(null);
-  const preloadedAudioRef = useRef<Map<string, HTMLAudioElement>>(new Map());
   const categories = ['all', 'meditation', 'nature', 'ambient', 'classical', 'binaural'];
-
-  // Preload next and previous tracks for instant playback
-  useEffect(() => {
-    const preloadAdjacentTracks = () => {
-      const filteredTracks = getFilteredTracks();
-      const currentIndex = filteredTracks.findIndex(track => track.id === stressReliefTracks[currentTrack].id);
-      
-      // Preload next track
-      const nextIndex = (currentIndex + 1) % filteredTracks.length;
-      const nextTrack = filteredTracks[nextIndex];
-      if (nextTrack && !preloadedAudioRef.current.has(nextTrack.id)) {
-        const audio = new Audio();
-        audio.preload = 'auto';
-        audio.src = nextTrack.url;
-        preloadedAudioRef.current.set(nextTrack.id, audio);
-      }
-      
-      // Preload previous track
-      const prevIndex = currentIndex === 0 ? filteredTracks.length - 1 : currentIndex - 1;
-      const prevTrack = filteredTracks[prevIndex];
-      if (prevTrack && !preloadedAudioRef.current.has(prevTrack.id)) {
-        const audio = new Audio();
-        audio.preload = 'auto';
-        audio.src = prevTrack.url;
-        preloadedAudioRef.current.set(prevTrack.id, audio);
-      }
-    };
-
-    preloadAdjacentTracks();
-  }, [currentTrack, selectedCategory]);
-
   useEffect(() => {
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
       const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
@@ -214,14 +181,6 @@ export default function MusicPage() {
       if (audioRef.current) {
         audioRef.current.volume = newVolume;
       }
-    } else if (command.includes('speed up') || command.includes('faster')) {
-      const newRate = Math.min(2.0, playbackRate + 0.25);
-      handlePlaybackRateChange(newRate);
-    } else if (command.includes('slow down') || command.includes('slower')) {
-      const newRate = Math.max(0.5, playbackRate - 0.25);
-      handlePlaybackRateChange(newRate);
-    } else if (command.includes('normal speed') || command.includes('regular speed')) {
-      handlePlaybackRateChange(1.0);
     } else if (command.includes('exit music') || command.includes('close music') || command.includes('exit player') || command.includes('close player')) {
       console.log('🚪 Exit music player command');
       pauseTrack();
@@ -258,10 +217,6 @@ export default function MusicPage() {
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-
-    // Set playback rate
-    audio.playbackRate = playbackRate;
-
     const updateTime = () => {
       setCurrentTime(audio.currentTime);
     };
@@ -291,11 +246,7 @@ export default function MusicPage() {
     audio.addEventListener('loadstart', handleLoadStart);
     audio.addEventListener('canplay', handleCanPlay);
     audio.addEventListener('error', handleError);
-    
-    // Optimize loading with metadata preload
-    audio.preload = 'metadata';
     audio.load();
-    
     return () => {
       audio.removeEventListener('timeupdate', updateTime);
       audio.removeEventListener('loadedmetadata', updateDuration);
@@ -304,52 +255,29 @@ export default function MusicPage() {
       audio.removeEventListener('canplay', handleCanPlay);
       audio.removeEventListener('error', handleError);
     };
-  }, [currentTrack, playbackRate]);
+  }, [currentTrack]);
   const playTrack = async () => {
     const audio = audioRef.current;
     if (!audio) return;
     try {
       setIsLoading(true);
-      
-      // Check if we have a preloaded version
-      const preloadedAudio = preloadedAudioRef.current.get(currentTrackData.id);
-      if (preloadedAudio && preloadedAudio.readyState >= 2) {
-        // Use preloaded audio for instant playback
-        audio.src = preloadedAudio.src;
-        audio.currentTime = 0;
-      }
-      
-      // Set playback rate
-      audio.playbackRate = playbackRate;
-      
       if (audio.readyState < 2) {
-        // Use 'canplaythrough' for better buffering
+        audio.load();
         await new Promise((resolve, reject) => {
-          const timeout = setTimeout(() => {
-            audio.removeEventListener('canplaythrough', handleCanPlay);
-            audio.removeEventListener('error', handleError);
-            // Fallback to play even if not fully loaded
-            resolve(true);
-          }, 3000); // 3 second timeout
-          
           const handleCanPlay = () => {
-            clearTimeout(timeout);
-            audio.removeEventListener('canplaythrough', handleCanPlay);
+            audio.removeEventListener('canplay', handleCanPlay);
             audio.removeEventListener('error', handleError);
             resolve(true);
           };
           const handleError = (e: any) => {
-            clearTimeout(timeout);
-            audio.removeEventListener('canplaythrough', handleCanPlay);
+            audio.removeEventListener('canplay', handleCanPlay);
             audio.removeEventListener('error', handleError);
             reject(e);
           };
-          audio.addEventListener('canplaythrough', handleCanPlay, { once: true });
-          audio.addEventListener('error', handleError, { once: true });
-          audio.load();
+          audio.addEventListener('canplay', handleCanPlay);
+          audio.addEventListener('error', handleError);
         });
       }
-      
       await audio.play();
       setIsPlaying(true);
       setIsLoading(false);
@@ -427,13 +355,6 @@ export default function MusicPage() {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
-
-  const handlePlaybackRateChange = (rate: number) => {
-    setPlaybackRate(rate);
-    if (audioRef.current) {
-      audioRef.current.playbackRate = rate;
-    }
   };
   const getFilteredTracks = () => {
     if (selectedCategory === 'all') return stressReliefTracks;
@@ -555,34 +476,12 @@ export default function MusicPage() {
                     className="flex-1 h-1.5 md:h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                   />
                 </div>
-
-                {}
-                <div className="space-y-1.5 md:space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs md:text-sm text-gray-600">Playback Speed</span>
-                    <span className="text-xs md:text-sm font-medium text-blue-600">{playbackRate}x</span>
-                  </div>
-                  <div className="flex gap-1.5 md:gap-2">
-                    {[0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map((rate) => (
-                      <Button
-                        key={rate}
-                        variant={playbackRate === rate ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => handlePlaybackRateChange(rate)}
-                        className="text-[10px] md:text-xs px-2 md:px-3 py-1"
-                      >
-                        {rate}x
-                      </Button>
-                    ))}
-                  </div>
-                </div>
                 {}
                 <audio
                   ref={audioRef}
                   src={currentTrackData.url}
-                  preload="metadata"
+                  preload="auto"
                   crossOrigin="anonymous"
-                  playsInline
                 />
               </CardContent>
             </Card>

@@ -8,7 +8,7 @@ export interface MusicTrack {
   category: 'meditation' | 'nature' | 'ambient' | 'classical' | 'binaural' | 'focus' | 'energy' | 'sleep';
   description: string;
   benefits: string[];
-  keywords: string[];
+  keywords: string[]; 
 }
 export class MusicService {
   private static instance: MusicService;
@@ -16,8 +16,6 @@ export class MusicService {
   private currentTrack: MusicTrack | null = null;
   private isPlaying: boolean = false;
   private volume: number = 0.7;
-  private playbackRate: number = 1.0;
-  private preloadedTracks: Map<string, HTMLAudioElement> = new Map();
   private onTrackChangeCallback?: (track: MusicTrack | null) => void;
   private onPlayStateChangeCallback?: (isPlaying: boolean) => void;
   private onVolumeChangeCallback?: (volume: number) => void;
@@ -54,7 +52,7 @@ export class MusicService {
     return false;
   }
   async playRandomTherapeutic(): Promise<boolean> {
-    const therapeuticTracks = musicTracks.filter(track =>
+    const therapeuticTracks = musicTracks.filter(track => 
       ['meditation', 'nature', 'ambient'].includes(track.category)
     );
     if (therapeuticTracks.length > 0) {
@@ -66,14 +64,14 @@ export class MusicService {
   }
   private findTrackByKeyword(keyword: string): MusicTrack | null {
     const normalizedKeyword = keyword.toLowerCase();
-    return musicTracks.find(track =>
+    return musicTracks.find(track => 
       track.keywords.some(k => k.toLowerCase().includes(normalizedKeyword)) ||
       track.title.toLowerCase().includes(normalizedKeyword) ||
       track.category.toLowerCase().includes(normalizedKeyword)
     ) || null;
   }
   private getTracksByCategory(category: string): MusicTrack[] {
-    return musicTracks.filter(track =>
+    return musicTracks.filter(track => 
       track.category.toLowerCase() === category.toLowerCase()
     );
   }
@@ -83,27 +81,11 @@ export class MusicService {
         this.audioElement.pause();
         this.audioElement.removeEventListener('ended', this.handleTrackEnd);
       }
-
-      // Check if track is preloaded
-      const preloadedAudio = this.preloadedTracks.get(track.id);
-      if (preloadedAudio && preloadedAudio.readyState >= 2) {
-        this.audioElement = preloadedAudio;
-        this.audioElement.currentTime = 0;
-      } else {
-        this.audioElement = new Audio(track.url);
-        this.audioElement.preload = 'auto';
-      }
-
+      this.audioElement = new Audio(track.url);
       this.audioElement.volume = this.volume;
-      this.audioElement.playbackRate = this.playbackRate;
       this.currentTrack = track;
-
       this.audioElement.addEventListener('ended', this.handleTrackEnd);
       this.audioElement.addEventListener('error', this.handleAudioError);
-
-      // Preload next track for seamless playback
-      this.preloadNextTrack(track);
-
       await this.audioElement.play();
       this.isPlaying = true;
       this.onTrackChangeCallback?.(track);
@@ -113,29 +95,6 @@ export class MusicService {
       this.isPlaying = false;
       this.onPlayStateChangeCallback?.(false);
       throw error;
-    }
-  }
-
-  private preloadNextTrack(currentTrack: MusicTrack): void {
-    const currentIndex = musicTracks.findIndex(t => t.id === currentTrack.id);
-    if (currentIndex === -1) return;
-
-    const nextIndex = (currentIndex + 1) % musicTracks.length;
-    const nextTrack = musicTracks[nextIndex];
-
-    if (!this.preloadedTracks.has(nextTrack.id)) {
-      const audio = new Audio();
-      audio.preload = 'auto';
-      audio.src = nextTrack.url;
-      this.preloadedTracks.set(nextTrack.id, audio);
-
-      // Limit cache size to 3 tracks
-      if (this.preloadedTracks.size > 3) {
-        const firstKey = this.preloadedTracks.keys().next().value;
-        if (firstKey) {
-          this.preloadedTracks.delete(firstKey);
-        }
-      }
     }
   }
   private handleTrackEnd = (): void => {
@@ -179,20 +138,8 @@ export class MusicService {
     }
     this.onVolumeChangeCallback?.(this.volume);
   }
-
   getVolume(): number {
     return this.volume;
-  }
-
-  setPlaybackRate(rate: number): void {
-    this.playbackRate = Math.max(0.25, Math.min(4.0, rate));
-    if (this.audioElement) {
-      this.audioElement.playbackRate = this.playbackRate;
-    }
-  }
-
-  getPlaybackRate(): number {
-    return this.playbackRate;
   }
   getCurrentTrack(): MusicTrack | null {
     return this.currentTrack;
@@ -352,16 +299,16 @@ export const getMusicRecommendation = (userInput: string): MusicTrack | null => 
     return stressTracks[Math.floor(Math.random() * stressTracks.length)];
   }
   if (input.includes('sleep') || input.includes('tired') || input.includes('bedtime')) {
-    return musicTracks.find(t => t.category === 'sleep') ||
-      musicTracks.find(t => t.keywords.includes('sleep')) || null;
+    return musicTracks.find(t => t.category === 'sleep') || 
+           musicTracks.find(t => t.keywords.includes('sleep')) || null;
   }
   if (input.includes('focus') || input.includes('work') || input.includes('study')) {
     return musicTracks.find(t => t.category === 'focus') ||
-      musicTracks.find(t => t.category === 'binaural') || null;
+           musicTracks.find(t => t.category === 'binaural') || null;
   }
   if (input.includes('sad') || input.includes('down') || input.includes('depressed')) {
     return musicTracks.find(t => t.category === 'classical') ||
-      musicTracks.find(t => t.category === 'ambient') || null;
+           musicTracks.find(t => t.category === 'ambient') || null;
   }
   const healixTrack = musicTracks.find(t => t.title === 'Healix Meditation');
   if (healixTrack) return healixTrack;
