@@ -35,6 +35,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
     <ProtectedRoute>
       {!isHomePage && !isChatPage && !isAuthPage && <GlobalNavbar />}
       {children}
+      {!isAuthPage && <MicrophoneToggle />}
     </ProtectedRoute>
   );
 }
@@ -65,7 +66,6 @@ export default function RootLayout({
               {children}
             </LayoutContent>
             <VoiceMusicPlayer />
-            <MicrophoneToggle />
           </UserSettingsProvider>
         </AuthProvider>
       </body>
