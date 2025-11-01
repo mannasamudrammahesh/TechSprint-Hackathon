@@ -98,6 +98,8 @@ export default function MusicPage() {
   const [isListening, setIsListening] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const audioRef = useRef<HTMLAudioElement>(null);
+  const nextAudioRef = useRef<HTMLAudioElement>(null);
+  const prevAudioRef = useRef<HTMLAudioElement>(null);
   const recognitionRef = useRef<any>(null);
   const categories = ['all', 'meditation', 'nature', 'ambient', 'classical', 'binaural'];
   useEffect(() => {
@@ -242,10 +244,12 @@ export default function MusicPage() {
     audio.addEventListener('ended', handleEnded);
     audio.addEventListener('canplaythrough', handleCanPlay);
     audio.addEventListener('error', handleError);
-    audio.src = currentTrackData.url;
-    audio.volume = volume;
-    audio.preload = 'auto';
-    audio.load();
+    if (audio.src !== currentTrackData.url) {
+      audio.src = currentTrackData.url;
+      audio.volume = volume;
+      audio.preload = 'auto';
+      audio.load();
+    }
     return () => {
       audio.removeEventListener('timeupdate', updateTime);
       audio.removeEventListener('loadedmetadata', updateDuration);
@@ -254,6 +258,25 @@ export default function MusicPage() {
       audio.removeEventListener('error', handleError);
     };
   }, [currentTrack, volume]);
+
+  useEffect(() => {
+    const filteredTracks = getFilteredTracks();
+    const currentIndex = filteredTracks.findIndex(track => track.id === stressReliefTracks[currentTrack].id);
+    const nextIndex = (currentIndex + 1) % filteredTracks.length;
+    const prevIndex = currentIndex === 0 ? filteredTracks.length - 1 : currentIndex - 1;
+    const nextTrackIndex = stressReliefTracks.findIndex(track => track.id === filteredTracks[nextIndex].id);
+    const prevTrackIndex = stressReliefTracks.findIndex(track => track.id === filteredTracks[prevIndex].id);
+    if (nextAudioRef.current) {
+      nextAudioRef.current.src = stressReliefTracks[nextTrackIndex].url;
+      nextAudioRef.current.preload = 'auto';
+      nextAudioRef.current.load();
+    }
+    if (prevAudioRef.current) {
+      prevAudioRef.current.src = stressReliefTracks[prevTrackIndex].url;
+      prevAudioRef.current.preload = 'auto';
+      prevAudioRef.current.load();
+    }
+  }, [currentTrack, selectedCategory]);
   const playTrack = async () => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -290,12 +313,25 @@ export default function MusicPage() {
     const wasPlaying = isPlaying;
     if (audioRef.current) {
       audioRef.current.pause();
-      audioRef.current.currentTime = 0;
     }
-    setIsPlaying(false);
+    if (nextAudioRef.current && audioRef.current) {
+      audioRef.current.src = nextAudioRef.current.src;
+      audioRef.current.currentTime = 0;
+      audioRef.current.volume = volume;
+    }
     setCurrentTrack(nextTrackIndex);
+    setCurrentTime(0);
     if (wasPlaying) {
-      setTimeout(() => playTrack(), 50);
+      setIsLoading(true);
+      audioRef.current?.play().then(() => {
+        setIsPlaying(true);
+        setIsLoading(false);
+      }).catch(error => {
+        console.error('Error playing next track:', error);
+        setIsLoading(false);
+      });
+    } else {
+      setIsPlaying(false);
     }
   };
   const previousTrack = () => {
@@ -306,12 +342,25 @@ export default function MusicPage() {
     const wasPlaying = isPlaying;
     if (audioRef.current) {
       audioRef.current.pause();
-      audioRef.current.currentTime = 0;
     }
-    setIsPlaying(false);
+    if (prevAudioRef.current && audioRef.current) {
+      audioRef.current.src = prevAudioRef.current.src;
+      audioRef.current.currentTime = 0;
+      audioRef.current.volume = volume;
+    }
     setCurrentTrack(prevTrackIndex);
+    setCurrentTime(0);
     if (wasPlaying) {
-      setTimeout(() => playTrack(), 50);
+      setIsLoading(true);
+      audioRef.current?.play().then(() => {
+        setIsPlaying(true);
+        setIsLoading(false);
+      }).catch(error => {
+        console.error('Error playing previous track:', error);
+        setIsLoading(false);
+      });
+    } else {
+      setIsPlaying(false);
     }
   };
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -471,6 +520,8 @@ export default function MusicPage() {
                   ref={audioRef}
                   preload="auto"
                 />
+                <audio ref={nextAudioRef} preload="auto" style={{ display: 'none' }} />
+                <audio ref={prevAudioRef} preload="auto" style={{ display: 'none' }} />
               </CardContent>
             </Card>
           </div>
