@@ -99,8 +99,6 @@ export default function MusicPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const audioRef = useRef<HTMLAudioElement>(null);
   const recognitionRef = useRef<any>(null);
-  const preloadNextRef = useRef<HTMLAudioElement | null>(null);
-  const preloadPrevRef = useRef<HTMLAudioElement | null>(null);
   const categories = ['all', 'meditation', 'nature', 'ambient', 'classical', 'binaural'];
   useEffect(() => {
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
@@ -256,52 +254,6 @@ export default function MusicPage() {
       audio.removeEventListener('error', handleError);
     };
   }, [currentTrack, volume]);
-
-  // Preload next and previous tracks for instant playback
-  useEffect(() => {
-    const filteredTracks = getFilteredTracks();
-    const currentIndex = filteredTracks.findIndex(track => track.id === stressReliefTracks[currentTrack].id);
-
-    // Calculate next and previous indices
-    const nextIndex = (currentIndex + 1) % filteredTracks.length;
-    const prevIndex = currentIndex === 0 ? filteredTracks.length - 1 : currentIndex - 1;
-
-    const nextTrackIndex = stressReliefTracks.findIndex(track => track.id === filteredTracks[nextIndex].id);
-    const prevTrackIndex = stressReliefTracks.findIndex(track => track.id === filteredTracks[prevIndex].id);
-
-    // Preload next track
-    if (preloadNextRef.current) {
-      preloadNextRef.current.pause();
-      preloadNextRef.current.src = '';
-    }
-    preloadNextRef.current = new Audio();
-    preloadNextRef.current.src = stressReliefTracks[nextTrackIndex].url;
-    preloadNextRef.current.preload = 'auto';
-    preloadNextRef.current.volume = 0;
-    preloadNextRef.current.load();
-
-    // Preload previous track
-    if (preloadPrevRef.current) {
-      preloadPrevRef.current.pause();
-      preloadPrevRef.current.src = '';
-    }
-    preloadPrevRef.current = new Audio();
-    preloadPrevRef.current.src = stressReliefTracks[prevTrackIndex].url;
-    preloadPrevRef.current.preload = 'auto';
-    preloadPrevRef.current.volume = 0;
-    preloadPrevRef.current.load();
-
-    return () => {
-      if (preloadNextRef.current) {
-        preloadNextRef.current.pause();
-        preloadNextRef.current.src = '';
-      }
-      if (preloadPrevRef.current) {
-        preloadPrevRef.current.pause();
-        preloadPrevRef.current.src = '';
-      }
-    };
-  }, [currentTrack, selectedCategory]);
   const playTrack = async () => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -336,32 +288,14 @@ export default function MusicPage() {
     const nextIndex = (currentIndex + 1) % filteredTracks.length;
     const nextTrackIndex = stressReliefTracks.findIndex(track => track.id === filteredTracks[nextIndex].id);
     const wasPlaying = isPlaying;
-
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
     }
     setIsPlaying(false);
     setCurrentTrack(nextTrackIndex);
-
     if (wasPlaying) {
-      // Use preloaded audio for instant playback
-      setTimeout(() => {
-        const audio = audioRef.current;
-        if (audio && preloadNextRef.current && preloadNextRef.current.readyState >= 3) {
-          audio.src = preloadNextRef.current.src;
-          audio.volume = volume;
-          audio.play().then(() => {
-            setIsPlaying(true);
-            setIsLoading(false);
-          }).catch(err => {
-            console.error('Playback error:', err);
-            setIsLoading(false);
-          });
-        } else {
-          playTrack();
-        }
-      }, 10);
+      setTimeout(() => playTrack(), 50);
     }
   };
   const previousTrack = () => {
@@ -370,32 +304,14 @@ export default function MusicPage() {
     const prevIndex = currentIndex === 0 ? filteredTracks.length - 1 : currentIndex - 1;
     const prevTrackIndex = stressReliefTracks.findIndex(track => track.id === filteredTracks[prevIndex].id);
     const wasPlaying = isPlaying;
-
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
     }
     setIsPlaying(false);
     setCurrentTrack(prevTrackIndex);
-
     if (wasPlaying) {
-      // Use preloaded audio for instant playback
-      setTimeout(() => {
-        const audio = audioRef.current;
-        if (audio && preloadPrevRef.current && preloadPrevRef.current.readyState >= 3) {
-          audio.src = preloadPrevRef.current.src;
-          audio.volume = volume;
-          audio.play().then(() => {
-            setIsPlaying(true);
-            setIsLoading(false);
-          }).catch(err => {
-            console.error('Playback error:', err);
-            setIsLoading(false);
-          });
-        } else {
-          playTrack();
-        }
-      }, 10);
+      setTimeout(() => playTrack(), 50);
     }
   };
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -436,197 +352,182 @@ export default function MusicPage() {
   };
   const currentTrackData = stressReliefTracks[currentTrack];
   return (
-    <>
-      {/* Preload audio files in HTML head for faster loading */}
-      {typeof window !== 'undefined' && (
-        <>
-          <link rel="preload" as="audio" href={currentTrackData.url} />
-          {(() => {
-            const filteredTracks = getFilteredTracks();
-            const currentIndex = filteredTracks.findIndex(track => track.id === stressReliefTracks[currentTrack].id);
-            const nextIndex = (currentIndex + 1) % filteredTracks.length;
-            const nextTrackIndex = stressReliefTracks.findIndex(track => track.id === filteredTracks[nextIndex].id);
-            return <link rel="prefetch" as="audio" href={stressReliefTracks[nextTrackIndex].url} />;
-          })()}
-        </>
-      )}
-      <div className="min-h-screen" style={{ backgroundColor: '#d6e2ea' }}>
-        <div className="container mx-auto p-3 md:p-6">
-          { }
-          <div className="text-center mb-4 md:mb-8 mt-3 md:mt-8 px-4">
-            <div className="mb-2 md:mb-4">
-              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600" style={{
-                backgroundClip: 'text',
-                WebkitBackgroundClip: 'text',
-                color: 'transparent',
-                WebkitTextFillColor: 'transparent',
-                paddingBottom: '0.25rem'
-              }}>
-                Stress Relief Music Therapy
-              </h1>
-            </div>
-            <p className="text-xs sm:text-sm md:text-base lg:text-lg text-gray-600 max-w-2xl mx-auto px-2 leading-relaxed">
-              Scientifically curated music tracks designed to reduce stress, anxiety, and promote mental wellness.
-              Use voice commands or manual controls to enhance your therapeutic experience.
-            </p>
+    <div className="min-h-screen" style={{ backgroundColor: '#d6e2ea' }}>
+      <div className="container mx-auto p-3 md:p-6">
+        { }
+        <div className="text-center mb-4 md:mb-8 mt-3 md:mt-8 px-4">
+          <div className="mb-2 md:mb-4">
+            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600" style={{
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              color: 'transparent',
+              WebkitTextFillColor: 'transparent',
+              paddingBottom: '0.25rem'
+            }}>
+              Stress Relief Music Therapy
+            </h1>
           </div>
-          <div className="grid lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
-            { }
-            <div className="lg:col-span-2">
-              <Card className="shadow-xl bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200">
-                <CardHeader className="pb-2 md:pb-3">
-                  <CardTitle className="text-xl md:text-2xl flex items-center gap-2 text-blue-800">
-                    <Music className="h-5 w-5 md:h-6 md:w-6" />
-                    Now Playing
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3 md:space-y-6 p-4 md:p-6">
+          <p className="text-xs sm:text-sm md:text-base lg:text-lg text-gray-600 max-w-2xl mx-auto px-2 leading-relaxed">
+            Scientifically curated music tracks designed to reduce stress, anxiety, and promote mental wellness.
+            Use voice commands or manual controls to enhance your therapeutic experience.
+          </p>
+        </div>
+        <div className="grid lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
+          { }
+          <div className="lg:col-span-2">
+            <Card className="shadow-xl bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200">
+              <CardHeader className="pb-2 md:pb-3">
+                <CardTitle className="text-xl md:text-2xl flex items-center gap-2 text-blue-800">
+                  <Music className="h-5 w-5 md:h-6 md:w-6" />
+                  Now Playing
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 md:space-y-6 p-4 md:p-6">
+                { }
+                <div className="text-center">
+                  <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-gray-800 mb-1.5 md:mb-2">{currentTrackData.title}</h3>
+                  <p className="text-sm sm:text-base md:text-lg text-gray-600 mb-1.5 md:mb-2">{currentTrackData.artist}</p>
+                  <Badge className="mb-2 md:mb-3 text-[10px] sm:text-xs md:text-sm">{currentTrackData.category}</Badge>
+                  <p className="text-[10px] sm:text-xs md:text-sm text-gray-600 mb-2 md:mb-4 px-2 leading-relaxed">{currentTrackData.description}</p>
                   { }
-                  <div className="text-center">
-                    <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-gray-800 mb-1.5 md:mb-2">{currentTrackData.title}</h3>
-                    <p className="text-sm sm:text-base md:text-lg text-gray-600 mb-1.5 md:mb-2">{currentTrackData.artist}</p>
-                    <Badge className="mb-2 md:mb-3 text-[10px] sm:text-xs md:text-sm">{currentTrackData.category}</Badge>
-                    <p className="text-[10px] sm:text-xs md:text-sm text-gray-600 mb-2 md:mb-4 px-2 leading-relaxed">{currentTrackData.description}</p>
-                    { }
-                    <div className="flex flex-wrap justify-center gap-1 md:gap-2 mb-2 md:mb-4 px-2">
-                      {currentTrackData.benefits.map((benefit, index) => (
-                        <span key={index} className="inline-flex items-center gap-0.5 md:gap-1 px-1.5 md:px-3 py-0.5 md:py-1 text-[9px] sm:text-[10px] md:text-xs bg-green-100 text-green-700 rounded-full">
-                          <Heart className="h-2 w-2 md:h-3 md:w-3 flex-shrink-0" />
-                          <span className="leading-tight">{benefit}</span>
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  { }
-                  <div className="space-y-1.5 md:space-y-2">
-                    <input
-                      type="range"
-                      min="0"
-                      max="100"
-                      value={duration ? (currentTime / duration) * 100 : 0}
-                      onChange={handleProgressChange}
-                      className="w-full h-1.5 md:h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer slider"
-                    />
-                    <div className="flex justify-between text-[10px] sm:text-xs text-gray-500">
-                      <span>{formatTime(currentTime)}</span>
-                      <span>{formatTime(duration)}</span>
-                    </div>
-                  </div>
-                  { }
-                  <div className="flex items-center justify-center space-x-2 md:space-x-4">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={previousTrack}
-                      className="rounded-full w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 p-0"
-                    >
-                      <SkipBack className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5" />
-                    </Button>
-                    <Button
-                      onClick={togglePlayPause}
-                      disabled={isLoading}
-                      className="rounded-full w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 p-0 bg-blue-600 hover:bg-blue-700"
-                    >
-                      {isLoading ? (
-                        <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 border-2 border-white border-t-transparent" />
-                      ) : isPlaying ? (
-                        <Pause className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" />
-                      ) : (
-                        <Play className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" />
-                      )}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={nextTrack}
-                      className="rounded-full w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 p-0"
-                    >
-                      <SkipForward className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5" />
-                    </Button>
-                  </div>
-                  { }
-                  <div className="flex items-center space-x-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={toggleMute}
-                      className="p-1"
-                    >
-                      {isMuted ? <VolumeX className="h-3.5 w-3.5 md:h-4 md:w-4" /> : <Volume2 className="h-3.5 w-3.5 md:h-4 md:w-4" />}
-                    </Button>
-                    <input
-                      type="range"
-                      min="0"
-                      max="1"
-                      step="0.1"
-                      value={isMuted ? 0 : volume}
-                      onChange={handleVolumeChange}
-                      className="flex-1 h-1.5 md:h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                    />
-                  </div>
-                  { }
-                  <audio
-                    ref={audioRef}
-                    preload="auto"
-                  />
-                </CardContent>
-              </Card>
-            </div>
-            { }
-            <div>
-              <Card className="shadow-xl">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-base md:text-lg">
-                    <Waves className="h-4 w-4 md:h-5 md:w-5" />
-                    Music Library
-                  </CardTitle>
-                  { }
-                  <div className="flex flex-wrap gap-1.5 md:gap-2 mt-3 md:mt-4">
-                    {categories.map((category) => (
-                      <Button
-                        key={category}
-                        variant={selectedCategory === category ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setSelectedCategory(category)}
-                        className="text-[10px] md:text-xs px-2 md:px-3 py-1"
-                      >
-                        {category.charAt(0).toUpperCase() + category.slice(1)}
-                      </Button>
+                  <div className="flex flex-wrap justify-center gap-1 md:gap-2 mb-2 md:mb-4 px-2">
+                    {currentTrackData.benefits.map((benefit, index) => (
+                      <span key={index} className="inline-flex items-center gap-0.5 md:gap-1 px-1.5 md:px-3 py-0.5 md:py-1 text-[9px] sm:text-[10px] md:text-xs bg-green-100 text-green-700 rounded-full">
+                        <Heart className="h-2 w-2 md:h-3 md:w-3 flex-shrink-0" />
+                        <span className="leading-tight">{benefit}</span>
+                      </span>
                     ))}
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2 max-h-64 md:max-h-96 overflow-y-auto">
-                    {getFilteredTracks().map((track, index) => {
-                      const actualIndex = stressReliefTracks.findIndex(t => t.id === track.id);
-                      return (
-                        <div
-                          key={track.id}
-                          onClick={() => setCurrentTrack(actualIndex)}
-                          className={`p-3 rounded cursor-pointer transition-colors ${actualIndex === currentTrack
-                            ? 'bg-blue-100 text-blue-800 border border-blue-300'
-                            : 'hover:bg-gray-100 text-gray-700'
-                            }`}
-                        >
-                          <div className="flex justify-between items-start">
-                            <div className="flex-1">
-                              <span className="font-medium block">{track.title}</span>
-                              <span className="text-xs text-gray-500 block">{track.artist}</span>
-                              <Badge variant="outline" className="text-xs mt-1">{track.category}</Badge>
-                            </div>
-                            <span className="text-xs text-gray-500 ml-2">{track.duration}</span>
-                          </div>
-                          <p className="text-xs text-gray-600 mt-1">{track.description}</p>
-                        </div>
-                      );
-                    })}
+                </div>
+                { }
+                <div className="space-y-1.5 md:space-y-2">
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={duration ? (currentTime / duration) * 100 : 0}
+                    onChange={handleProgressChange}
+                    className="w-full h-1.5 md:h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer slider"
+                  />
+                  <div className="flex justify-between text-[10px] sm:text-xs text-gray-500">
+                    <span>{formatTime(currentTime)}</span>
+                    <span>{formatTime(duration)}</span>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
+                </div>
+                { }
+                <div className="flex items-center justify-center space-x-2 md:space-x-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={previousTrack}
+                    className="rounded-full w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 p-0"
+                  >
+                    <SkipBack className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5" />
+                  </Button>
+                  <Button
+                    onClick={togglePlayPause}
+                    disabled={isLoading}
+                    className="rounded-full w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 p-0 bg-blue-600 hover:bg-blue-700"
+                  >
+                    {isLoading ? (
+                      <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 border-2 border-white border-t-transparent" />
+                    ) : isPlaying ? (
+                      <Pause className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" />
+                    ) : (
+                      <Play className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" />
+                    )}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={nextTrack}
+                    className="rounded-full w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 p-0"
+                  >
+                    <SkipForward className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5" />
+                  </Button>
+                </div>
+                { }
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={toggleMute}
+                    className="p-1"
+                  >
+                    {isMuted ? <VolumeX className="h-3.5 w-3.5 md:h-4 md:w-4" /> : <Volume2 className="h-3.5 w-3.5 md:h-4 md:w-4" />}
+                  </Button>
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.1"
+                    value={isMuted ? 0 : volume}
+                    onChange={handleVolumeChange}
+                    className="flex-1 h-1.5 md:h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                  />
+                </div>
+                { }
+                <audio
+                  ref={audioRef}
+                  preload="auto"
+                />
+              </CardContent>
+            </Card>
+          </div>
+          { }
+          <div>
+            <Card className="shadow-xl">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base md:text-lg">
+                  <Waves className="h-4 w-4 md:h-5 md:w-5" />
+                  Music Library
+                </CardTitle>
+                { }
+                <div className="flex flex-wrap gap-1.5 md:gap-2 mt-3 md:mt-4">
+                  {categories.map((category) => (
+                    <Button
+                      key={category}
+                      variant={selectedCategory === category ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setSelectedCategory(category)}
+                      className="text-[10px] md:text-xs px-2 md:px-3 py-1"
+                    >
+                      {category.charAt(0).toUpperCase() + category.slice(1)}
+                    </Button>
+                  ))}
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2 max-h-64 md:max-h-96 overflow-y-auto">
+                  {getFilteredTracks().map((track, index) => {
+                    const actualIndex = stressReliefTracks.findIndex(t => t.id === track.id);
+                    return (
+                      <div
+                        key={track.id}
+                        onClick={() => setCurrentTrack(actualIndex)}
+                        className={`p-3 rounded cursor-pointer transition-colors ${actualIndex === currentTrack
+                          ? 'bg-blue-100 text-blue-800 border border-blue-300'
+                          : 'hover:bg-gray-100 text-gray-700'
+                          }`}
+                      >
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <span className="font-medium block">{track.title}</span>
+                            <span className="text-xs text-gray-500 block">{track.artist}</span>
+                            <Badge variant="outline" className="text-xs mt-1">{track.category}</Badge>
+                          </div>
+                          <span className="text-xs text-gray-500 ml-2">{track.duration}</span>
+                        </div>
+                        <p className="text-xs text-gray-600 mt-1">{track.description}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
