@@ -151,7 +151,8 @@ export default function GlobalNavbar() {
             )}
             <Link 
               href="/Contact" 
-              className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-1.5 px-3 md:py-2 md:px-4 rounded text-sm md:text-base text-center"
+              className="text-white font-bold py-1.5 px-3 md:py-2 md:px-4 rounded text-sm md:text-base text-center hover:opacity-80 transition-opacity"
+              style={{ backgroundColor: 'rgb(59 130 246 / var(--tw-bg-opacity, 1))' }}
               onClick={closeMenu}
             >
               Contact

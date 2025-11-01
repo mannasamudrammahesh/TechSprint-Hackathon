@@ -535,12 +535,34 @@ export default function MusicPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2 max-h-64 md:max-h-96 overflow-y-auto">
-                  {getFilteredTracks().map((track, index) => {
+                  {getFilteredTracks().map((track) => {
                     const actualIndex = stressReliefTracks.findIndex(t => t.id === track.id);
                     return (
                       <div
                         key={track.id}
-                        onClick={() => setCurrentTrack(actualIndex)}
+                        onClick={() => {
+                          const wasPlaying = isPlaying;
+                          const currentAudio = audioRefs.current[currentTrack];
+                          if (currentAudio) {
+                            currentAudio.pause();
+                          }
+                          setCurrentTrack(actualIndex);
+                          setCurrentTime(0);
+                          if (wasPlaying) {
+                            setTimeout(() => {
+                              const newAudio = audioRefs.current[actualIndex];
+                              if (newAudio) {
+                                newAudio.currentTime = 0;
+                                newAudio.volume = volume;
+                                newAudio.play().catch(error => {
+                                  console.error('Error playing track:', error);
+                                });
+                              }
+                            }, 100);
+                          } else {
+                            setIsPlaying(false);
+                          }
+                        }}
                         className={`p-3 rounded cursor-pointer transition-colors ${actualIndex === currentTrack
                           ? 'bg-blue-100 text-blue-800 border border-blue-300'
                           : 'hover:bg-gray-100 text-gray-700'

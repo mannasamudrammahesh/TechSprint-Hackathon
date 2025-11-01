@@ -96,12 +96,14 @@ export default function HomeLayout({
                 <div className="relative">
                   <button
                     onClick={() => setShowUserMenu(!showUserMenu)}
-                    className="hover:opacity-80 transition-opacity"
+                    className="transition-all"
                     aria-label="User menu"
                   >
                     <div 
                       className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-base shadow-md hover:shadow-lg transition-all hover:scale-105"
                       style={{ backgroundColor: 'rgb(59, 130, 246)', color: '#ffffff' }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgb(37, 99, 235)'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgb(59, 130, 246)'}
                     >
                       {user?.user_metadata?.full_name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
                     </div>
@@ -130,7 +132,10 @@ export default function HomeLayout({
             )}
             <Link
               href="/Contact"
-              className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded text-center"
+              className="text-white font-bold py-2 px-4 rounded text-center transition-all"
+              style={{ backgroundColor: 'rgb(59 130 246 / var(--tw-bg-opacity, 1))' }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgb(37, 99, 235)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgb(59 130 246 / var(--tw-bg-opacity, 1))'}
               onClick={closeMenu}
             >
               Contact
