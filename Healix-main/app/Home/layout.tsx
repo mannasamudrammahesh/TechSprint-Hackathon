@@ -3,7 +3,7 @@
 import styles from "@/styles/Root.module.css";
 import Link from "next/link";
 import { useState } from "react";
-import { Settings, LogOut } from "lucide-react";
+import { Settings, LogOut, User } from "lucide-react";
 import HealixLogo from "@/components/HealixLogo";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -31,19 +31,19 @@ export default function HomeLayout({
   return (
     <div className={`${showMenu ? "overflow-hidden h-screen" : ""}`}>
       <nav className="relative">
-        <div className="flex p-4 md:p-6 lg:p-10 items-center justify-between font-bold pb-8 md:pb-20 lg:pb-40">
-          <div className="flex items-center gap-2 md:gap-3">
-            <Link href="/" className="flex items-center">
-              <HealixLogo width={30} height={30} textSize="text-xl md:text-2xl" />
+        <div className="flex p-10 items-center justify-between font-bold pb-40">
+          <div className="flex items-center gap-3">
+            <Link href="/" className="flex items-center ">
+              <HealixLogo width={35} height={35} textSize="text-2xl" />
             </Link>
           </div>
           <div
             className={`flex flex-col gap-1 transition-all ease-in-out duration-300 ${styles.menu} ${showMenu ? styles.click : ""}`}
             onClick={toggleMenu}
           >
-            <div className={`w-6 md:w-8 h-1 bg-black ${styles.menuli}`}></div>
-            <div className={`w-6 md:w-8 h-1 bg-black ${styles.menuli}`}></div>
-            <div className={`w-6 md:w-8 h-1 bg-black ${styles.menuli}`}></div>
+            <div className={`w-8 h-1 bg-black ${styles.menuli}`}></div>
+            <div className={`w-8 h-1 bg-black ${styles.menuli}`}></div>
+            <div className={`w-8 h-1 bg-black ${styles.menuli}`}></div>
           </div>
 
           {/* Close button for mobile/tablet menu - shown when menu is open */}
@@ -67,26 +67,26 @@ export default function HomeLayout({
           )}
 
           <div
-            className={`flex gap-4 md:gap-6 lg:gap-8 items-center ${styles.menubar} ${showMenu ? styles.click : ""}`}
+            className={`flex gap-8 items-center ${styles.menubar} ${showMenu ? styles.click : ""}`}
           >
-            <ul className="flex gap-3 md:gap-4 lg:gap-5">
+            <ul className="flex gap-5">
               <li>
-                <Link href="/Home" className={`${styles.a} text-sm md:text-base`} onClick={closeMenu}>
+                <Link href="/Home" className={`${styles.a}`} onClick={closeMenu}>
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/Chat" className={`${styles.a} text-sm md:text-base`} onClick={closeMenu}>
+                <Link href="/Chat" className={`${styles.a}`} onClick={closeMenu}>
                   Counseling
                 </Link>
               </li>
               <li>
-                <Link href="/Therapy" className={`${styles.a} text-sm md:text-base`} onClick={closeMenu}>
+                <Link href="/Therapy" className={`${styles.a}`} onClick={closeMenu}>
                   Therapist
                 </Link>
               </li>
               <li>
-                <Link href="/music" className={`${styles.a} text-sm md:text-base`} onClick={closeMenu}>
+                <Link href="/music" className={`${styles.a}`} onClick={closeMenu}>
                   Music Therapy
                 </Link>
               </li>
@@ -96,12 +96,14 @@ export default function HomeLayout({
                 <div className="relative">
                   <button
                     onClick={() => setShowUserMenu(!showUserMenu)}
-                    className="hover:opacity-80 transition-opacity"
+                    className="transition-all"
                     aria-label="User menu"
                   >
                     <div 
-                      className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-sm md:text-base shadow-md hover:shadow-lg transition-all hover:scale-105"
+                      className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-base shadow-md hover:shadow-lg transition-all hover:scale-105"
                       style={{ backgroundColor: 'rgb(59, 130, 246)', color: '#ffffff' }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgb(37, 99, 235)'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgb(59, 130, 246)'}
                     >
                       {user?.user_metadata?.full_name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
                     </div>
@@ -120,18 +122,20 @@ export default function HomeLayout({
                 </div>
                 <Link
                   href="/settings"
-                  className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-1.5 px-3 md:py-2 md:px-4 rounded flex items-center gap-1 md:gap-2 text-sm md:text-base"
+                  className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded flex items-center gap-2"
                   onClick={closeMenu}
                 >
-                  <Settings className="h-3 w-3 md:h-4 md:w-4" />
-                  <span className="hidden md:inline">Settings</span>
+                  <Settings className="h-4 w-4" />
+                  Settings
                 </Link>
               </>
             )}
             <Link
               href="/Contact"
-              className="text-white font-bold py-1.5 px-3 md:py-2 md:px-4 rounded text-sm md:text-base text-center hover:opacity-80 transition-opacity"
+              className="text-white font-bold py-2 px-4 rounded text-center transition-all"
               style={{ backgroundColor: 'rgb(59 130 246 / var(--tw-bg-opacity, 1))' }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgb(37, 99, 235)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgb(59 130 246 / var(--tw-bg-opacity, 1))'}
               onClick={closeMenu}
             >
               Contact
@@ -139,7 +143,7 @@ export default function HomeLayout({
             {!user && (
               <Link
                 href="/sign-in"
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1.5 px-3 md:py-2 md:px-4 rounded text-sm md:text-base text-center"
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-center"
                 onClick={closeMenu}
               >
                 Sign In
