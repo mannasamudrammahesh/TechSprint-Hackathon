@@ -16,7 +16,7 @@ export default function HealixLogo({
   textSize = "text-2xl"
 }: HealixLogoProps) {
   return (
-    <div className={`flex items-center ${className}`}>
+    <div className={`flex items-center flex-shrink-0 ${className}`}>
       {/* H SVG Logo */}
       <img 
         alt="Healix Logo" 
@@ -25,13 +25,13 @@ export default function HealixLogo({
         height={height} 
         decoding="async" 
         data-nimg="1" 
-        className="mr-[0.8px]" 
+        className="mr-[0.8px] flex-shrink-0" 
         style={{color: 'transparent'}} 
         src="/logo.svg"
       />
       
       {/* "ealix" text */}
-      <h1 className={textSize}>ealix</h1>
+      <h1 className={`${textSize} whitespace-nowrap`}>ealix</h1>
     </div>
   );
 }

@@ -97,27 +97,27 @@ export default function VoiceMusicPlayer() {
     return null;
   }
   return (
-    <div className="fixed bottom-24 right-8 z-40 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-4 w-80 border-2 border-gray-200 dark:border-gray-700">
+    <div className="fixed bottom-20 right-2 sm:bottom-24 sm:right-4 md:right-8 z-40 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-3 sm:p-4 w-[calc(100vw-1rem)] max-w-[320px] sm:w-80 border-2 border-gray-200 dark:border-gray-700">
       {}
-      <div className="flex justify-between items-center mb-3">
-        <h3 className="text-lg font-bold text-gray-800 dark:text-white">🎵 Music Player</h3>
+      <div className="flex justify-between items-center mb-2 sm:mb-3">
+        <h3 className="text-base sm:text-lg font-bold text-gray-800 dark:text-white">🎵 Music Player</h3>
         <button
           onClick={() => setShowPlayer(false)}
-          className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-lg sm:text-xl"
         >
           ✕
         </button>
       </div>
       {}
       {currentTrack && (
-        <div className="mb-4 p-3 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 rounded-lg">
-          <p className="text-sm font-semibold text-gray-800 dark:text-white truncate">
+        <div className="mb-3 sm:mb-4 p-2 sm:p-3 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 rounded-lg">
+          <p className="text-xs sm:text-sm font-semibold text-gray-800 dark:text-white truncate">
             {currentTrack.title}
           </p>
-          <p className="text-xs text-gray-600 dark:text-gray-300 truncate">
+          <p className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-300 truncate">
             {currentTrack.artist}
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 mt-1">
             {currentTrack.category.charAt(0).toUpperCase() + currentTrack.category.slice(1)}
           </p>
         </div>

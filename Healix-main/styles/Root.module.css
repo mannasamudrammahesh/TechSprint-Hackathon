@@ -94,6 +94,8 @@
 
     .menu {
         display: flex;
+        cursor: pointer;
+        z-index: 50;
     }
 
     .menubar {
@@ -109,11 +111,13 @@
         padding: 80px 20px 40px 20px;
         z-index: 9;
         overflow-y: auto;
+        overflow-x: hidden;
     }
 
     .menubar ul {
         flex-direction: column;
         gap: 15px;
+        width: 100%;
     }
 
     .menu.click~.menubar {
