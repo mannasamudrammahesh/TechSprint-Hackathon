@@ -75,7 +75,7 @@
 }
 
 .menu.click>.menuli:first-of-type {
-    transform: rotate(45deg) translate(5px, 5px);
+    transform: rotate(45deg) translate(4px, 4px);
 }
 
 .menu.click>.menuli:nth-of-type(2) {
@@ -83,7 +83,17 @@
 }
 
 .menu.click>.menuli:nth-of-type(3) {
-    transform: rotate(-45deg) translate(6px, -7px);
+    transform: rotate(-45deg) translate(5px, -6px);
+}
+
+@media (max-width: 640px) {
+    .menu.click>.menuli:first-of-type {
+        transform: rotate(45deg) translate(3px, 3px);
+    }
+
+    .menu.click>.menuli:nth-of-type(3) {
+        transform: rotate(-45deg) translate(4px, -4px);
+    }
 }
 
 .menubar {
@@ -106,14 +116,21 @@
         width: 100%;
         min-height: 100vh;
         transition: top 0.4s ease-in-out;
-        padding: 80px 20px 40px 20px;
+        padding: 70px 20px 40px 20px;
         z-index: 9;
         overflow-y: auto;
     }
 
     .menubar ul {
         flex-direction: column;
-        gap: 15px;
+        gap: 20px;
+    }
+
+    .menubar ul li a {
+        display: block;
+        padding: 12px 16px;
+        font-size: 16px;
+        min-height: 44px;
     }
 
     .menu.click~.menubar {
@@ -124,6 +141,21 @@
         overflow: hidden;
     }
 
+}
+
+@media (max-width: 640px) {
+    .menubar {
+        padding: 60px 16px 32px 16px;
+    }
+
+    .menubar ul {
+        gap: 16px;
+    }
+
+    .menubar ul li a {
+        padding: 10px 12px;
+        font-size: 15px;
+    }
 }
 
 @media (min-width: 1025px) {

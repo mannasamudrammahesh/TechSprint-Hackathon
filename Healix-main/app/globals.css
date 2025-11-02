@@ -227,6 +227,17 @@
 
 /* Responsive utilities */
 @media (max-width: 640px) {
+  /* Ensure proper viewport on mobile */
+  html {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+  }
+  
+  body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+  
   /* Disable animations on mobile for better performance */
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

@@ -41,17 +41,17 @@ export default function TherapyPage() {
     <div className="min-h-screen" style={{ backgroundColor: '#d6e2ea' }}>
       <div className="container mx-auto p-3 md:p-6">
         {/* Enhanced Header Section */}
-        <div className="text-center mb-6 md:mb-10 mt-4 md:mt-8 px-4">
-          <div className="mb-4 md:mb-6">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent mb-2 md:mb-3 pb-2">
+        <div className="text-center mb-4 sm:mb-6 md:mb-10 mt-3 sm:mt-4 md:mt-8 px-3 sm:px-4">
+          <div className="mb-3 sm:mb-4 md:mb-6">
+            <h1 className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent mb-2 md:mb-3 pb-1 sm:pb-2">
               Therapy
             </h1>
-            <div className="flex items-center justify-center gap-2 text-lg sm:text-xl md:text-2xl font-semibold text-gray-700">
-              <Sword className="h-5 w-5 md:h-6 md:w-6 text-purple-600" />
+            <div className="flex items-center justify-center gap-1.5 sm:gap-2 text-base xs:text-lg sm:text-xl md:text-2xl font-semibold text-gray-700">
+              <Sword className="h-4 w-4 xs:h-5 xs:w-5 md:h-6 md:w-6 text-purple-600" />
               <span>Interactive Therapy</span>
             </div>
           </div>
-          <p className="text-sm sm:text-base md:text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed px-2">
+          <p className="text-xs xs:text-sm sm:text-base md:text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed px-2">
             Experience cutting-edge AI-powered mental health support with real-time exercise detection
             and personalized therapeutic activities designed for your wellbeing.
           </p>
