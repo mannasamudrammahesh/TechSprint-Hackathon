@@ -3,7 +3,7 @@
 import styles from "@/styles/Root.module.css";
 import Link from "next/link";
 import { useState } from "react";
-import { Settings, LogOut } from "lucide-react";
+import { Settings, LogOut, User } from "lucide-react";
 import HealixLogo from "@/components/HealixLogo";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -29,9 +29,9 @@ export default function HomeLayout({
   };
 
   return (
-    <div className={`min-h-screen ${showMenu ? "overflow-hidden h-screen" : ""}`}>
+    <div className={`${showMenu ? "overflow-hidden h-screen" : ""}`}>
       <nav className="relative">
-        <div className="flex p-4 md:p-10 items-center justify-between font-bold pb-8 md:pb-40">
+        <div className="flex p-10 items-center justify-between font-bold pb-40">
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center ">
               <HealixLogo width={35} height={35} textSize="text-2xl" />
@@ -50,7 +50,7 @@ export default function HomeLayout({
           {showMenu && (
             <button
               onClick={closeMenu}
-              className="fixed top-4 right-4 text-black hover:text-gray-700 xl:hidden z-[100]"
+              className="fixed top-5 right-5 text-black hover:text-gray-700 xl:hidden z-[100]"
               aria-label="Close menu"
             >
               <svg
@@ -99,7 +99,7 @@ export default function HomeLayout({
                     className="transition-all"
                     aria-label="User menu"
                   >
-                    <div
+                    <div 
                       className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-base shadow-md hover:shadow-lg transition-all hover:scale-105"
                       style={{ backgroundColor: 'rgb(59, 130, 246)', color: '#ffffff' }}
                       onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgb(37, 99, 235)'}
