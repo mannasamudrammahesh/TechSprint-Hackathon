@@ -479,28 +479,28 @@ export default function Home() {
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col">
         {/* Header with Counselling Image and Back Button */}
-        <div className="bg-[#d6e2ea] border-b border-gray-300 p-2 sm:p-3 md:p-4 shadow-sm">
+        <div className="bg-[#d6e2ea] border-b border-gray-300 p-3 md:p-4 shadow-sm">
           <div className="flex items-center justify-between max-w-7xl mx-auto">
             {/* Left: Menu Button */}
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setShowSidebar(!showSidebar)}
-              className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 p-0 hover:bg-gray-100 flex-shrink-0"
+              className="h-9 w-9 md:h-10 md:w-10 p-0 hover:bg-gray-100 flex-shrink-0"
             >
-              <Menu size={18} className="sm:w-5 sm:h-5 md:w-[22px] md:h-[22px]" />
+              <Menu size={20} className="md:w-[22px] md:h-[22px]" />
             </Button>
             {/* Center: Counselling Icon and Text */}
-            <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-1.5 sm:gap-2 md:gap-3">
-              <MessageCircleCode size={28} className="text-gray-800 sm:w-9 sm:h-9 md:w-12 md:h-12" />
-              <span className="text-base sm:text-lg md:text-2xl lg:text-3xl font-bold text-gray-800 hidden xs:inline">Counselling</span>
+            <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-2 md:gap-3">
+              <MessageCircleCode size={36} className="text-gray-800 md:w-12 md:h-12" />
+              <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 hidden sm:inline">Counselling</span>
             </div>
             {/* Right: Back Button */}
             <Button
               variant="outline"
               size="sm"
               onClick={() => router.push('/Home')}
-              className="flex items-center gap-1 md:gap-2 h-8 sm:h-9 md:h-10 px-2 sm:px-3 md:px-4 hover:bg-gray-100 flex-shrink-0 text-xs md:text-sm"
+              className="flex items-center gap-1 md:gap-2 h-9 md:h-10 px-2 md:px-4 hover:bg-gray-100 flex-shrink-0 text-xs md:text-sm"
             >
               <ArrowLeft className="h-3 w-3 md:h-4 md:w-4" />
               <span className="hidden sm:inline">Back</span>

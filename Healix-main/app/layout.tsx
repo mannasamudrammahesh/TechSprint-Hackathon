@@ -14,7 +14,7 @@ const MicrophoneToggle = dynamic(() => import('@/components/MicrophoneToggle'), 
 });
 const GlobalNavbar = dynamic(() => import('@/components/GlobalNavbar'), {
   ssr: false,
-  loading: () => <div className="h-14 sm:h-16 md:h-20 lg:h-28" />
+  loading: () => <div className="h-16 md:h-20 lg:h-28" />
 });
 const fallbackFonts = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
 const ProtectedRoute = dynamic(() => import('@/components/ProtectedRoute'), {
