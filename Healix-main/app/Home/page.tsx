@@ -6,7 +6,6 @@ import { useEffect } from "react";
 import styles from '@/styles/Root.module.css'
 import { Typewriter } from 'react-simple-typewriter'
 import { Toaster } from "react-hot-toast";
-
 export default function Home() {
     const router = useRouter();
     useEffect(() => {
@@ -15,10 +14,9 @@ export default function Home() {
         router.prefetch('/Therapy');
     }, [router]);
     return (
-        {/* MODIFIED: Changed pt-0 to pt-8 (or pt-10 for more space) for mobile top padding */}
-        <main className="px-4 md:px-8 lg:px-10 flex flex-col md:flex-row justify-around items-center gap-6 md:gap-4 pt-8 pb-4 md:py-0">
+        <main className="px-4 md:px-8 lg:px-10 flex flex-col md:flex-row justify-around items-center gap-6 md:gap-4 pt-0 pb-4 md:py-0">
             <Toaster />
-            {/* Mobile Image (kept order-1 and -mt-2) */}
+            {}
             <div className="w-full md:hidden flex justify-center order-1 -mt-2">
                 <Image
                     src="/neurology.png"
@@ -48,7 +46,7 @@ export default function Home() {
                     <p className={styles.p}>Get Started</p>
                 </Link>
             </div>
-            {/* Desktop Image */}
+            {}
             <div className="hidden md:flex w-auto justify-center order-3">
                 <Image
                     src="/neurology.png"
