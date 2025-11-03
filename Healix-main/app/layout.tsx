@@ -16,6 +16,7 @@ const GlobalNavbar = dynamic(() => import('@/components/GlobalNavbar'), {
   ssr: false,
   loading: () => <div className="h-16 md:h-20 lg:h-28" />
 });
+import MobileNavbar from '@/components/MobileNavbar';
 const fallbackFonts = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
 const ProtectedRoute = dynamic(() => import('@/components/ProtectedRoute'), {
   ssr: false,
@@ -32,11 +33,14 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   const isChatPage = pathname === '/Chat';
   const isAuthPage = pathname === '/sign-in' || pathname === '/sign-up' || pathname?.startsWith('/sign-');
   return (
-    <ProtectedRoute>
-      {!isHomePage && !isChatPage && !isAuthPage && <GlobalNavbar />}
-      {children}
-      {!isAuthPage && <MicrophoneToggle />}
-    </ProtectedRoute>
+    <>
+      {!isAuthPage && <MobileNavbar />}
+      <ProtectedRoute>
+        {!isHomePage && !isChatPage && !isAuthPage && <GlobalNavbar />}
+        {children}
+        {!isAuthPage && <MicrophoneToggle />}
+      </ProtectedRoute>
+    </>
   );
 }
 export default function RootLayout({
