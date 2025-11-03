@@ -22,17 +22,17 @@ export default function MobileNavbar() {
         <div className="flex p-3 items-center justify-between font-bold">
           <div className="flex items-center gap-2">
             <Link href="/Home" className="flex items-center">
-              <HealixLogo width={48} height={48} textSize="text-3xl" />
+              <HealixLogo width={32} height={32} textSize="text-xl" />
             </Link>
           </div>
 
           <div
-            className="flex flex-col gap-1.5 cursor-pointer"
+            className="flex flex-col gap-1 cursor-pointer"
             onClick={toggleMenu}
           >
-            <div className={`w-8 h-1.5 bg-black transition-all duration-300 ${showMenu ? 'rotate-45 translate-y-3' : ''}`}></div>
-            <div className={`w-8 h-1.5 bg-black transition-all duration-300 ${showMenu ? 'opacity-0' : ''}`}></div>
-            <div className={`w-8 h-1.5 bg-black transition-all duration-300 ${showMenu ? '-rotate-45 -translate-y-3' : ''}`}></div>
+            <div className={`w-6 h-1 bg-black transition-all duration-300 ${showMenu ? 'rotate-45 translate-y-2' : ''}`}></div>
+            <div className={`w-6 h-1 bg-black transition-all duration-300 ${showMenu ? 'opacity-0' : ''}`}></div>
+            <div className={`w-6 h-1 bg-black transition-all duration-300 ${showMenu ? '-rotate-45 -translate-y-2' : ''}`}></div>
           </div>
         </div>
 
@@ -42,7 +42,7 @@ export default function MobileNavbar() {
             {/* Close button */}
             <button
               onClick={closeMenu}
-              className="absolute top-3 right-3 text-black text-3xl font-bold z-50"
+              className="absolute top-3 right-3 text-black text-2xl font-bold z-50"
               aria-label="Close menu"
             >
               ×
@@ -50,11 +50,11 @@ export default function MobileNavbar() {
 
             {/* Menu items */}
             <div className="flex flex-col items-center gap-8">
-              <ul className="flex flex-col items-center gap-8">
+              <ul className="flex flex-col items-center gap-6">
                 <li>
                   <Link
                     href="/Home"
-                    className="text-2xl font-semibold text-black"
+                    className="text-xl font-semibold text-black"
                     onClick={closeMenu}
                   >
                     Home
@@ -63,7 +63,7 @@ export default function MobileNavbar() {
                 <li>
                   <Link
                     href="/Chat"
-                    className="text-2xl font-semibold text-black"
+                    className="text-xl font-semibold text-black"
                     onClick={closeMenu}
                   >
                     Counselling
@@ -72,7 +72,7 @@ export default function MobileNavbar() {
                 <li>
                   <Link
                     href="/Therapy"
-                    className="text-2xl font-semibold text-black"
+                    className="text-xl font-semibold text-black"
                     onClick={closeMenu}
                   >
                     Therapist
@@ -81,7 +81,7 @@ export default function MobileNavbar() {
                 <li>
                   <Link
                     href="/music"
-                    className="text-2xl font-semibold text-black"
+                    className="text-xl font-semibold text-black"
                     onClick={closeMenu}
                   >
                     Music Therapy
@@ -89,17 +89,17 @@ export default function MobileNavbar() {
                 </li>
               </ul>
 
-              <div className="flex flex-col items-center gap-6">
+              <div className="flex flex-col items-center gap-4">
                 <Link
                   href="/Contact"
-                  className="bg-blue-500 text-white font-bold py-4 px-8 rounded text-xl"
+                  className="bg-blue-500 text-white font-bold py-3 px-6 rounded text-lg"
                   onClick={closeMenu}
                 >
                   Contact
                 </Link>
                 <Link
                   href="/sign-in"
-                  className="bg-gray-500 text-white font-bold py-4 px-8 rounded text-xl"
+                  className="bg-gray-500 text-white font-bold py-3 px-6 rounded text-lg"
                   onClick={closeMenu}
                 >
                   Sign In
