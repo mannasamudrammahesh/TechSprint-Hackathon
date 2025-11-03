@@ -133,3 +133,19 @@
     }
 
 }
+
+.navbarContainer {
+    position: relative;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+}
+
+@media (max-width: 768px) {
+    .navbarContainer {
+        position: sticky;
+        top: 0;
+        background-color: #d6e2ea;
+    }
+}
