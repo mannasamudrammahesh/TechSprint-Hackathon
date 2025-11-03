@@ -3,7 +3,7 @@
 import styles from "@/styles/Root.module.css";
 import Link from "next/link";
 import { useState } from "react";
-import { Settings, LogOut, User } from "lucide-react";
+import { Settings, LogOut } from "lucide-react";
 import HealixLogo from "@/components/HealixLogo";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -31,7 +31,7 @@ export default function HomeLayout({
   return (
     <div className={`${showMenu ? "overflow-hidden h-screen" : ""}`}>
       <nav className="relative">
-        <div className="flex p-10 items-center justify-between font-bold pb-40">
+        <div className="flex p-4 sm:p-6 md:p-10 items-center justify-between font-bold pb-8 sm:pb-20 md:pb-40">
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center ">
               <HealixLogo width={35} height={35} textSize="text-2xl" />
