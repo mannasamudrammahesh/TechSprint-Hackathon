@@ -50,11 +50,11 @@ export default function GlobalNavbar() {
 
   return (
     <>
-      <nav className="hidden md:block fixed top-0 left-0 right-0 z-50" style={{ backgroundColor: '#d6e2ea' }}>
-        <div className="flex p-2 sm:p-3 md:p-6 lg:p-10 items-center justify-between font-bold">
+      <nav className="fixed top-0 left-0 right-0 z-50" style={{ backgroundColor: '#d6e2ea' }}>
+        <div className="flex p-4 md:p-6 lg:p-10 items-center justify-between font-bold">
           <div className="flex items-center gap-2 md:gap-3">
             <Link href="/" className="flex items-center">
-              <HealixLogo width={28} height={28} textSize="text-lg sm:text-xl md:text-2xl" />
+              <HealixLogo width={30} height={30} textSize="text-xl md:text-2xl" />
             </Link>
           </div>
 
@@ -92,22 +92,22 @@ export default function GlobalNavbar() {
           >
             <ul className="flex gap-3 md:gap-4 lg:gap-5">
               <li>
-                <Link href="/Home" className={`${styles.a} text-sm md:text-base`} onClick={closeMenu}>
+                <Link href="/Home" className={`${styles.a}`} onClick={closeMenu}>
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/Chat" className={`${styles.a} text-sm md:text-base`} onClick={closeMenu}>
+                <Link href="/Chat" className={`${styles.a}`} onClick={closeMenu}>
                   Counselling
                 </Link>
               </li>
               <li>
-                <Link href="/Therapy" className={`${styles.a} text-sm md:text-base`} onClick={closeMenu}>
+                <Link href="/Therapy" className={`${styles.a}`} onClick={closeMenu}>
                   Therapist
                 </Link>
               </li>
               <li>
-                <Link href="/music" className={`${styles.a} text-sm md:text-base`} onClick={closeMenu}>
+                <Link href="/music" className={`${styles.a}`} onClick={closeMenu}>
                   Music Therapy
                 </Link>
               </li>
@@ -141,7 +141,7 @@ export default function GlobalNavbar() {
                 </div>
                 <Link
                   href="/settings"
-                  className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-1.5 px-3 md:py-2 md:px-4 rounded flex items-center gap-1 md:gap-2 text-sm md:text-base"
+                  className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-1.5 px-3 md:py-2 md:px-4 rounded flex items-center gap-1 md:gap-2"
                   onClick={closeMenu}
                 >
                   <Settings className="h-3 w-3 md:h-4 md:w-4" />
@@ -151,7 +151,7 @@ export default function GlobalNavbar() {
             )}
             <Link 
               href="/Contact" 
-              className="text-white font-bold py-1.5 px-3 md:py-2 md:px-4 rounded text-sm md:text-base text-center hover:opacity-80 transition-opacity"
+              className="text-white font-bold py-1.5 px-3 md:py-2 md:px-4 rounded text-center hover:opacity-80 transition-opacity"
               style={{ backgroundColor: 'rgb(59 130 246 / var(--tw-bg-opacity, 1))' }}
               onClick={closeMenu}
             >
@@ -160,7 +160,7 @@ export default function GlobalNavbar() {
             {!user && (
               <Link 
                 href="/sign-in" 
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1.5 px-3 md:py-2 md:px-4 rounded text-sm md:text-base text-center"
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1.5 px-3 md:py-2 md:px-4 rounded text-center"
                 onClick={closeMenu}
               >
                 Sign In
@@ -169,8 +169,8 @@ export default function GlobalNavbar() {
           </div>
         </div>
       </nav>
-      {/* Spacer to prevent content from going under the fixed navbar - only for desktop */}
-      <div className="hidden md:block md:h-20 lg:h-28"></div>
+      {/* Spacer to prevent content from going under the fixed navbar */}
+      <div className="h-16 md:h-20 lg:h-28"></div>
     </>
   );
 }
