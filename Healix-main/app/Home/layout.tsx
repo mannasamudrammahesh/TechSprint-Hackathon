@@ -2,7 +2,7 @@
 
 import styles from "@/styles/Root.module.css";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Settings, LogOut, User } from "lucide-react";
 import HealixLogo from "@/components/HealixLogo";
 import { useAuth } from "@/contexts/AuthContext";
@@ -28,27 +28,10 @@ export default function HomeLayout({
     await signOut();
   };
 
-  // Ensure navbar is always visible on mobile
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth <= 768) {
-        window.scrollTo(0, 0);
-      }
-    };
-    
-    // Initial check
-    handleResize();
-    
-    // Listen for resize events
-    window.addEventListener('resize', handleResize);
-    
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
   return (
     <div className={`${showMenu ? "overflow-hidden h-screen" : ""}`}>
-      <nav className="relative" style={{ position: 'sticky', top: 0, zIndex: 10 }}>
-        <div className="flex p-4 sm:p-6 md:p-10 items-center justify-between font-bold pb-8 sm:pb-20 md:pb-40">
+      <nav className="relative">
+        <div className="flex p-10 items-center justify-between font-bold pb-40">
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center ">
               <HealixLogo width={35} height={35} textSize="text-2xl" />
