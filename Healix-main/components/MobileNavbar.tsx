@@ -8,7 +8,7 @@ import HealixLogo from "@/components/HealixLogo";
 import { useAuth } from "@/contexts/AuthContext";
 import styles from "@/styles/Root.module.css";
 
-export default function GlobalNavbar() {
+export default function MobileNavbar() {
   const [showMenu, setShowMenu] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const { user, signOut } = useAuth();
@@ -50,11 +50,12 @@ export default function GlobalNavbar() {
 
   return (
     <>
-      <nav className="hidden md:block fixed top-0 left-0 right-0 z-50" style={{ backgroundColor: '#d6e2ea' }}>
-        <div className="flex p-2 sm:p-3 md:p-6 lg:p-10 items-center justify-between font-bold">
-          <div className="flex items-center gap-2 md:gap-3">
+      {/* Mobile-only navbar - hidden on desktop and tablet */}
+      <nav className="md:hidden fixed top-0 left-0 right-0 z-50" style={{ backgroundColor: '#d6e2ea' }}>
+        <div className="flex p-2 sm:p-3 items-center justify-between font-bold">
+          <div className="flex items-center gap-2">
             <Link href="/" className="flex items-center">
-              <HealixLogo width={28} height={28} textSize="text-lg sm:text-xl md:text-2xl" />
+              <HealixLogo width={28} height={28} textSize="text-lg sm:text-xl" />
             </Link>
           </div>
 
@@ -62,16 +63,16 @@ export default function GlobalNavbar() {
             className={`flex flex-col gap-1 transition-all ease-in-out duration-300 ${styles.menu} ${showMenu ? styles.click : ""}`}
             onClick={toggleMenu}
           >
-            <div className={`w-6 md:w-8 h-1 bg-black ${styles.menuli}`}></div>
-            <div className={`w-6 md:w-8 h-1 bg-black ${styles.menuli}`}></div>
-            <div className={`w-6 md:w-8 h-1 bg-black ${styles.menuli}`}></div>
+            <div className={`w-6 h-1 bg-black ${styles.menuli}`}></div>
+            <div className={`w-6 h-1 bg-black ${styles.menuli}`}></div>
+            <div className={`w-6 h-1 bg-black ${styles.menuli}`}></div>
           </div>
 
-          {/* Close button for mobile/tablet menu - shown when menu is open */}
+          {/* Close button for mobile menu - shown when menu is open */}
           {showMenu && (
             <button
               onClick={closeMenu}
-              className="fixed top-5 right-5 text-black hover:text-gray-700 xl:hidden z-[100]"
+              className="fixed top-3 right-3 text-black hover:text-gray-700 z-[100]"
               aria-label="Close menu"
             >
               <svg
@@ -88,26 +89,26 @@ export default function GlobalNavbar() {
           )}
 
           <div
-            className={`flex gap-4 md:gap-6 lg:gap-8 items-center ${styles.menubar} ${showMenu ? styles.click : ""}`}
+            className={`flex gap-4 items-center ${styles.mobileMenubar} ${showMenu ? styles.click : ""}`}
           >
-            <ul className="flex gap-3 md:gap-4 lg:gap-5">
+            <ul className="flex gap-4">
               <li>
-                <Link href="/Home" className={`${styles.a} text-sm md:text-base`} onClick={closeMenu}>
+                <Link href="/Home" className={`${styles.a} text-sm`} onClick={closeMenu}>
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/Chat" className={`${styles.a} text-sm md:text-base`} onClick={closeMenu}>
+                <Link href="/Chat" className={`${styles.a} text-sm`} onClick={closeMenu}>
                   Counselling
                 </Link>
               </li>
               <li>
-                <Link href="/Therapy" className={`${styles.a} text-sm md:text-base`} onClick={closeMenu}>
+                <Link href="/Therapy" className={`${styles.a} text-sm`} onClick={closeMenu}>
                   Therapist
                 </Link>
               </li>
               <li>
-                <Link href="/music" className={`${styles.a} text-sm md:text-base`} onClick={closeMenu}>
+                <Link href="/music" className={`${styles.a} text-sm`} onClick={closeMenu}>
                   Music Therapy
                 </Link>
               </li>
@@ -121,7 +122,7 @@ export default function GlobalNavbar() {
                     aria-label="User menu"
                   >
                     <div 
-                      className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-sm md:text-base shadow-md hover:shadow-lg transition-all hover:scale-105"
+                      className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow-md hover:shadow-lg transition-all hover:scale-105"
                       style={{ backgroundColor: 'rgb(59, 130, 246)', color: '#ffffff' }}
                     >
                       {user?.user_metadata?.full_name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
@@ -141,17 +142,16 @@ export default function GlobalNavbar() {
                 </div>
                 <Link
                   href="/settings"
-                  className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-1.5 px-3 md:py-2 md:px-4 rounded flex items-center gap-1 md:gap-2 text-sm md:text-base"
+                  className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-1.5 px-3 rounded flex items-center gap-1 text-sm"
                   onClick={closeMenu}
                 >
-                  <Settings className="h-3 w-3 md:h-4 md:w-4" />
-                  <span className="hidden md:inline">Settings</span>
+                  <Settings className="h-3 w-3" />
                 </Link>
               </>
             )}
             <Link 
               href="/Contact" 
-              className="text-white font-bold py-1.5 px-3 md:py-2 md:px-4 rounded text-sm md:text-base text-center hover:opacity-80 transition-opacity"
+              className="text-white font-bold py-1.5 px-3 rounded text-sm text-center hover:opacity-80 transition-opacity"
               style={{ backgroundColor: 'rgb(59 130 246 / var(--tw-bg-opacity, 1))' }}
               onClick={closeMenu}
             >
@@ -160,7 +160,7 @@ export default function GlobalNavbar() {
             {!user && (
               <Link 
                 href="/sign-in" 
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1.5 px-3 md:py-2 md:px-4 rounded text-sm md:text-base text-center"
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1.5 px-3 rounded text-sm text-center"
                 onClick={closeMenu}
               >
                 Sign In
@@ -169,8 +169,8 @@ export default function GlobalNavbar() {
           </div>
         </div>
       </nav>
-      {/* Spacer to prevent content from going under the fixed navbar - only for desktop */}
-      <div className="hidden md:block md:h-20 lg:h-28"></div>
+      {/* Mobile spacer to prevent content from going under the fixed navbar */}
+      <div className="md:hidden h-12 sm:h-14"></div>
     </>
   );
 }
