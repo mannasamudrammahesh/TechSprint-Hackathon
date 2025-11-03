@@ -30,20 +30,20 @@ export default function HomeLayout({
 
   return (
     <div className={`${showMenu ? "overflow-hidden h-screen" : ""}`}>
-      <nav className={`relative ${styles.mobileNavbar}`}>
-        <div className="flex px-4 py-6 pt-8 md:p-10 items-center justify-between font-bold pb-6 md:pb-40">
+      <nav className={`fixed top-0 left-0 right-0 z-50 ${styles.mobileNavbar}`} style={{ backgroundColor: '#d6e2ea' }}>
+        <div className="flex px-2 py-3 pt-4 sm:px-4 sm:py-4 sm:pt-6 md:p-10 items-center justify-between font-bold pb-3 sm:pb-4 md:pb-40">
           <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center ">
-              <HealixLogo width={35} height={35} textSize="text-2xl" />
+            <Link href="/" className="flex items-center">
+              <HealixLogo width={28} height={28} textSize="text-lg sm:text-xl md:text-2xl" />
             </Link>
           </div>
           <div
             className={`flex flex-col gap-1 transition-all ease-in-out duration-300 ${styles.menu} ${showMenu ? styles.click : ""}`}
             onClick={toggleMenu}
           >
-            <div className={`w-8 h-1 bg-black ${styles.menuli}`}></div>
-            <div className={`w-8 h-1 bg-black ${styles.menuli}`}></div>
-            <div className={`w-8 h-1 bg-black ${styles.menuli}`}></div>
+            <div className={`w-6 sm:w-8 h-1 bg-black ${styles.menuli}`}></div>
+            <div className={`w-6 sm:w-8 h-1 bg-black ${styles.menuli}`}></div>
+            <div className={`w-6 sm:w-8 h-1 bg-black ${styles.menuli}`}></div>
           </div>
 
           {/* Close button for mobile/tablet menu - shown when menu is open */}
@@ -67,26 +67,26 @@ export default function HomeLayout({
           )}
 
           <div
-            className={`flex gap-8 items-center ${styles.menubar} ${showMenu ? styles.click : ""}`}
+            className={`flex gap-4 sm:gap-6 md:gap-8 items-center ${styles.menubar} ${showMenu ? styles.click : ""}`}
           >
-            <ul className="flex gap-5">
+            <ul className="flex gap-3 sm:gap-4 md:gap-5">
               <li>
-                <Link href="/Home" className={`${styles.a}`} onClick={closeMenu}>
+                <Link href="/Home" className={`${styles.a} text-sm md:text-base`} onClick={closeMenu}>
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/Chat" className={`${styles.a}`} onClick={closeMenu}>
+                <Link href="/Chat" className={`${styles.a} text-sm md:text-base`} onClick={closeMenu}>
                   Counseling
                 </Link>
               </li>
               <li>
-                <Link href="/Therapy" className={`${styles.a}`} onClick={closeMenu}>
+                <Link href="/Therapy" className={`${styles.a} text-sm md:text-base`} onClick={closeMenu}>
                   Therapist
                 </Link>
               </li>
               <li>
-                <Link href="/music" className={`${styles.a}`} onClick={closeMenu}>
+                <Link href="/music" className={`${styles.a} text-sm md:text-base`} onClick={closeMenu}>
                   Music Therapy
                 </Link>
               </li>
@@ -100,7 +100,7 @@ export default function HomeLayout({
                     aria-label="User menu"
                   >
                     <div 
-                      className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-base shadow-md hover:shadow-lg transition-all hover:scale-105"
+                      className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition-all hover:scale-105"
                       style={{ backgroundColor: 'rgb(59, 130, 246)', color: '#ffffff' }}
                       onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgb(37, 99, 235)'}
                       onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgb(59, 130, 246)'}
@@ -122,17 +122,17 @@ export default function HomeLayout({
                 </div>
                 <Link
                   href="/settings"
-                  className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded flex items-center gap-2"
+                  className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-1.5 px-3 sm:py-2 sm:px-4 rounded flex items-center gap-1 sm:gap-2 text-sm sm:text-base"
                   onClick={closeMenu}
                 >
-                  <Settings className="h-4 w-4" />
-                  Settings
+                  <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <span className="hidden sm:inline">Settings</span>
                 </Link>
               </>
             )}
             <Link
               href="/Contact"
-              className="text-white font-bold py-2 px-4 rounded text-center transition-all"
+              className="text-white font-bold py-1.5 px-3 sm:py-2 sm:px-4 rounded text-center transition-all text-sm sm:text-base"
               style={{ backgroundColor: 'rgb(59 130 246 / var(--tw-bg-opacity, 1))' }}
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgb(37, 99, 235)'}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgb(59 130 246 / var(--tw-bg-opacity, 1))'}
@@ -143,7 +143,7 @@ export default function HomeLayout({
             {!user && (
               <Link
                 href="/sign-in"
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-center"
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1.5 px-3 sm:py-2 sm:px-4 rounded text-center text-sm sm:text-base"
                 onClick={closeMenu}
               >
                 Sign In
@@ -152,6 +152,8 @@ export default function HomeLayout({
           </div>
         </div>
       </nav>
+      {/* Spacer to prevent content from going under the fixed navbar */}
+      <div className="h-12 sm:h-16 md:h-28"></div>
       {!showMenu ? children : ""}
     </div>
   );
