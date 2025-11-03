@@ -2,8 +2,8 @@
 
 import styles from "@/styles/Root.module.css";
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import { Settings, LogOut } from "lucide-react";
+import { useState } from "react";
+import { Settings, LogOut, User } from "lucide-react";
 import HealixLogo from "@/components/HealixLogo";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -28,17 +28,10 @@ export default function HomeLayout({
     await signOut();
   };
 
-  // Ensure page starts at top on mobile
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      window.scrollTo(0, 0);
-    }
-  }, []);
-
   return (
     <div className={`${showMenu ? "overflow-hidden h-screen" : ""}`}>
-      <nav className={`relative ${styles.navbarContainer}`}>
-        <div className="flex p-4 md:p-10 items-center justify-between font-bold pb-6 md:pb-40">
+      <nav className="relative">
+        <div className="flex p-10 items-center justify-between font-bold pb-40">
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center ">
               <HealixLogo width={35} height={35} textSize="text-2xl" />
