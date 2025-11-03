@@ -17,7 +17,7 @@ export default function Home() {
         <main className="px-4 md:px-8 lg:px-10 flex flex-col md:flex-row justify-around items-center gap-6 md:gap-4 pt-0 pb-4 md:py-0">
             <Toaster />
             {}
-            <div className="w-full md:hidden flex justify-center order-1 mt-8 sm:mt-10">
+            <div className="w-full md:hidden flex justify-center order-1 mt-12 sm:mt-16">
                 <Image
                     src="/neurology.png"
                     alt="Healix Mental Health"
