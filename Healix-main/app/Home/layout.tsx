@@ -31,19 +31,19 @@ export default function HomeLayout({
   return (
     <div className={`${showMenu ? "overflow-hidden h-screen" : ""}`}>
       <nav className={`relative ${styles.mobileNavbar}`}>
-        <div className="flex px-4 py-6 pt-8 md:p-10 items-center justify-between font-bold pb-6 md:pb-40">
+        <div className="flex px-4 py-2 md:p-10 items-center justify-between font-bold pb-4 md:pb-40">
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center ">
-              <HealixLogo width={35} height={35} textSize="text-2xl" />
+              <HealixLogo width={24} height={24} textSize="text-lg md:text-2xl" />
             </Link>
           </div>
           <div
             className={`flex flex-col gap-1 transition-all ease-in-out duration-300 ${styles.menu} ${showMenu ? styles.click : ""}`}
             onClick={toggleMenu}
           >
-            <div className={`w-8 h-1 bg-black ${styles.menuli}`}></div>
-            <div className={`w-8 h-1 bg-black ${styles.menuli}`}></div>
-            <div className={`w-8 h-1 bg-black ${styles.menuli}`}></div>
+            <div className={`w-5 md:w-8 h-0.5 md:h-1 bg-black ${styles.menuli}`}></div>
+            <div className={`w-5 md:w-8 h-0.5 md:h-1 bg-black ${styles.menuli}`}></div>
+            <div className={`w-5 md:w-8 h-0.5 md:h-1 bg-black ${styles.menuli}`}></div>
           </div>
 
           {/* Close button for mobile/tablet menu - shown when menu is open */}
