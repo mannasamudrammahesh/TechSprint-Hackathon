@@ -16,8 +16,8 @@ export default function Home() {
     return (
         <main className="px-4 md:px-8 lg:px-10 flex flex-col md:flex-row justify-around items-center gap-6 md:gap-4 pt-0 pb-4 md:py-0">
             <Toaster />
-            {}
-            <div className="w-full md:hidden flex justify-center order-1 mt-12 sm:mt-16">
+            {/* Top neurology image for mobile only */}
+            <div className="w-full md:hidden flex justify-center items-center order-1">
                 <Image
                     src="/neurology.png"
                     alt="Healix Mental Health"
@@ -46,7 +46,18 @@ export default function Home() {
                     <p className={styles.p}>Get Started</p>
                 </Link>
             </div>
-            {}
+            {/* Bottom neurology image for mobile only */}
+            <div className="w-full md:hidden flex justify-center items-center order-3">
+                <Image
+                    src="/neurology.png"
+                    alt="Healix Mental Health"
+                    width={400}
+                    height={400}
+                    className="w-64 h-64 sm:w-80 sm:h-80 object-contain"
+                    priority
+                />
+            </div>
+            {/* Desktop neurology image */}
             <div className="hidden md:flex w-auto justify-center order-3">
                 <Image
                     src="/neurology.png"
