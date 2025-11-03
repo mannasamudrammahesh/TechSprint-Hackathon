@@ -140,11 +140,7 @@
 
 @media (max-width: 768px) {
     .mobileNavbar {
-        position: sticky;
-        top: 0;
-        padding-top: max(env(safe-area-inset-top), 16px);
+        padding-top: max(env(safe-area-inset-top), 20px);
         background-color: #d6e2ea;
-        z-index: 50;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 }

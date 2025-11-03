@@ -25,13 +25,13 @@ export default function HealixLogo({
         height={height} 
         decoding="async" 
         data-nimg="1" 
-        className="mr-1 flex-shrink-0" 
-        style={{color: 'transparent', minWidth: `${width}px`}} 
+        className="mr-[0.8px]" 
+        style={{color: 'transparent'}} 
         src="/logo.svg"
       />
       
       {/* "ealix" text */}
-      <h1 className={`${textSize} leading-none`}>ealix</h1>
+      <h1 className={textSize}>ealix</h1>
     </div>
   );
 }
