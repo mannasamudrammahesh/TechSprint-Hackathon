@@ -22,7 +22,7 @@ export default function MobileNavbar() {
         <div className="flex p-3 items-center justify-between font-bold">
           <div className="flex items-center gap-2">
             <Link href="/Home" className="flex items-center">
-              <HealixLogo width={32} height={32} textSize="text-xl" />
+              <HealixLogo width={38} height={38} textSize="text-2xl" />
             </Link>
           </div>
 
