@@ -30,7 +30,7 @@ export default function HomeLayout({
 
   return (
     <div className={`${showMenu ? "overflow-hidden h-screen" : ""}`}>
-      <nav className={`relative ${styles.mobileNavbar}`}>
+      <nav className={`hidden sm:block relative ${styles.mobileNavbar}`}>
         <div className="flex px-4 py-6 pt-8 md:p-10 items-center justify-between font-bold pb-6 md:pb-40">
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center ">
