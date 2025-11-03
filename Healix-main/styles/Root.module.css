@@ -133,3 +133,14 @@
     }
 
 }
+
+.mobileNavbar {
+    position: relative;
+}
+
+@media (max-width: 768px) {
+    .mobileNavbar {
+        padding-top: max(env(safe-area-inset-top), 20px);
+        background-color: #d6e2ea;
+    }
+}
