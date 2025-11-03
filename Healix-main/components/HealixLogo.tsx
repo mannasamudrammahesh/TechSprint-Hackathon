@@ -25,7 +25,7 @@ export default function HealixLogo({
         height={height} 
         decoding="async" 
         data-nimg="1" 
-        className="mr-1 flex-shrink-0" 
+        className="mr-0.5 flex-shrink-0" 
         style={{color: 'transparent', minWidth: `${width}px`}} 
         src="/logo.svg"
       />
