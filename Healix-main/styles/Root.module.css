@@ -133,3 +133,11 @@
     }
 
 }
+
+/* Mobile navbar visibility fix */
+@media (max-width: 768px) {
+    .menu {
+        z-index: 11;
+        position: relative;
+    }
+}
