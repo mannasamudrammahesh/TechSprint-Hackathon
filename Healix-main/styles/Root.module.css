@@ -133,3 +133,19 @@
     }
 
 }
+
+/* Mobile navbar fix - ensure logo and menu are always visible */
+@media (max-width: 767px) {
+    nav {
+        position: relative;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 10;
+        background-color: #d6e2ea;
+    }
+    
+    .menu {
+        z-index: 11;
+    }
+}

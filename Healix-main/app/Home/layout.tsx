@@ -29,9 +29,9 @@ export default function HomeLayout({
   };
 
   return (
-    <div className={`${showMenu ? "overflow-hidden h-screen" : ""}`}>
+    <div className={`min-h-screen ${showMenu ? "overflow-hidden h-screen" : ""}`} style={{ backgroundColor: '#d6e2ea' }}>
       <nav className="relative">
-        <div className="flex p-10 items-center justify-between font-bold pb-40">
+        <div className="flex items-center justify-between font-bold px-4 py-4 pb-6 md:p-10 md:pb-40">
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center ">
               <HealixLogo width={35} height={35} textSize="text-2xl" />
