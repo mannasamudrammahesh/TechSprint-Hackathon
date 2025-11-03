@@ -21,8 +21,6 @@ export default function GlobalNavbar() {
     routes.forEach(route => {
       router.prefetch(route);
     });
-    // Ensure page starts at top
-    window.scrollTo(0, 0);
   }, [router]);
 
   // Close user menu when clicking outside
@@ -52,8 +50,8 @@ export default function GlobalNavbar() {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 shadow-sm" style={{ backgroundColor: '#d6e2ea', paddingTop: 'max(env(safe-area-inset-top), 0px)' }}>
-        <div className="flex px-4 py-3 md:p-6 lg:p-10 items-center justify-between font-bold">
+      <nav className="fixed top-0 left-0 right-0 z-50" style={{ backgroundColor: '#d6e2ea' }}>
+        <div className="flex p-4 md:p-6 lg:p-10 items-center justify-between font-bold">
           <div className="flex items-center gap-2 md:gap-3">
             <Link href="/" className="flex items-center">
               <HealixLogo width={30} height={30} textSize="text-xl md:text-2xl" />
@@ -172,7 +170,7 @@ export default function GlobalNavbar() {
         </div>
       </nav>
       {/* Spacer to prevent content from going under the fixed navbar */}
-      <div className="h-14 md:h-20 lg:h-28"></div>
+      <div className="h-16 md:h-20 lg:h-28"></div>
     </>
   );
 }
