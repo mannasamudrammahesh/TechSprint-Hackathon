@@ -14,9 +14,20 @@ export default function Home() {
         router.prefetch('/Therapy');
     }, [router]);
     return (
-        <main className="px-4 md:px-8 lg:px-10 flex flex-col md:flex-row justify-around items-center gap-6 md:gap-4 pt-0 pb-4 md:py-0 min-h-[calc(100vh-56px)] md:min-h-0">
+        <main className="px-4 md:px-8 lg:px-10 flex flex-col md:flex-row justify-around items-center gap-6 md:gap-4 pt-0 pb-4 md:py-0">
             <Toaster />
-            <div className="flex flex-col gap-3 md:gap-6 text-center md:text-left max-w-full md:max-w-[50%] order-1 md:order-2 px-4 md:px-0">
+            {}
+            <div className="w-full md:hidden flex justify-center items-center order-1 my-auto">
+                <Image
+                    src="/neurology.png"
+                    alt="Healix Mental Health"
+                    width={400}
+                    height={400}
+                    className="w-64 h-64 sm:w-80 sm:h-80 object-contain"
+                    priority
+                />
+            </div>
+            <div className="flex flex-col gap-3 md:gap-6 text-center md:text-left max-w-full md:max-w-[50%] order-2 px-4 md:px-0">
                 <h1 className="font-black text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl leading-tight">
                     <span style={{ color: 'black', fontWeight: 'bold' }}>
                         <Typewriter
@@ -35,18 +46,7 @@ export default function Home() {
                     <p className={styles.p}>Get Started</p>
                 </Link>
             </div>
-            {/* Mobile neurology image - centered vertically */}
-            <div className="w-full md:hidden flex justify-center items-center order-2 md:order-1 flex-1">
-                <Image
-                    src="/neurology.png"
-                    alt="Healix Mental Health"
-                    width={400}
-                    height={400}
-                    className="w-64 h-64 sm:w-80 sm:h-80 object-contain"
-                    priority
-                />
-            </div>
-            {/* Desktop neurology image */}
+            {}
             <div className="hidden md:flex w-auto justify-center order-3">
                 <Image
                     src="/neurology.png"
