@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { useIsMobile } from '@/utils/useIsMobile';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -12,10 +13,20 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const isMobile = useIsMobile(768); // Use 768px as mobile breakpoint
 
   useEffect(() => {
-    // Public routes that don't require authentication
-    const publicRoutes = ['/', '/Contact', '/sign-in', '/sign-up'];
+    // Define public routes based on mobile/desktop view
+    let publicRoutes: string[];
+    
+    if (isMobile) {
+      // In mobile view: only home and contact pages are public
+      publicRoutes = ['/', '/Home', '/Contact', '/sign-in', '/sign-up'];
+    } else {
+      // In desktop view: keep original behavior
+      publicRoutes = ['/', '/Contact', '/sign-in', '/sign-up'];
+    }
+    
     const isPublicRoute = publicRoutes.includes(pathname);
 
     // If not loading, not authenticated, and not on a public route, redirect to sign-in
@@ -23,7 +34,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
       const redirectUrl = `/sign-in?redirectTo=${encodeURIComponent(pathname)}`;
       router.push(redirectUrl);
     }
-  }, [user, loading, pathname, router]);
+  }, [user, loading, pathname, router, isMobile]);
 
   // Show loading state while checking authentication
   if (loading) {
@@ -34,8 +45,17 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     );
   }
 
-  // Public routes that don't require authentication
-  const publicRoutes = ['/', '/Contact', '/sign-in', '/sign-up'];
+  // Define public routes based on mobile/desktop view
+  let publicRoutes: string[];
+  
+  if (isMobile) {
+    // In mobile view: only home and contact pages are public
+    publicRoutes = ['/', '/Home', '/Contact', '/sign-in', '/sign-up'];
+  } else {
+    // In desktop view: keep original behavior
+    publicRoutes = ['/', '/Contact', '/sign-in', '/sign-up'];
+  }
+  
   const isPublicRoute = publicRoutes.includes(pathname);
 
   // If not authenticated and not on a public route, show nothing (will redirect)

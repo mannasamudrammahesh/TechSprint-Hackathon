@@ -2,14 +2,34 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createClient } from '@supabase/supabase-js';
 
+// Function to detect mobile devices from User-Agent
+function isMobileDevice(userAgent: string): boolean {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+}
+
 // Routes that don't require authentication
-const publicRoutes = [
-  "/",
-  "/Contact",
-  "/sign-in",
-  "/sign-up",
-  "/api/uploadthing",
-];
+function getPublicRoutes(isMobile: boolean): string[] {
+  if (isMobile) {
+    // In mobile view: only home and contact pages are public
+    return [
+      "/",
+      "/Home",
+      "/Contact",
+      "/sign-in",
+      "/sign-up",
+      "/api/uploadthing",
+    ];
+  } else {
+    // In desktop view: keep original behavior
+    return [
+      "/",
+      "/Contact",
+      "/sign-in",
+      "/sign-up",
+      "/api/uploadthing",
+    ];
+  }
+}
 
 // Routes to ignore completely
 const ignoredRoutes = [
@@ -28,6 +48,13 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Detect if it's a mobile device
+  const userAgent = request.headers.get('user-agent') || '';
+  const isMobile = isMobileDevice(userAgent);
+  
+  // Get public routes based on device type
+  const publicRoutes = getPublicRoutes(isMobile);
+  
   // Check if it's a public route
   const isPublicRoute = publicRoutes.some(route => pathname === route || pathname.startsWith(route));
 

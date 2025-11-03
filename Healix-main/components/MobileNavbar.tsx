@@ -4,11 +4,13 @@ import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import HealixLogo from "@/components/HealixLogo";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function MobileNavbar() {
   const [showMenu, setShowMenu] = useState(false);
   const pathname = usePathname();
   const isChatPage = pathname === '/Chat';
+  const { user, signOut } = useAuth();
 
   const toggleMenu = () => {
     setShowMenu(!showMenu);
@@ -105,13 +107,26 @@ export default function MobileNavbar() {
                 >
                   Contact
                 </Link>
-                <Link
-                  href="/sign-in"
-                  className="bg-gray-500 text-white font-bold py-3 px-6 rounded text-lg"
-                  onClick={closeMenu}
-                >
-                  Sign In
-                </Link>
+                {/* Show Sign In/Sign Out based on authentication status */}
+                {user ? (
+                  <button
+                    onClick={async () => {
+                      closeMenu();
+                      await signOut();
+                    }}
+                    className="bg-red-500 text-white font-bold py-3 px-6 rounded text-lg"
+                  >
+                    Sign Out
+                  </button>
+                ) : (
+                  <Link
+                    href="/sign-in"
+                    className="bg-gray-500 text-white font-bold py-3 px-6 rounded text-lg"
+                    onClick={closeMenu}
+                  >
+                    Sign In
+                  </Link>
+                )}
               </div>
             </div>
           </div>

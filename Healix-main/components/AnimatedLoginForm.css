@@ -153,70 +153,13 @@
 
 @media (max-width: 768px) {
   .login-form-component-root {
-    min-width: 320px;
-    padding: var(--spacing-1x);
+    min-width: 100%;
   }
-
+  
   .rive-container {
-    min-height: 250px;
-    min-width: 320px;
-  }
-
-  .login-form-wrapper {
-    max-width: 350px;
-  }
-
-  .form-container {
-    padding: var(--spacing-3x);
-  }
-
-  .form-container input {
-    font-size: 15px;
-  }
-
-  .login-btn {
-    font-size: 15px;
+    min-height: 300px;
+    min-width: 300px;
   }
 }
 
-@media (max-width: 480px) {
-  .login-form-component-root {
-    min-width: 100%;
-    padding: var(--spacing-1x);
-  }
 
-  .rive-container {
-    min-width: 100%;
-    min-height: 220px;
-  }
-
-  .login-form-wrapper {
-    max-width: 100%;
-    width: 100%;
-  }
-
-  .form-container {
-    padding: var(--spacing-2x);
-  }
-
-  .form-container input {
-    font-size: 14px;
-    height: 45px;
-    line-height: 45px;
-  }
-
-  .login-btn {
-    font-size: 14px;
-    height: 45px;
-    line-height: 45px;
-  }
-
-  .error-message,
-  .success-message {
-    font-size: 13px;
-  }
-
-  .form-footer {
-    font-size: 13px;
-  }
-}
