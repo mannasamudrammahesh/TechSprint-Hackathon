@@ -479,7 +479,7 @@ export default function Home() {
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col">
         {/* Header with Counselling Image and Back Button */}
-        <div className="bg-[#d6e2ea] border-b border-gray-300 p-3 md:p-4 shadow-sm">
+        <div className="sticky top-0 z-30 bg-[#d6e2ea] border-b border-gray-300 p-3 md:p-4 shadow-sm">
           <div className="flex items-center justify-between max-w-7xl mx-auto">
             {/* Left: Menu Button */}
             <Button
