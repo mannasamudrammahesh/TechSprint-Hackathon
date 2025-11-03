@@ -2,10 +2,13 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import HealixLogo from "@/components/HealixLogo";
 
 export default function MobileNavbar() {
   const [showMenu, setShowMenu] = useState(false);
+  const pathname = usePathname();
+  const isChatPage = pathname === '/Chat';
 
   const toggleMenu = () => {
     setShowMenu(!showMenu);
@@ -14,6 +17,11 @@ export default function MobileNavbar() {
   const closeMenu = () => {
     setShowMenu(false);
   };
+
+  // Hide navbar on Chat page in mobile view only
+  if (isChatPage) {
+    return null;
+  }
 
   return (
     <>
