@@ -133,20 +133,3 @@
     }
 
 }
-
-/* Critical mobile navbar fix */
-@media (max-width: 768px) {
-    /* Ensure navbar container is always at top */
-    nav {
-        position: relative !important;
-        top: 0 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-    
-    /* Force navbar content to be visible */
-    nav > div {
-        margin-top: 0 !important;
-        transform: translateY(0) !important;
-    }
-}
