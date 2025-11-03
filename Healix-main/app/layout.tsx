@@ -16,10 +16,6 @@ const GlobalNavbar = dynamic(() => import('@/components/GlobalNavbar'), {
   ssr: false,
   loading: () => <div className="h-16 md:h-20 lg:h-28" />
 });
-const MobileNavbar = dynamic(() => import('@/components/MobileNavbar'), {
-  ssr: false,
-  loading: () => <div className="md:hidden h-12 sm:h-14" />
-});
 const fallbackFonts = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
 const ProtectedRoute = dynamic(() => import('@/components/ProtectedRoute'), {
   ssr: false,
@@ -38,7 +34,6 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   return (
     <ProtectedRoute>
       {!isHomePage && !isChatPage && !isAuthPage && <GlobalNavbar />}
-      {!isAuthPage && <MobileNavbar />}
       {children}
       {!isAuthPage && <MicrophoneToggle />}
     </ProtectedRoute>

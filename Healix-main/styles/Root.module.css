@@ -126,33 +126,6 @@
 
 }
 
-/* Mobile-only navbar styles */
-@media (max-width: 767px) {
-    .mobileMenubar {
-        position: fixed;
-        flex-direction: column;
-        left: 0;
-        right: 0;
-        top: -100%;
-        background-color: #d6e2ea;
-        width: 100%;
-        min-height: 100vh;
-        transition: top 0.4s ease-in-out;
-        padding: 50px 20px 40px 20px;
-        z-index: 9;
-        overflow-y: auto;
-    }
-
-    .mobileMenubar ul {
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .menu.click~.mobileMenubar {
-        top: 0;
-    }
-}
-
 @media (min-width: 1025px) {
 
     .menuli {

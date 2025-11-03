@@ -30,7 +30,7 @@ export default function HomeLayout({
 
   return (
     <div className={`${showMenu ? "overflow-hidden h-screen" : ""}`}>
-      <nav className={`hidden md:block fixed top-0 left-0 right-0 z-50 ${styles.mobileNavbar}`} style={{ backgroundColor: '#d6e2ea' }}>
+      <nav className={`fixed top-0 left-0 right-0 z-50 ${styles.mobileNavbar}`} style={{ backgroundColor: '#d6e2ea' }}>
         <div className="flex px-2 py-3 pt-4 sm:px-4 sm:py-4 sm:pt-6 md:p-10 items-center justify-between font-bold pb-3 sm:pb-4 md:pb-40">
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center">
@@ -152,8 +152,8 @@ export default function HomeLayout({
           </div>
         </div>
       </nav>
-      {/* Spacer to prevent content from going under the fixed navbar - only for desktop */}
-      <div className="hidden md:block md:h-28"></div>
+      {/* Spacer to prevent content from going under the fixed navbar */}
+      <div className="h-12 sm:h-16 md:h-28"></div>
       {!showMenu ? children : ""}
     </div>
   );
