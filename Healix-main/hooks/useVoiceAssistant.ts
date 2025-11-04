@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useUserSettings } from "@/contexts/UserSettingsContext";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   voiceSelector,
   detectWakeWord,
@@ -484,6 +485,7 @@ export const useVoiceAssistant = (
 ) => {
   const router = useRouter();
   const { settings } = useUserSettings();
+  const { user } = useAuth();
   const [state, setState] = useState<VoiceAssistantState>({
     isListening: false,
     isSpeaking: false,
@@ -504,6 +506,12 @@ export const useVoiceAssistant = (
   const isActivatingRef = useRef<boolean>(false); // Track if currently activating
   const isRestartingRef = useRef<boolean>(false); // Prevent rapid restarts
   const cachedFemaleVoiceRef = useRef<SpeechSynthesisVoice | null>(null); // Cache female voice for faster response
+
+  // Check if user is on mobile device
+  const isMobile = useCallback(() => {
+    if (typeof window === "undefined") return false;
+    return window.innerWidth <= 768;
+  }, []);
 
   const defaultConfig: VoiceAssistantConfig = {
     hotword: settings.wakeWord.toLowerCase(),
@@ -1095,11 +1103,8 @@ export const useVoiceAssistant = (
 
       // Customize greeting for activate_assistant with username
       if (voiceCommand.intent === "activate_assistant") {
-        if (settings.userName) {
-          response = `Hello ${settings.userName}, I'm Healix, your mental health companion. How can I help you today?`;
-        } else {
-          response = `Hello! I'm Healix, your mental health companion. How can I help you today?`;
-        }
+        const userName = settings.userName || user?.user_metadata?.full_name || user?.email?.split('@')[0] || "there";
+        response = `Hello ${userName}, I'm ${settings.assistantName}, your mental health companion. How can I help you today?`;
       }
 
       // Speak first then execute for non-navigation commands
@@ -1282,6 +1287,11 @@ export const useVoiceAssistant = (
 
       const targetLanguage = language || settings.voiceLanguage;
 
+      // PREVENT MULTIPLE SIMULTANEOUS SPEECH - Cancel any ongoing speech first
+      if (synthesisRef.current) {
+        synthesisRef.current.cancel();
+      }
+
       setState((prev) => ({ ...prev, isSpeaking: true, status: "speaking" }));
 
       // Use browser TTS with voice selection
@@ -1413,6 +1423,17 @@ export const useVoiceAssistant = (
 
   // Start listening - KEEPS MICROPHONE ON CONTINUOUSLY
   const startListening = useCallback(() => {
+    // Check authentication for mobile users ONLY
+    if (isMobile() && !user) {
+      console.error("❌ Mobile user not authenticated");
+      setState((prev) => ({
+        ...prev,
+        error: "Please sign in to use voice features on mobile",
+        status: "error",
+      }));
+      return;
+    }
+
     if (!recognitionRef.current) {
       console.error("❌ Speech recognition not initialized");
       setState((prev) => ({
@@ -1455,7 +1476,7 @@ export const useVoiceAssistant = (
         }));
       }
     }
-  }, [state.isListening]);
+  }, [state.isListening, isMobile, user]);
 
   // Stop listening - ONLY STOPS WHEN USER CLICKS BUTTON
   const stopListening = useCallback(() => {
@@ -1503,7 +1524,7 @@ export const useVoiceAssistant = (
     }
   }, []);
 
-  // Toggle listening
+  // Toggle listening with mobile authentication check
   const toggleListening = useCallback(() => {
     if (state.isListening) {
       stopListening();

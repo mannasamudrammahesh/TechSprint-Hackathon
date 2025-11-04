@@ -30,9 +30,24 @@ export default function MicrophoneToggle() {
     }
   }, [state.isListening]);
 
+  // Check if user is on mobile device
+  const isMobile = () => {
+    if (typeof window === "undefined") return false;
+    return window.innerWidth <= 768;
+  };
+
   const toggleMicrophone = async () => {
     // Prevent rapid toggling
     if (isTogglingRef.current) {
+      return;
+    }
+
+    // Check authentication for mobile users
+    if (isMobile() && !user && !loading) {
+      toast.error("Please sign in to use voice features on mobile", {
+        icon: '🔒',
+        duration: 3000,
+      });
       return;
     }
 
@@ -51,9 +66,13 @@ export default function MicrophoneToggle() {
         // Turn ON microphone
         await startListening();
         setIsMicActive(true);
-        toast.success("Microphone active - Say 'Hey Healix'", {
+        const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || '';
+        const message = userName 
+          ? `Microphone active - Say "Hey Healix" ${userName}!`
+          : "Microphone active - Say 'Hey Healix'";
+        toast.success(message, {
           icon: '🟢',
-          duration: 2000,
+          duration: 3000,
         });
       }
     } catch (error) {
@@ -70,6 +89,9 @@ export default function MicrophoneToggle() {
     }
   };
 
+  // Check if mobile user needs authentication
+  const needsAuth = isMobile() && !user && !loading;
+  
   return (
     <button
       onClick={toggleMicrophone}
@@ -82,16 +104,36 @@ export default function MicrophoneToggle() {
         shadow-2xl hover:shadow-3xl
         transition-all duration-300 ease-in-out
         hover:scale-105 active:scale-95
-        ${isMicActive
+        ${needsAuth
+          ? 'bg-gradient-to-br from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600'
+          : isMicActive
           ? 'bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700'
           : 'bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700'
         }
         border-2 sm:border-3 md:border-4 border-white
+        ${needsAuth ? 'opacity-75' : ''}
       `}
-      aria-label={isMicActive ? "Turn off microphone" : "Turn on microphone"}
-      title={isMicActive ? "Microphone ON - Click to turn off" : "Microphone OFF - Click to turn on"}
+      aria-label={
+        needsAuth 
+          ? "Sign in required for voice features" 
+          : isMicActive 
+          ? "Turn off microphone" 
+          : "Turn on microphone"
+      }
+      title={
+        needsAuth
+          ? "Sign in to use voice features on mobile"
+          : isMicActive 
+          ? "Microphone ON - Click to turn off" 
+          : "Microphone OFF - Click to turn on"
+      }
     >
-      {isMicActive ? (
+      {needsAuth ? (
+        <div className="relative">
+          <FaMicrophoneSlash size={20} className="text-white sm:w-6 sm:h-6 md:w-7 md:h-7" />
+          <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full border border-white"></div>
+        </div>
+      ) : isMicActive ? (
         <FaMicrophone size={20} className="text-white sm:w-6 sm:h-6 md:w-7 md:h-7" />
       ) : (
         <FaMicrophoneSlash size={20} className="text-white sm:w-6 sm:h-6 md:w-7 md:h-7" />
