@@ -534,7 +534,7 @@ export const useVoiceAssistant = (
         .replace(/[^a-zA-Z\s]/g, '') // Remove non-letters except spaces
         .replace(/\s+/g, ' ') // Replace multiple spaces with single space
         .trim();
-      
+
       if (cleanName.length > 0) {
         return cleanName;
       }
@@ -629,12 +629,12 @@ export const useVoiceAssistant = (
             lastActivationTimeRef.current = now;
             isActivatingRef.current = true;
             justActivatedRef.current = true; // Prevent processing this transcript as command
-            
+
             // Clear transcript to avoid processing wake word as command
             setState((prev) => ({ ...prev, transcript: "" }));
-            
+
             activateAssistant();
-            
+
             // Reset activation flags after a delay
             setTimeout(() => {
               isActivatingRef.current = false;
@@ -653,11 +653,11 @@ export const useVoiceAssistant = (
               'i can help you navigate', 'start games', 'breathing exercises',
               'therapeutic music', 'what you like to do'
             ];
-            
-            const isAssistantSpeech = assistantSpeechPatterns.some(pattern => 
+
+            const isAssistantSpeech = assistantSpeechPatterns.some(pattern =>
               lowerTranscript.includes(pattern)
             );
-            
+
             if (!isAssistantSpeech) {
               console.log("🎯 Processing command:", finalTranscript);
               processCommand(finalTranscript, detectedLanguage);
@@ -774,7 +774,7 @@ export const useVoiceAssistant = (
 
       // Load voices immediately (only log once on first load)
       let voices = speechSynthesis.getVoices();
-      
+
       // Only log if voices are available and not already logged
       if (voices.length > 0 && !cachedFemaleVoiceRef.current) {
         console.log('🎤 Speech synthesis initialized with', voices.length, 'voices');
@@ -800,7 +800,7 @@ export const useVoiceAssistant = (
   // Activate assistant
   const activateAssistant = useCallback(() => {
     console.log("🚀 Activating assistant...");
-    
+
     // Update state to active
     setState((prev) => ({
       ...prev,
@@ -821,19 +821,19 @@ export const useVoiceAssistant = (
     // Provide personalized greeting immediately using direct speech synthesis
     const userName = getCleanUserName();
     const greeting = `Hello ${userName}, I'm ${settings.assistantName}, your mental health companion. How can I help you today?`;
-    
+
     console.log("🎤 Speaking greeting:", greeting);
-    
+
     // Use direct speech synthesis for greeting
     if (synthesisRef.current && defaultConfig.enableTTS) {
       synthesisRef.current.cancel(); // Cancel any ongoing speech
-      
+
       const utterance = new SpeechSynthesisUtterance(greeting);
       utterance.lang = settings.voiceLanguage;
       utterance.rate = settings.voiceSpeed || 1.0;
       utterance.pitch = settings.voicePitch || 1.1;
       utterance.volume = settings.voiceVolume || 1.0;
-      
+
       utterance.onstart = () => {
         setState((prev) => ({ ...prev, isSpeaking: true, status: "speaking" }));
         // Stop recognition while speaking to prevent hearing own voice
@@ -846,11 +846,11 @@ export const useVoiceAssistant = (
           }
         }
       };
-      
+
       utterance.onend = () => {
         setState((prev) => ({ ...prev, isSpeaking: false, status: "listening" }));
         console.log("🎤 Greeting completed, waiting before restarting recognition");
-        
+
         // Wait a bit longer after speech ends to ensure no echo/feedback
         setTimeout(() => {
           if (recognitionRef.current && shouldBeListeningRef.current) {
@@ -865,7 +865,7 @@ export const useVoiceAssistant = (
           }
         }, 1500); // Extra delay to prevent hearing own voice
       };
-      
+
       utterance.onerror = () => {
         setState((prev) => ({ ...prev, isSpeaking: false, status: "listening" }));
         // Restart recognition on error too
@@ -882,7 +882,7 @@ export const useVoiceAssistant = (
           }
         }, 1000);
       };
-      
+
       synthesisRef.current.speak(utterance);
     }
 
@@ -892,7 +892,7 @@ export const useVoiceAssistant = (
   // Deactivate assistant
   const deactivateAssistant = useCallback(() => {
     console.log("🛑 Deactivating assistant...");
-    
+
     setState((prev) => ({
       ...prev,
       isActive: false,
@@ -1114,16 +1114,16 @@ export const useVoiceAssistant = (
         console.log("🧭 Navigation command detected:", voiceCommand.intent);
         const response = intentDetectorRef.current.getResponse(voiceCommand.intent);
         console.log("🧭 Executing navigation to:", voiceCommand.intent);
-        
+
         // Speak first to provide immediate feedback
         speak(response, detectedLanguage);
-        
+
         // Then navigate with minimal delay for near-simultaneous execution
         setTimeout(() => {
           executeCommand(voiceCommand);
           console.log("🧭 Navigation executed");
         }, 50);
-        
+
         setState((prev) => ({ ...prev, status: "idle" }));
         return;
       }
@@ -1213,11 +1213,18 @@ export const useVoiceAssistant = (
         return;
       }
 
+      // MOBILE FIX: Skip extra responses for navigation commands on mobile
+      // Navigation commands are already handled above with proper responses
+      if (isMobile() && voiceCommand.entities?.action === "navigate") {
+        console.log("🚫 Skipping duplicate response for navigation command on mobile");
+        return;
+      }
+
       // Speak first then execute for non-navigation commands
       speak(response, detectedLanguage);
       await executeCommand(voiceCommand);
     },
-    [settings.voiceLanguage, getCleanUserName],
+    [settings.voiceLanguage, getCleanUserName, isMobile],
   );
 
   // Execute command
@@ -1252,7 +1259,10 @@ export const useVoiceAssistant = (
               // This is handled by music_player action below
               break;
             case "navigate_insights":
-              speak("Insights has been removed.");
+              // Only speak if not on mobile (mobile already got response from navigation section)
+              if (!isMobile()) {
+                speak("Insights has been removed.");
+              }
               break;
             case "navigate_guide":
               router.push("/Guide-Eval");
@@ -1383,7 +1393,7 @@ export const useVoiceAssistant = (
           console.log("Unknown command:", command);
       }
     },
-    [router, deactivateAssistant],
+    [router, deactivateAssistant, isMobile],
   );
 
   // Text-to-speech with backend TTS for multilingual support
@@ -1432,7 +1442,7 @@ export const useVoiceAssistant = (
 
       // Use cached voice for faster response, or find it if not cached
       let femaleVoice = cachedFemaleVoiceRef.current;
-      
+
       if (!femaleVoice) {
         // Get all available voices
         const voices = speechSynthesis.getVoices();
@@ -1511,7 +1521,7 @@ export const useVoiceAssistant = (
 
       utterance.onend = () => {
         setState((prev) => ({ ...prev, isSpeaking: false, status: "listening" }));
-        
+
         // Restart recognition after speech ends with a delay to prevent echo
         setTimeout(() => {
           if (recognitionRef.current && shouldBeListeningRef.current && !state.isSpeaking) {
@@ -1532,7 +1542,7 @@ export const useVoiceAssistant = (
         // Don't log full error object, just the type
         console.log('Error type:', error.error || 'unknown');
         setState((prev) => ({ ...prev, isSpeaking: false, status: "listening" }));
-        
+
         // Restart recognition on error too
         setTimeout(() => {
           if (recognitionRef.current && shouldBeListeningRef.current) {
