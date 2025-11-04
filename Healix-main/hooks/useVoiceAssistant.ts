@@ -1109,6 +1109,14 @@ export const useVoiceAssistant = (
       );
       setState((prev) => ({ ...prev, lastCommand: voiceCommand }));
 
+      // DEBUG: Log intent detection for mobile
+      if (isMobile()) {
+        console.log("🔍 MOBILE DEBUG - Command:", command);
+        console.log("🔍 MOBILE DEBUG - Detected intent:", voiceCommand.intent);
+        console.log("🔍 MOBILE DEBUG - Action:", voiceCommand.entities?.action);
+        console.log("🔍 MOBILE DEBUG - Confidence:", voiceCommand.confidence);
+      }
+
       // PRIORITY 1: Check for navigation commands FIRST (including music therapy page)
       if (voiceCommand.entities?.action === "navigate") {
         console.log("🧭 Navigation command detected:", voiceCommand.intent);
@@ -1183,7 +1191,14 @@ export const useVoiceAssistant = (
 
       // If unknown or conversational, use LOCAL response system (no API calls - completely free!)
       if (voiceCommand.intent === "unknown" || isStressRelated) {
-        // INSTANT FEEDBACK: Speak immediately
+        // MOBILE FIX: Skip local response system on mobile to prevent non-related responses
+        if (isMobile()) {
+          console.log("🚫 Skipping local response system on mobile for unknown command:", command);
+          setState((prev) => ({ ...prev, status: "idle" }));
+          return;
+        }
+
+        // INSTANT FEEDBACK: Speak immediately (desktop/tablet only)
         const quickResponse = getQuickAcknowledgment(command);
         speak(quickResponse, detectedLanguage);
 
@@ -1220,7 +1235,15 @@ export const useVoiceAssistant = (
         return;
       }
 
-      // Speak first then execute for non-navigation commands
+      // MOBILE FIX: Skip generic responses on mobile for any remaining commands
+      if (isMobile()) {
+        console.log("🚫 Skipping generic response on mobile for command:", voiceCommand.intent);
+        await executeCommand(voiceCommand);
+        setState((prev) => ({ ...prev, status: "idle" }));
+        return;
+      }
+
+      // Speak first then execute for non-navigation commands (desktop/tablet only)
       speak(response, detectedLanguage);
       await executeCommand(voiceCommand);
     },
