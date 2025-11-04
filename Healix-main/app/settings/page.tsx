@@ -260,6 +260,10 @@ export default function SettingsPage() {
                         <p className="text-[10px] md:text-xs text-gray-600">Listen to calming music and meditation sounds</p>
                       </div>
                       <div className="p-2 md:p-3 bg-gray-50 rounded-lg border border-gray-200">
+                        <p className="font-medium text-gray-800 text-xs md:text-sm">"Go to Music Player" / "Open Music Player"</p>
+                        <p className="text-[10px] md:text-xs text-gray-600">Listen calm music in player</p>
+                      </div>
+                      <div className="p-2 md:p-3 bg-gray-50 rounded-lg border border-gray-200">
                         <p className="font-medium text-gray-800 text-xs md:text-sm">"Go to Settings" / "Open Preferences"</p>
                         <p className="text-[10px] md:text-xs text-gray-600">Adjust your app settings and preferences</p>
                       </div>
