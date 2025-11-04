@@ -506,12 +506,43 @@ export const useVoiceAssistant = (
   const isActivatingRef = useRef<boolean>(false); // Track if currently activating
   const isRestartingRef = useRef<boolean>(false); // Prevent rapid restarts
   const cachedFemaleVoiceRef = useRef<SpeechSynthesisVoice | null>(null); // Cache female voice for faster response
+  const justActivatedRef = useRef<boolean>(false); // Prevent processing wake word as command
 
   // Check if user is on mobile device
   const isMobile = useCallback(() => {
     if (typeof window === "undefined") return false;
     return window.innerWidth <= 768;
   }, []);
+
+  // Extract clean name for greeting
+  const getCleanUserName = useCallback(() => {
+    // Priority 1: Use profile name from settings
+    if (settings.userName && settings.userName.trim()) {
+      return settings.userName.trim();
+    }
+
+    // Priority 2: Use full name from user metadata
+    if (user?.user_metadata?.full_name && user.user_metadata.full_name.trim()) {
+      return user.user_metadata.full_name.trim();
+    }
+
+    // Priority 3: Extract and clean username from email
+    if (user?.email) {
+      const emailUsername = user.email.split('@')[0];
+      // Remove numbers and special characters, keep only letters and spaces
+      const cleanName = emailUsername
+        .replace(/[^a-zA-Z\s]/g, '') // Remove non-letters except spaces
+        .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+        .trim();
+      
+      if (cleanName.length > 0) {
+        return cleanName;
+      }
+    }
+
+    // Fallback
+    return "there";
+  }, [settings.userName, user?.user_metadata?.full_name, user?.email]);
 
   const defaultConfig: VoiceAssistantConfig = {
     hotword: settings.wakeWord.toLowerCase(),
@@ -597,21 +628,27 @@ export const useVoiceAssistant = (
             console.log(`🎯 Wake word detected: "${settings.wakeWord}"`);
             lastActivationTimeRef.current = now;
             isActivatingRef.current = true;
+            justActivatedRef.current = true; // Prevent processing this transcript as command
             
             // Clear transcript to avoid processing wake word as command
             setState((prev) => ({ ...prev, transcript: "" }));
             
             activateAssistant();
             
-            // Reset activation flag after a delay
+            // Reset activation flags after a delay
             setTimeout(() => {
               isActivatingRef.current = false;
-            }, 2000);
+              justActivatedRef.current = false; // Allow command processing again
+            }, 3000); // Increased delay to ensure greeting completes
           }
         } else {
           // Process commands when assistant is active (only on final transcript)
-          if (finalTranscript) {
+          // BUT NOT if we just activated (to prevent processing wake word as command)
+          if (finalTranscript && !justActivatedRef.current) {
+            console.log("🎯 Processing command:", finalTranscript);
             processCommand(finalTranscript, detectedLanguage);
+          } else if (finalTranscript && justActivatedRef.current) {
+            console.log("🚫 Skipping command processing - just activated with wake word");
           }
         }
       };
@@ -764,15 +801,36 @@ export const useVoiceAssistant = (
       }
     }
 
-    // NO GREETING HERE - Let the intent response handle it
-    // This prevents double voice issue
+    // Provide personalized greeting immediately using direct speech synthesis
+    const userName = getCleanUserName();
+    const greeting = `Hello ${userName}, I'm ${settings.assistantName}, your mental health companion. How can I help you today?`;
+    
+    console.log("🎤 Speaking greeting:", greeting);
+    
+    // Use direct speech synthesis for greeting
+    if (synthesisRef.current && defaultConfig.enableTTS) {
+      synthesisRef.current.cancel(); // Cancel any ongoing speech
+      
+      const utterance = new SpeechSynthesisUtterance(greeting);
+      utterance.lang = settings.voiceLanguage;
+      utterance.rate = settings.voiceSpeed || 1.0;
+      utterance.pitch = settings.voicePitch || 1.1;
+      utterance.volume = settings.voiceVolume || 1.0;
+      
+      utterance.onstart = () => setState((prev) => ({ ...prev, isSpeaking: true, status: "speaking" }));
+      utterance.onend = () => setState((prev) => ({ ...prev, isSpeaking: false, status: "listening" }));
+      utterance.onerror = () => setState((prev) => ({ ...prev, isSpeaking: false, status: "listening" }));
+      
+      synthesisRef.current.speak(utterance);
+    }
 
-    // Restart recognition for commands after a shorter delay for faster response
+    // Restart recognition for commands after greeting completes
     setTimeout(() => {
       if (recognitionRef.current && shouldBeListeningRef.current) {
         try {
           recognitionRef.current.start();
-          console.log("✅ Recognition restarted for commands");
+          console.log("✅ Recognition restarted for commands after greeting");
+          setState((prev) => ({ ...prev, status: "listening" }));
         } catch (e: any) {
           // Ignore "already started" errors
           if (!e.message?.includes('already started')) {
@@ -780,8 +838,8 @@ export const useVoiceAssistant = (
           }
         }
       }
-    }, 100); // Reduced from 1500ms to 100ms for faster response
-  }, []);
+    }, 2000); // Wait for greeting to complete
+  }, [getCleanUserName, settings.assistantName, settings.voiceLanguage, settings.voiceSpeed, settings.voicePitch, settings.voiceVolume, defaultConfig.enableTTS]);
 
   // Deactivate assistant
   const deactivateAssistant = useCallback(() => {
@@ -1101,17 +1159,17 @@ export const useVoiceAssistant = (
         voiceCommand.intent,
       );
 
-      // Customize greeting for activate_assistant with username
+      // Skip greeting for activate_assistant since it's handled in activateAssistant function
       if (voiceCommand.intent === "activate_assistant") {
-        const userName = settings.userName || user?.user_metadata?.full_name || user?.email?.split('@')[0] || "there";
-        response = `Hello ${userName}, I'm ${settings.assistantName}, your mental health companion. How can I help you today?`;
+        // Don't speak anything here - greeting is already handled
+        return;
       }
 
       // Speak first then execute for non-navigation commands
       speak(response, detectedLanguage);
       await executeCommand(voiceCommand);
     },
-    [settings.voiceLanguage, settings.userName],
+    [settings.voiceLanguage, getCleanUserName],
   );
 
   // Execute command

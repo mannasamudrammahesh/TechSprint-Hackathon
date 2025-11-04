@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FaMicrophone, FaMicrophoneSlash } from 'react-icons/fa';
 import { useVoiceAssistant } from '@/hooks/useVoiceAssistant';
 import { useAuth } from '@/contexts/AuthContext';
+import { useUserSettings } from '@/contexts/UserSettingsContext';
 import toast from 'react-hot-toast';
 
 /**
@@ -16,6 +17,7 @@ import toast from 'react-hot-toast';
  */
 export default function MicrophoneToggle() {
   const { user, loading } = useAuth();
+  const { settings } = useUserSettings();
   const { state, startListening, stopListening } = useVoiceAssistant();
   const [isMicActive, setIsMicActive] = useState(false);
   const isTogglingRef = useRef(false);
@@ -66,10 +68,20 @@ export default function MicrophoneToggle() {
         // Turn ON microphone
         await startListening();
         setIsMicActive(true);
-        const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || '';
+        // Extract clean name for toast message
+        let userName = '';
+        if (user?.user_metadata?.full_name && user.user_metadata.full_name.trim()) {
+          userName = user.user_metadata.full_name.trim();
+        } else if (user?.email) {
+          const emailUsername = user.email.split('@')[0];
+          // Remove numbers and special characters, keep only letters
+          userName = emailUsername.replace(/[^a-zA-Z\s]/g, '').replace(/\s+/g, ' ').trim();
+        }
+        
+        const assistantName = settings.assistantName || 'Healix';
         const message = userName 
-          ? `Microphone active - Say "Hey Healix" ${userName}!`
-          : "Microphone active - Say 'Hey Healix'";
+          ? `Microphone active - Say "Hey ${assistantName}" ${userName}!`
+          : `Microphone active - Say "Hey ${assistantName}"`;
         toast.success(message, {
           icon: '🟢',
           duration: 3000,
