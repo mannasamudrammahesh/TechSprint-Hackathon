@@ -644,9 +644,26 @@ export const useVoiceAssistant = (
         } else {
           // Process commands when assistant is active (only on final transcript)
           // BUT NOT if we just activated (to prevent processing wake word as command)
+          // AND NOT if it sounds like the assistant's own speech
           if (finalTranscript && !justActivatedRef.current) {
-            console.log("🎯 Processing command:", finalTranscript);
-            processCommand(finalTranscript, detectedLanguage);
+            // Filter out assistant's own speech patterns
+            const lowerTranscript = finalTranscript.toLowerCase();
+            const assistantSpeechPatterns = [
+              'hello', 'im healix', 'mental health companion', 'how can i help',
+              'i can help you navigate', 'start games', 'breathing exercises',
+              'therapeutic music', 'what you like to do'
+            ];
+            
+            const isAssistantSpeech = assistantSpeechPatterns.some(pattern => 
+              lowerTranscript.includes(pattern)
+            );
+            
+            if (!isAssistantSpeech) {
+              console.log("🎯 Processing command:", finalTranscript);
+              processCommand(finalTranscript, detectedLanguage);
+            } else {
+              console.log("🚫 Ignoring assistant's own speech:", finalTranscript);
+            }
           } else if (finalTranscript && justActivatedRef.current) {
             console.log("🚫 Skipping command processing - just activated with wake word");
           }
@@ -817,28 +834,59 @@ export const useVoiceAssistant = (
       utterance.pitch = settings.voicePitch || 1.1;
       utterance.volume = settings.voiceVolume || 1.0;
       
-      utterance.onstart = () => setState((prev) => ({ ...prev, isSpeaking: true, status: "speaking" }));
-      utterance.onend = () => setState((prev) => ({ ...prev, isSpeaking: false, status: "listening" }));
-      utterance.onerror = () => setState((prev) => ({ ...prev, isSpeaking: false, status: "listening" }));
+      utterance.onstart = () => {
+        setState((prev) => ({ ...prev, isSpeaking: true, status: "speaking" }));
+        // Stop recognition while speaking to prevent hearing own voice
+        if (recognitionRef.current) {
+          try {
+            recognitionRef.current.stop();
+            console.log("🔇 Stopped recognition during greeting to prevent self-hearing");
+          } catch (e) {
+            console.error("Error stopping recognition during speech:", e);
+          }
+        }
+      };
+      
+      utterance.onend = () => {
+        setState((prev) => ({ ...prev, isSpeaking: false, status: "listening" }));
+        console.log("🎤 Greeting completed, waiting before restarting recognition");
+        
+        // Wait a bit longer after speech ends to ensure no echo/feedback
+        setTimeout(() => {
+          if (recognitionRef.current && shouldBeListeningRef.current) {
+            try {
+              recognitionRef.current.start();
+              console.log("✅ Recognition restarted after greeting with delay");
+            } catch (e: any) {
+              if (!e.message?.includes('already started')) {
+                console.error("Failed to restart recognition after greeting:", e);
+              }
+            }
+          }
+        }, 1500); // Extra delay to prevent hearing own voice
+      };
+      
+      utterance.onerror = () => {
+        setState((prev) => ({ ...prev, isSpeaking: false, status: "listening" }));
+        // Restart recognition on error too
+        setTimeout(() => {
+          if (recognitionRef.current && shouldBeListeningRef.current) {
+            try {
+              recognitionRef.current.start();
+              console.log("✅ Recognition restarted after speech error");
+            } catch (e: any) {
+              if (!e.message?.includes('already started')) {
+                console.error("Failed to restart recognition after speech error:", e);
+              }
+            }
+          }
+        }, 1000);
+      };
       
       synthesisRef.current.speak(utterance);
     }
 
-    // Restart recognition for commands after greeting completes
-    setTimeout(() => {
-      if (recognitionRef.current && shouldBeListeningRef.current) {
-        try {
-          recognitionRef.current.start();
-          console.log("✅ Recognition restarted for commands after greeting");
-          setState((prev) => ({ ...prev, status: "listening" }));
-        } catch (e: any) {
-          // Ignore "already started" errors
-          if (!e.message?.includes('already started')) {
-            console.error("Failed to restart recognition for commands:", e);
-          }
-        }
-      }
-    }, 2000); // Wait for greeting to complete
+    // Recognition restart is now handled in utterance.onend to prevent timing issues
   }, [getCleanUserName, settings.assistantName, settings.voiceLanguage, settings.voiceSpeed, settings.voicePitch, settings.voiceVolume, defaultConfig.enableTTS]);
 
   // Deactivate assistant
@@ -1352,6 +1400,16 @@ export const useVoiceAssistant = (
 
       setState((prev) => ({ ...prev, isSpeaking: true, status: "speaking" }));
 
+      // Stop recognition while speaking to prevent hearing own voice
+      if (recognitionRef.current && state.isListening) {
+        try {
+          recognitionRef.current.stop();
+          console.log("🔇 Stopped recognition during speech to prevent self-hearing");
+        } catch (e) {
+          console.error("Error stopping recognition during speech:", e);
+        }
+      }
+
       // Use browser TTS with voice selection
       speakWithBrowserTTS(text, targetLanguage);
     },
@@ -1452,14 +1510,42 @@ export const useVoiceAssistant = (
       }
 
       utterance.onend = () => {
-        setState((prev) => ({ ...prev, isSpeaking: false, status: "idle" }));
+        setState((prev) => ({ ...prev, isSpeaking: false, status: "listening" }));
+        
+        // Restart recognition after speech ends with a delay to prevent echo
+        setTimeout(() => {
+          if (recognitionRef.current && shouldBeListeningRef.current && !state.isSpeaking) {
+            try {
+              recognitionRef.current.start();
+              console.log("✅ Recognition restarted after speech");
+            } catch (e: any) {
+              if (!e.message?.includes('already started')) {
+                console.error("Failed to restart recognition after speech:", e);
+              }
+            }
+          }
+        }, 800); // Delay to prevent hearing own voice
       };
 
       utterance.onerror = (error: any) => {
         console.error('❌ Speech synthesis error:', error);
         // Don't log full error object, just the type
         console.log('Error type:', error.error || 'unknown');
-        setState((prev) => ({ ...prev, isSpeaking: false, status: "idle" }));
+        setState((prev) => ({ ...prev, isSpeaking: false, status: "listening" }));
+        
+        // Restart recognition on error too
+        setTimeout(() => {
+          if (recognitionRef.current && shouldBeListeningRef.current) {
+            try {
+              recognitionRef.current.start();
+              console.log("✅ Recognition restarted after speech error");
+            } catch (e: any) {
+              if (!e.message?.includes('already started')) {
+                console.error("Failed to restart recognition after speech error:", e);
+              }
+            }
+          }
+        }, 500);
       };
 
       // Cancel any ongoing speech before starting new one

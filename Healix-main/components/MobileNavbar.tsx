@@ -97,6 +97,15 @@ export default function MobileNavbar() {
                     Music Therapy
                   </Link>
                 </li>
+                <li>
+                  <Link
+                    href="/settings"
+                    className="text-xl font-semibold text-black"
+                    onClick={closeMenu}
+                  >
+                    Settings
+                  </Link>
+                </li>
               </ul>
 
               <div className="flex flex-col items-center gap-4">
