@@ -767,15 +767,3 @@ export const detectWakeWord = (
 
   return allPatterns.some((pattern: RegExp) => pattern.test(normalizedText));
 };
-
-// Helper function to generate personalized greetings
-export const generatePersonalizedGreeting = (userName?: string): string => {
-  const greetings = [
-    `Hello ${userName || 'there'}! I'm Healix, your mental health companion. How can I help you today?`,
-    `Hi ${userName || 'there'}! I'm Healix, here to support your mental wellness journey. What's on your mind?`,
-    `Welcome ${userName || 'there'}! I'm Healix, your caring AI companion. How are you feeling today?`,
-    `Hello ${userName || 'there'}! I'm Healix, ready to listen and support you. What would you like to talk about?`
-  ];
-  
-  return greetings[Math.floor(Math.random() * greetings.length)];
-};

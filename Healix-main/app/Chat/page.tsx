@@ -15,8 +15,6 @@ import RiveBear from "@/components/RiveBear";
 import HealixLogo from "@/components/HealixLogo";
 import { useRouter } from "next/navigation";
 import { BeatLoader } from "react-spinners";
-import MobileVoiceAssistant from "@/components/MobileVoiceAssistant";
-import { useMobileDetection } from "@/hooks/useMobileDetection";
 
 interface Message {
   role: 'user' | 'assistant';
@@ -34,7 +32,6 @@ interface ChatHistory {
 export default function Home() {
   const { user } = useAuth();
   const router = useRouter();
-  const isMobile = useMobileDetection();
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -111,12 +108,6 @@ export default function Home() {
   }, [user?.id]);
 
   const startListening = () => {
-    // Check authentication for mobile users
-    if (isMobile && !user) {
-      toast.error("Please sign in to use voice features on mobile devices");
-      return;
-    }
-
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
@@ -532,27 +523,6 @@ export default function Home() {
               <p className="text-gray-600 max-w-lg text-base sm:text-lg leading-relaxed px-4">
                 I'm here to listen and support you. Share what's on your mind, and we'll work through it together.
               </p>
-              
-              {/* Mobile-specific voice instructions */}
-              {isMobile && user && (
-                <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200 max-w-sm">
-                  <p className="text-sm text-blue-800 mb-2">🎤 Voice Features Available!</p>
-                  <p className="text-xs text-blue-600">
-                    Use the voice assistant below or say "Hey Healix" to get started
-                  </p>
-                </div>
-              )}
-              
-              {/* Mobile authentication reminder */}
-              {isMobile && !user && (
-                <div className="mt-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200 max-w-sm">
-                  <p className="text-sm text-yellow-800 mb-2">🔐 Sign in for Voice Features</p>
-                  <p className="text-xs text-yellow-600">
-                    Voice assistant is available after signing in on mobile devices
-                  </p>
-                </div>
-              )}
-
               <div className="mt-6 md:mt-8 flex flex-wrap gap-2 md:gap-3 justify-center px-4">
                 <div className="px-3 md:px-4 py-1.5 md:py-2 bg-white rounded-full shadow-sm text-xs md:text-sm text-gray-600 border border-gray-200">
                   💬 Safe Space
@@ -563,11 +533,6 @@ export default function Home() {
                 <div className="px-3 md:px-4 py-1.5 md:py-2 bg-white rounded-full shadow-sm text-xs md:text-sm text-gray-600 border border-gray-200">
                   🔒 Confidential
                 </div>
-                {isMobile && user && (
-                  <div className="px-3 md:px-4 py-1.5 md:py-2 bg-white rounded-full shadow-sm text-xs md:text-sm text-gray-600 border border-gray-200">
-                    🎤 Voice Ready
-                  </div>
-                )}
               </div>
             </div>
           )}
@@ -691,20 +656,6 @@ export default function Home() {
           </div>
           <div ref={messagesEndRef} />
         </div>
-        {/* Mobile Voice Assistant - Only visible on mobile */}
-        {isMobile && (
-          <div className="block sm:hidden bg-[#d6e2ea] border-t border-gray-200 p-2">
-            <div className="max-w-4xl mx-auto">
-              <MobileVoiceAssistant
-                onTranscript={(transcript) => setPrompt(transcript)}
-                onSubmit={onSubmit}
-                disabled={loading}
-                language="en-US"
-              />
-            </div>
-          </div>
-        )}
-
         {/* Input Area - Sticky at bottom */}
         <div className="sticky bottom-4 sm:bottom-0 bg-gradient-to-t from-[#d6e2ea] to-transparent border-t border-gray-200 p-2 sm:p-3 md:p-4 backdrop-blur-sm">
           <div className="max-w-4xl mx-auto">
@@ -723,15 +674,11 @@ export default function Home() {
                   variant="ghost"
                   size="sm"
                   onClick={startListening}
-                  disabled={isListening || loading || (isMobile && !user)}
+                  disabled={isListening || loading}
                   className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 p-0 rounded-full hover:bg-gray-100 transition-all"
-                  title={isMobile && !user ? "Sign in to use voice on mobile" : "Voice input"}
+                  title="Voice input"
                 >
-                  <Mic size={18} className={cn(
-                    "sm:w-5 sm:h-5", 
-                    isListening ? "animate-pulse text-red-500" : 
-                    (isMobile && !user) ? "text-gray-400" : "text-gray-600"
-                  )} />
+                  <Mic size={18} className={cn("sm:w-5 sm:h-5", isListening ? "animate-pulse text-red-500" : "text-gray-600")} />
                 </Button>
                 <Button
                   variant="default"
