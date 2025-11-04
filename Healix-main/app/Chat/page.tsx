@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Markdown from "react-markdown";
 import { Input } from "@/components/ui/input";
 import { Mic, Volume2, User, Plus, History, Menu, X, ArrowLeft, MessageCircleCode } from "lucide-react";
@@ -11,10 +11,13 @@ import { TypingIndicator, HealixThinking } from "@/components/LoadingSpinner";
 import { useSpeechSynthesis } from "react-speech-kit";
 import { chatStorage } from "@/lib/chatStorage";
 import { useAuth } from "@/contexts/AuthContext";
+import { useUserSettings } from "@/contexts/UserSettingsContext";
 import RiveBear from "@/components/RiveBear";
 import HealixLogo from "@/components/HealixLogo";
+import MobileVoiceAssistant from "@/components/MobileVoiceAssistant";
 import { useRouter } from "next/navigation";
 import { BeatLoader } from "react-spinners";
+import { voiceSelector, getSpeechRecognitionLanguage } from "@/lib/voiceSelection";
 
 interface Message {
   role: 'user' | 'assistant';
@@ -31,6 +34,7 @@ interface ChatHistory {
 
 export default function Home() {
   const { user } = useAuth();
+  const { settings } = useUserSettings();
   const router = useRouter();
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
@@ -40,49 +44,64 @@ export default function Home() {
   const [showSidebar, setShowSidebar] = useState(false);
   const [chatHistory, setChatHistory] = useState<ChatHistory[]>([]);
   const [currentChatId, setCurrentChatId] = useState<string | null>(null);
+  const [lastResponseTime, setLastResponseTime] = useState(0);
   const submissionTimeout = useRef<NodeJS.Timeout | null>(null);
   const { speak, speaking, cancel, voices } = useSpeechSynthesis();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  const getBestVoice = () => {
-    const preferredVoiceNames = [
-      "Google UK English Female",
-      "Google US English Female",
-      "Microsoft Zira Desktop - English (United States)",
-      "Samantha",
-      "Victoria",
-      "Alex",
-      "Karen",
-    ];
-    for (const name of preferredVoiceNames) {
-      const exactMatch = voices.find((voice: SpeechSynthesisVoice) => voice.name === name);
-      if (exactMatch) return exactMatch;
-    }
-    const keywordMatch = voices.find(
-      (voice: SpeechSynthesisVoice) =>
-        (voice.name.toLowerCase().includes("female") ||
-          voice.name.toLowerCase().includes("girl") ||
-          voice.name.toLowerCase().includes("woman")) &&
-        voice.lang.startsWith("en"),
-    );
-    if (keywordMatch) return keywordMatch;
-    const providerMatch = voices.find(
-      (voice: SpeechSynthesisVoice) =>
-        (voice.name.includes("Google") || voice.name.includes("Microsoft")) &&
-        voice.lang.startsWith("en"),
-    );
-    if (providerMatch) return providerMatch;
-    const englishVoice = voices.find((voice: SpeechSynthesisVoice) => voice.lang.startsWith("en"));
-    return englishVoice || voices[0];
+  // Check if user is on mobile device
+  const isMobile = () => {
+    if (typeof window === "undefined") return false;
+    return window.innerWidth <= 768;
   };
 
-  const speechOptions = {
-    voice: getBestVoice(),
-    rate: 0.95,
-    pitch: 1.1,
-    volume: 1.0,
-  };
+  // Enhanced voice message speaking with settings
+  const speakMessage = useCallback((text: string) => {
+    if (!settings.voiceEnabled || !text.trim()) return;
+
+    // Prevent multiple simultaneous speech
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+
+    const voice = voiceSelector.getOptimalVoice(
+      settings.selectedVoice,
+      settings.voiceLanguage,
+      true // Prefer female voice for mental health context
+    );
+
+    if (!voice) {
+      console.warn("No suitable voice found, using fallback");
+      // Fallback to react-speech-kit
+      const processedText = processTextForSpeech(text);
+      if (processedText) {
+        speak({
+          text: processedText,
+          rate: settings.voiceSpeed,
+          pitch: settings.voicePitch,
+          volume: settings.voiceVolume,
+        });
+      }
+      return;
+    }
+
+    const processedText = processTextForSpeech(text);
+    if (!processedText) return;
+
+    const utterance = new SpeechSynthesisUtterance(processedText);
+    utterance.voice = voice;
+    utterance.rate = settings.voiceSpeed;
+    utterance.pitch = settings.voicePitch;
+    utterance.volume = settings.voiceVolume;
+    utterance.lang = settings.voiceLanguage;
+
+    utterance.onstart = () => console.log("Speech started");
+    utterance.onend = () => console.log("Speech ended");
+    utterance.onerror = (error) => console.error("Speech error:", error);
+
+    window.speechSynthesis.speak(utterance);
+  }, [settings, speak]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -108,6 +127,12 @@ export default function Home() {
   }, [user?.id]);
 
   const startListening = () => {
+    // Check authentication for mobile users
+    if (!user && isMobile()) {
+      toast.error("Please sign in to use voice features on mobile");
+      return;
+    }
+
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
@@ -116,7 +141,7 @@ export default function Home() {
     }
     const recognition = new SpeechRecognition();
     recognition.continuous = false;
-    recognition.lang = "en-US";
+    recognition.lang = getSpeechRecognitionLanguage(settings.voiceLanguage);
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
     recognition.onstart = () => {
@@ -168,27 +193,7 @@ export default function Home() {
     return cleanedText;
   };
 
-  const speakMessage = (text: string) => {
-    if (speaking) {
-      cancel();
-      return;
-    }
-    const processedText = processTextForSpeech(text);
-    if (!processedText) {
-      toast.error("No valid content to speak");
-      return;
-    }
-    toast.success("Starting speech...");
-    speak({
-      ...speechOptions,
-      text: processedText,
-      onEnd: () => toast.success("Speech completed"),
-      onError: (err: Error) => {
-        console.error("Speech error:", err);
-        toast.error("Speech playback failed");
-      },
-    });
-  };
+
 
   const onKeyDown = (e: any) => {
     if (e.key === "Enter") {
@@ -297,7 +302,7 @@ export default function Home() {
     toast.success("Chat deleted");
   };
 
-  const onSubmit = async () => {
+  const onSubmit = useCallback(async () => {
     if (submissionTimeout.current) clearTimeout(submissionTimeout.current);
     const trimmedPrompt = prompt.trim();
     if (!trimmedPrompt) return toast.error("Please enter a message!");
@@ -370,6 +375,13 @@ export default function Home() {
         userId: user?.id,
       });
       console.log('✅ Messages saved to storage');
+      
+      // Auto-speak response if voice is enabled and not too frequent
+      const now = Date.now();
+      if (settings.voiceEnabled && (now - lastResponseTime > 2000)) {
+        setLastResponseTime(now);
+        setTimeout(() => speakMessage(fullResponse), 500);
+      }
     } catch (error) {
       toast.error(
         `Failed to get response: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -377,7 +389,26 @@ export default function Home() {
       setLoading(false);
       setStreamingMessage("");
     }
-  };
+  }, [prompt, messages, user?.id, settings.voiceEnabled, lastResponseTime, speakMessage]);
+
+  // Handle voice input from mobile voice assistant
+  const handleVoiceInput = useCallback((text: string) => {
+    setPrompt(text);
+    toast.success("Voice captured!");
+    // Auto-submit after a short delay
+    submissionTimeout.current = setTimeout(() => onSubmit(), 1500);
+  }, [onSubmit]);
+
+  // Handle wake word detection
+  const handleWakeWordDetected = useCallback(() => {
+    // Clear any existing timeouts
+    if (submissionTimeout.current) {
+      clearTimeout(submissionTimeout.current);
+    }
+    
+    // Visual feedback for wake word detection
+    toast.success("Wake word detected!");
+  }, []);
 
   return (
     <div className="flex h-screen bg-[#d6e2ea]">
@@ -659,6 +690,16 @@ export default function Home() {
         {/* Input Area - Sticky at bottom */}
         <div className="sticky bottom-4 sm:bottom-0 bg-gradient-to-t from-[#d6e2ea] to-transparent border-t border-gray-200 p-2 sm:p-3 md:p-4 backdrop-blur-sm">
           <div className="max-w-4xl mx-auto">
+            {/* Mobile Voice Assistant - Only visible on mobile */}
+            <div className="block sm:hidden mb-3">
+              <MobileVoiceAssistant
+                onVoiceInput={handleVoiceInput}
+                onWakeWordDetected={handleWakeWordDetected}
+                isLoading={loading}
+                className="justify-center"
+              />
+            </div>
+            
             <div className="relative flex gap-2 items-center bg-white rounded-2xl shadow-xl border-2 border-gray-200 hover:border-blue-300 transition-colors">
               <Input
                 type="text"
@@ -670,12 +711,13 @@ export default function Home() {
                 disabled={loading}
               />
               <div className="absolute right-2 sm:right-3 flex gap-1 sm:gap-2">
+                {/* Desktop/Tablet Voice Input Button */}
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={startListening}
                   disabled={isListening || loading}
-                  className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 p-0 rounded-full hover:bg-gray-100 transition-all"
+                  className="hidden sm:flex h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 p-0 rounded-full hover:bg-gray-100 transition-all"
                   title="Voice input"
                 >
                   <Mic size={18} className={cn("sm:w-5 sm:h-5", isListening ? "animate-pulse text-red-500" : "text-gray-600")} />
@@ -694,6 +736,9 @@ export default function Home() {
             </div>
             <p className="text-[10px] sm:text-xs text-gray-500 text-center mt-1 sm:mt-2 hidden sm:block">
               Press Enter to send • Click mic for voice input
+            </p>
+            <p className="text-[10px] text-gray-500 text-center mt-1 block sm:hidden">
+              {user ? `Voice controls available • Signed in as ${user.user_metadata?.full_name || user.email}` : "Sign in to use voice features"}
             </p>
           </div>
         </div>
