@@ -353,6 +353,21 @@ class IntentDetector {
       response: "Music stopped.",
     });
 
+    this.intents.set("open_music_player", {
+      keywords: [
+        "open music player",
+        "start music player",
+        "launch music player",
+        "music player",
+        "show music player",
+        "open player",
+        "start player",
+        "launch player"
+      ],
+      action: "music_player",
+      response: "Opening music player.",
+    });
+
     this.intents.set("close_music_player", {
       keywords: [
         "exit music player",
@@ -1171,22 +1186,28 @@ export const useVoiceAssistant = (
           command.toLowerCase().includes("music") ||
           command.toLowerCase().includes("song"))
       ) {
-        // Use music service for stress relief
-        const musicService = MusicService.getInstance();
-        const recommendation = getMusicRecommendation(command);
-
-        if (recommendation) {
-          try {
-            await musicService.playTrack(recommendation);
-            speak(`Playing ${recommendation.title}.`, detectedLanguage);
-          } catch (error) {
-            speak("Music error.", detectedLanguage);
-          }
+        // MOBILE FIX: Skip music playback if this is a navigation command (like "music therapy")
+        if (isMobile() && voiceCommand.entities?.action === "navigate") {
+          console.log("🚫 Skipping music playback on mobile - this is a navigation command:", command);
+          // Let it fall through to be handled as unknown/silent on mobile
         } else {
-          speak("Playing calming music.", detectedLanguage);
-        }
-        setState((prev) => ({ ...prev, status: "idle" }));
-        return;
+          // Use music service for stress relief
+          const musicService = MusicService.getInstance();
+          const recommendation = getMusicRecommendation(command);
+
+          if (recommendation) {
+            try {
+              await musicService.playTrack(recommendation);
+              speak(`Playing ${recommendation.title}.`, detectedLanguage);
+            } catch (error) {
+              speak("Music error.", detectedLanguage);
+            }
+          } else {
+            speak("Playing calming music.", detectedLanguage);
+          }
+          setState((prev) => ({ ...prev, status: "idle" }));
+          return;
+        } // End of mobile fix else block
       }
 
       // If unknown or conversational, use LOCAL response system (no API calls - completely free!)
