@@ -2088,7 +2088,9 @@ I'm here to support you, though I'm experiencing a temporary technical issue. Yo
 
 What would you like to talk about? I'm here to listen.
 
+---
 
+**⚠️ Disclaimer:** This AI provides general mental health support and information only. It is not a substitute for professional medical advice, diagnosis, or treatment. If you're experiencing a mental health crisis, please contact emergency services or a mental health professional immediately."""
         
         return MentalHealthResponse(
             response=fallback_text,
