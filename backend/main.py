@@ -17,36 +17,17 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-try:
-    import torch
+# Skip PyTorch for deployment to avoid numpy compatibility issues
+TORCH_AVAILABLE = False
+print("⚠️ PyTorch disabled for deployment - using API-based alternatives")
 
-    TORCH_AVAILABLE = True
-except ImportError:
-    TORCH_AVAILABLE = False
-    print("⚠️ PyTorch not available - some features will be limited")
+# Skip Whisper for deployment to avoid numpy compatibility issues
+WHISPER_AVAILABLE = False
+print("⚠️ Whisper disabled for deployment - using API-based STT alternatives")
 
-try:
-    import whisper
-
-    WHISPER_AVAILABLE = True
-except ImportError:
-    WHISPER_AVAILABLE = False
-    print("⚠️ Whisper not available - STT features will be limited")
-
-try:
-    from transformers import (
-        AutoTokenizer,
-        AutoModelForCausalLM,
-        MarianMTModel,
-        MarianTokenizer,
-        pipeline,
-        AutoModelForSequenceClassification,
-    )
-
-    TRANSFORMERS_AVAILABLE = True
-except ImportError:
-    TRANSFORMERS_AVAILABLE = False
-    print("⚠️ Transformers not available - translation features will be limited")
+# Skip heavy transformers for deployment to avoid numpy compatibility issues
+TRANSFORMERS_AVAILABLE = False
+print("⚠️ Transformers disabled for deployment - using API-based alternatives")
 
 try:
     import numpy as np
