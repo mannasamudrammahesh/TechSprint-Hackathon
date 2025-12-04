@@ -16,7 +16,7 @@
 
 ## 🌟 About
 
-Healix is a comprehensive mental health platform that combines cutting-edge AI technology with compassionate care. Powered by Google's Gemini AI, Healix provides real-time mental health counseling, personalized support, and evidence-based resources to help you on your mental wellness journey.
+Healix is a comprehensive mental health platform that combines cutting-edge AI technology with compassionate care. Powered by the LLaMA Scout model, Healix provides real-time mental health counseling, personalized support, and evidence-based resources to help you on your mental wellness journey.
 
 ### ✨ Key Features
 
