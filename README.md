@@ -16,11 +16,11 @@
 
 ## 🌟 About
 
-Healix is a comprehensive mental health platform that combines cutting-edge AI technology with compassionate care. Powered by Google's Gemini AI, Healix provides real-time mental health counseling, personalized support, and evidence-based resources to help you on your mental wellness journey.
+Healix is a comprehensive mental health platform that combines cutting-edge AI technology with compassionate care. Powered by **Llama Scout AI** (meta-llama/llama-3.2-3b-instruct), Healix provides real-time mental health counseling, personalized support, and evidence-based resources to help you on your mental wellness journey.
 
 ### ✨ Key Features
 
-- **🤖 AI Counselor** - Chat with Healix, powered by Gemini AI for fast, empathetic responses (2-3 seconds)
+- **🤖 AI Counselor** - Chat with Healix, powered by Llama Scout AI for fast, empathetic responses (<3 seconds)
 - **💬 Natural Conversations** - Interactive dialogue with follow-up questions and personalized advice
 - **🎵 Music Therapy** - Curated playlists for relaxation, focus, and emotional well-being
 - **📚 Mental Health Resources** - Comprehensive guides on anxiety, depression, stress, and more
@@ -29,6 +29,7 @@ Healix is a comprehensive mental health platform that combines cutting-edge AI t
 - **🌍 Multilingual** - Support for 10+ languages including English, Hindi, Telugu, Tamil
 - **📱 Fully Responsive** - Seamless experience across all devices
 - **🔒 Secure & Private** - Your conversations are confidential
+- **🚀 No API Keys Required** - Self-hosted AI model for complete privacy
 
 ---
 
@@ -38,7 +39,7 @@ Healix is a comprehensive mental health platform that combines cutting-edge AI t
 
 - **Frontend**: Node.js 18+, npm
 - **Backend**: Python 3.8+, pip
-- **API Key**: Google Gemini API key ([Get one here](https://makersuite.google.com/app/apikey))
+- **No API Keys Required** - Uses self-hosted Llama Scout AI model
 
 ### Installation
 
@@ -52,8 +53,7 @@ Healix is a comprehensive mental health platform that combines cutting-edge AI t
    ```bash
    cd backend
    pip install -r requirements.txt
-   cp .env.example .env
-   # Edit .env and add your GEMINI_API_KEY
+   # No API keys needed - Llama Scout runs locally
    python main.py
    ```
 
@@ -101,11 +101,12 @@ AIML-Sprint/
 
 ### 💬 AI Counselor
 
-- **Gemini-Powered**: Fast, intelligent responses in 2-3 seconds
+- **Llama Scout Powered**: Fast, intelligent responses in <3 seconds
 - **Empathetic**: Validates feelings and provides emotional support
 - **Interactive**: Asks follow-up questions to understand you better
 - **Crisis-Aware**: Detects crisis situations and provides immediate resources
 - **Personalized**: Adapts to your emotional state and needs
+- **Privacy-First**: No external API calls, completely self-hosted
 
 ### 🎵 Music Therapy
 
@@ -149,10 +150,11 @@ Comprehensive guides on:
 ### Backend
 - **Framework**: FastAPI
 - **Language**: Python 3.8+
-- **Primary AI**: Google Gemini 2.0 Flash
-- **Fallback AI**: Llama Scout
+- **Primary AI**: Llama Scout (meta-llama/llama-3.2-3b-instruct)
+- **Provider**: OpenRouter AI (Free Tier)
 - **Speech**: Whisper (STT), TTS
 - **Database**: Supabase (optional)
+- **Privacy**: No API keys stored, self-hosted model
 
 ---
 
@@ -194,7 +196,7 @@ See detailed deployment guides in:
 ### Backend Environment Variables
 
 ```env
-GEMINI_API_KEY=your_gemini_api_key
+# No API keys required - Llama Scout runs locally
 HOST=0.0.0.0
 PORT=3003
 DEBUG=False
@@ -216,7 +218,7 @@ CLERK_SECRET_KEY=your_clerk_secret
 ### Backend
 ```bash
 cd backend
-python -c "from gemini_integration import gemini_ai; print(gemini_ai.is_available())"
+python -c "from llama_scout_integration import get_llama_scout_ai; ai = get_llama_scout_ai(); print('Llama Scout AI ready!')"
 ```
 
 ### Frontend
@@ -261,7 +263,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- Google Gemini AI for powering intelligent responses
+- Meta's Llama Scout AI for powering intelligent responses
+- OpenRouter AI for free model hosting
 - Rive for beautiful animations
 - Shadcn/ui for elegant UI components
 - FastAPI for excellent backend framework
