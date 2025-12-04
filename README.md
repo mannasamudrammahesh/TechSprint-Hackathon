@@ -38,7 +38,7 @@ Healix is a comprehensive mental health platform that combines cutting-edge AI t
 
 - **Frontend**: Node.js 18+, npm
 - **Backend**: Python 3.8+, pip
-- **Model Download**: LLaMA Scout Model ([Download here](https://huggingface.co/NeuralScout/Llama-Scout))
+- **Model Download**: LLaMA Scout Model ([Download here](https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct))
 
 
 ### Installation
