@@ -16,7 +16,7 @@
 
 ## 🌟 About
 
-Healix is a comprehensive mental health platform that combines cutting-edge AI technology with compassionate care. Powered by Google's Gemini AI, Healix provides real-time mental health counseling, personalized support, and evidence-based resources to help you on your mental wellness journey.
+Healix is a comprehensive mental health platform that combines cutting-edge AI technology with compassionate care. Powered by the LLaMA Scout model, Healix provides real-time mental health counseling, personalized support, and evidence-based resources to help you on your mental wellness journey.
 
 ### ✨ Key Features
 
@@ -38,7 +38,8 @@ Healix is a comprehensive mental health platform that combines cutting-edge AI t
 
 - **Frontend**: Node.js 18+, npm
 - **Backend**: Python 3.8+, pip
-- **API Key**: Google Gemini API key ([Get one here](https://makersuite.google.com/app/apikey))
+- **Model Download**: LLaMA Scout Model ([Download here](https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct))
+
 
 ### Installation
 
@@ -53,8 +54,9 @@ Healix is a comprehensive mental health platform that combines cutting-edge AI t
    cd backend
    pip install -r requirements.txt
    cp .env.example .env
-   # Edit .env and add your GEMINI_API_KEY
+    # Edit .env and set MODEL_TYPE=llama_scout (no API key needed)
    python main.py
+
    ```
 
 3. **Set up Frontend** (in a new terminal)
@@ -79,8 +81,8 @@ Healix is a comprehensive mental health platform that combines cutting-edge AI t
 AIML-Sprint/
 ├── backend/                 # Python FastAPI backend
 │   ├── main.py             # Main server file
-│   ├── gemini_integration.py  # Gemini AI integration
-│   ├── llama_scout_integration.py  # Fallback AI
+│   ├── gemini_integration.py  # Fallback AI
+│   ├── llama_scout_integration.py  # Primary AI
 │   ├── requirements.txt    # Python dependencies
 │   └── README.md           # Backend documentation
 │
@@ -101,7 +103,7 @@ AIML-Sprint/
 
 ### 💬 AI Counselor
 
-- **Gemini-Powered**: Fast, intelligent responses in 2-3 seconds
+- **Llama Scout**: Fast, intelligent responses in 2-3 seconds
 - **Empathetic**: Validates feelings and provides emotional support
 - **Interactive**: Asks follow-up questions to understand you better
 - **Crisis-Aware**: Detects crisis situations and provides immediate resources
@@ -129,7 +131,6 @@ Comprehensive guides on:
 ### 🎯 Additional Features
 
 - **Voice Navigation**: Control the app hands-free
-- **Emotion Detection**: Real-time emotional state analysis
 - **Progress Tracking**: Monitor your mental health journey
 - **Dark/Light Mode**: Comfortable viewing anytime
 - **Animated Mascot**: Friendly bear provides visual feedback
@@ -149,8 +150,8 @@ Comprehensive guides on:
 ### Backend
 - **Framework**: FastAPI
 - **Language**: Python 3.8+
-- **Primary AI**: Google Gemini 2.0 Flash
-- **Fallback AI**: Llama Scout
+- **Primary AI**: Llama Scout
+- **Fallback AI**:  Google Gemini 2.0 Flash
 - **Speech**: Whisper (STT), TTS
 - **Database**: Supabase (optional)
 
@@ -194,7 +195,7 @@ See detailed deployment guides in:
 ### Backend Environment Variables
 
 ```env
-GEMINI_API_KEY=your_gemini_api_key
+
 HOST=0.0.0.0
 PORT=3003
 DEBUG=False
@@ -216,7 +217,7 @@ CLERK_SECRET_KEY=your_clerk_secret
 ### Backend
 ```bash
 cd backend
-python -c "from gemini_integration import gemini_ai; print(gemini_ai.is_available())"
+python main.py
 ```
 
 ### Frontend
@@ -261,7 +262,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- Google Gemini AI for powering intelligent responses
+- Llama Scout for powering intelligent responses
 - Rive for beautiful animations
 - Shadcn/ui for elegant UI components
 - FastAPI for excellent backend framework
