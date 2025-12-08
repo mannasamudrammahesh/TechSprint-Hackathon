@@ -195,8 +195,8 @@ GOOGLE_API_KEY=your_gemini_api_key
 GEMINI_API_KEY=your_gemini_api_key
 
 # Backend
-NEXT_PUBLIC_BACKEND_URL=http://127.0.0.1:3003
-BACKEND_URL=http://127.0.0.1:3003
+NEXT_PUBLIC_BACKEND_URL=http://127.0.0.1:8000
+BACKEND_URL=http://127.0.0.1:8000
 
 # App URL
 NEXT_PUBLIC_APP_URL=http://localhost:3000

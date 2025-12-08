@@ -90,6 +90,11 @@ export default function HomeLayout({
                   Music Therapy
                 </Link>
               </li>
+              <li>
+                <Link href="/mindful-visualizer" className={`${styles.a}`} onClick={closeMenu}>
+                  Mindful Visualizer
+                </Link>
+              </li>
             </ul>
             {user && (
               <>

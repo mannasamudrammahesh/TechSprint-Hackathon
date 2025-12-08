@@ -32,13 +32,15 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   const isHomePage = pathname === '/' || pathname === '/Home';
   const isChatPage = pathname === '/Chat';
   const isAuthPage = pathname === '/sign-in' || pathname === '/sign-up' || pathname?.startsWith('/sign-');
+  const isMindfulVisualizerPage = pathname === '/mindful-visualizer';
+  
   return (
     <>
-      {!isAuthPage && <MobileNavbar />}
+      {!isAuthPage && !isMindfulVisualizerPage && <MobileNavbar />}
       <ProtectedRoute>
-        {!isHomePage && !isChatPage && !isAuthPage && <GlobalNavbar />}
+        {!isHomePage && !isChatPage && !isAuthPage && !isMindfulVisualizerPage && <GlobalNavbar />}
         {children}
-        {!isAuthPage && <MicrophoneToggle />}
+        {!isAuthPage && !isMindfulVisualizerPage && <MicrophoneToggle />}
       </ProtectedRoute>
     </>
   );

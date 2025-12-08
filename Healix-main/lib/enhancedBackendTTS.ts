@@ -4,7 +4,7 @@
  * Falls back to browser TTS if backend is unavailable
  */
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3003';
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
 
 export interface TTSOptions {
   language?: string;

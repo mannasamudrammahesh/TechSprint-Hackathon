@@ -99,6 +99,15 @@ export default function MobileNavbar() {
                 </li>
                 <li>
                   <Link
+                    href="/mindful-visualizer"
+                    className="text-xl font-semibold text-black"
+                    onClick={closeMenu}
+                  >
+                    Mindful Visualizer
+                  </Link>
+                </li>
+                <li>
+                  <Link
                     href="/settings"
                     className="text-xl font-semibold text-black"
                     onClick={closeMenu}

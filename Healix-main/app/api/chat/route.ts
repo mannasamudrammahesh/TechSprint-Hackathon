@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 // Backend API configuration
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3003";
+const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8000";
 
 /**
  * POST /api/chat
@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
       console.error("❌ Failed to connect to backend:", fetchError.message);
       return NextResponse.json(
         {
-          text: `Unable to connect to the AI backend server. Please ensure:\n\n1. The backend server is running (check the "Healix Backend" window)\n2. It's running on port 3003\n3. Look for "Llama 4 Scout AI initialized successfully" in the backend logs\n\nError: ${fetchError.message}`,
+          text: `Unable to connect to the AI backend server. Please ensure:\n\n1. The backend server is running (check the "Healix Backend" window)\n2. It's running on port 8000\n3. Look for "Llama Scout AI initialized successfully" in the backend logs\n\nError: ${fetchError.message}`,
           error: true,
           errorType: "CONNECTION_FAILED",
           backendUrl: BACKEND_URL,
@@ -147,7 +147,7 @@ export async function POST(req: NextRequest) {
 
     if (error.message.includes("fetch")) {
       errorMessage =
-        "Failed to connect to backend server. Is it running on port 3003?";
+        "Failed to connect to backend server. Is it running on port 8000?";
     } else if (error.message.includes("JSON")) {
       errorMessage = "Backend returned invalid response. Check backend logs.";
     } else if (error.message.includes("timeout")) {
@@ -158,7 +158,7 @@ export async function POST(req: NextRequest) {
     // Return detailed error
     return NextResponse.json(
       {
-        text: `🚨 Critical Error: ${errorMessage}\n\nTechnical details: ${error.message}\n\nWhat to check:\n1. Is the "Healix Backend" window open and running?\n2. Does it show "Starting Healix AI Backend on port 3003"?\n3. Does it show "Llama 4 Scout AI initialized successfully"?\n4. Are there any red error messages in the backend window?\n\nIf the backend is not running, please run: START_FIXED.bat`,
+        text: `🚨 Critical Error: ${errorMessage}\n\nTechnical details: ${error.message}\n\nWhat to check:\n1. Is the "Healix Backend" window open and running?\n2. Does it show "Starting Healix AI Backend on port 8000"?\n3. Does it show "Llama Scout AI initialized successfully"?\n4. Are there any red error messages in the backend window?\n\nIf the backend is not running, please run: START_FIXED.bat`,
         error: true,
         errorType: "CRITICAL_ERROR",
         details: error.message,

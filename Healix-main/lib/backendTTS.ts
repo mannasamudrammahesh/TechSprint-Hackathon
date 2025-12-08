@@ -3,7 +3,7 @@
  * Uses Google TTS and Edge TTS from backend for better quality
  */
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:3003';
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000';
 
 export interface TTSOptions {
   text: string;

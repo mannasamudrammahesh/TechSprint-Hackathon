@@ -17,7 +17,7 @@ export default function GlobalNavbar() {
 
   // Prefetch all navigation routes on mount for instant navigation
   useEffect(() => {
-    const routes = ['/Home', '/Chat', '/Therapy', '/music', '/settings', '/Contact'];
+    const routes = ['/Home', '/Chat', '/Therapy', '/music', '/mindful-visualizer', '/settings', '/Contact'];
     routes.forEach(route => {
       router.prefetch(route);
     });
@@ -109,6 +109,11 @@ export default function GlobalNavbar() {
               <li>
                 <Link href="/music" className={`${styles.a}`} onClick={closeMenu}>
                   Music Therapy
+                </Link>
+              </li>
+              <li>
+                <Link href="/mindful-visualizer" className={`${styles.a}`} onClick={closeMenu}>
+                  Mindful Visualizer
                 </Link>
               </li>
             </ul>
