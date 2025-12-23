@@ -67,7 +67,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 - **Database:** Supabase (PostgreSQL)
 - **Authentication:** Supabase Auth
 - **AI & ML:** 
-  - **Google Gemini 2.5 Flash** - Primary AI counselor (100% response coverage)
+  - **Google Gemini 2.5 Flash** - Exclusive AI counselor (100% response coverage, no fallbacks)
   - **MediaPipe** - Real-time exercise detection and pose estimation
   - **Google Generative AI SDK** - Seamless API integration
 - **Animations:** Rive (Interactive bear character)
@@ -123,13 +123,14 @@ All data is stored securely in Supabase and associated with the user's account.
 
 ## 🎨 Key Features
 
-### 🤖 AI Counseling (Powered by Google Gemini)
-- **100% Gemini API Integration** - All counseling responses powered by Google's advanced AI
+### 🤖 AI Counseling (Exclusively Powered by Google Gemini)
+- **100% Gemini API Integration** - ALL counseling responses exclusively powered by Google Gemini 2.5 Flash
+- **No Fallback Models** - Pure Gemini AI for consistent, high-quality therapeutic responses
 - **Empathetic Conversations** - Context-aware, therapeutic responses with 85-90% empathic accuracy
 - **Crisis Detection** - Automatic identification of crisis situations with immediate intervention
-- **Multi-language Support** - Counseling available in multiple languages
+- **Multi-language Support** - Counseling available in multiple languages via Gemini
 - **Session Management** - Enhanced conversation history and context retention
-- **Real-time Emotion Analysis** - AI-powered emotion detection and response adaptation
+- **Real-time Emotion Analysis** - Gemini-powered emotion detection and response adaptation
 
 ### 🎮 Interactive Therapy Games
 - **Boss Battle Format** - Gamified challenges against "Anxiety Shadow", "Depression Cloud", "Stress Demon"
@@ -193,4 +194,5 @@ For support or inquiries, please contact: help.healix@gmail.com
 
 - **GDG on Campus TechSprint 2024** - Innovative use of Google AI technologies
 - **Mental Health Innovation** - Combining AI counseling with gamified therapy
+
 
