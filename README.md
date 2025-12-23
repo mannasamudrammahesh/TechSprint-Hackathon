@@ -20,7 +20,7 @@ Healix is a comprehensive mental health support platform that combines **Google 
 
 - Node.js 18+ and npm
 - Supabase account
-- **Google Gemini API key** (Essential for AI counseling)
+- **Google Gemini API key** (Essential for AI counseling) - [Get your API key here](https://makersuite.google.com/app/apikey)
 - Modern web browser with camera access (for therapy games)
 
 ### Installation
@@ -194,5 +194,6 @@ For support or inquiries, please contact: help.healix@gmail.com
 
 - **GDG on Campus TechSprint 2024** - Innovative use of Google AI technologies
 - **Mental Health Innovation** - Combining AI counseling with gamified therapy
+
 
 
